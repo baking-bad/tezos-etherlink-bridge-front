@@ -1,0 +1,31 @@
+{
+	"name": "etherlink-bridge",
+	"version": "0.0.0",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"dev": "vite",
+		"build": "vite build",
+		"preview": "vite preview"
+	},
+	"dependencies": {
+		"@airgap/beacon-types": "^4.1.2",
+		"@taquito/beacon-wallet": "^19.0.2",
+		"@taquito/taquito": "^19.0.2",
+		"@taquito/utils": "^19.0.2",
+		"@web3modal/ethers": "^4.0.10",
+		"@web3modal/scaffold-utils": "^4.0.10",
+		"ethers": "^6.11.1",
+		"pinia": "^2.1.7",
+		"sass": "^1.71.0",
+		"sass-loader": "^14.1.0",
+		"vue": "^3.4.15",
+		"vue-router": "^4.2.5",
+		"web3": "^4.5.0"
+	},
+	"devDependencies": {
+		"@vitejs/plugin-vue": "^5.0.3",
+		"vite": "^5.0.11",
+		"vite-plugin-node-polyfills": "^0.21.0"
+	}
+}
