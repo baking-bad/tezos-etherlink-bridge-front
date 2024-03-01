@@ -10,6 +10,7 @@
 	},
 	"dependencies": {
 		"@airgap/beacon-types": "^4.1.2",
+		"@baking-bad/tezos-etherlink-bridge-sdk": "^0.1.1",
 		"@taquito/beacon-wallet": "^19.0.2",
 		"@taquito/taquito": "^19.0.2",
 		"@taquito/utils": "^19.0.2",
