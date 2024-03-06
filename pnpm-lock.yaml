@@ -8,6 +8,9 @@ dependencies:
   '@airgap/beacon-types':
     specifier: ^4.1.2
     version: 4.1.2
+  '@baking-bad/tezos-etherlink-bridge-sdk':
+    specifier: ^0.1.1
+    version: 0.1.1(@taquito/taquito@19.0.2)(web3@4.5.0)(ws@8.16.0)
   '@taquito/beacon-wallet':
     specifier: ^19.0.2
     version: 19.0.2
@@ -197,6 +200,23 @@ packages:
       '@babel/helper-string-parser': 7.23.4
       '@babel/helper-validator-identifier': 7.22.20
       to-fast-properties: 2.0.0
+
+  /@baking-bad/tezos-etherlink-bridge-sdk@0.1.1(@taquito/taquito@19.0.2)(web3@4.5.0)(ws@8.16.0):
+    resolution: {integrity: sha512-spYOTmGpWFh/QZWlUrsk0S2YKbCbRuLNR5RQyV9eDHmhyzrhz2WRI82uLOmQzuEmxZii72GLWJKWQKxoOkaVLg==}
+    engines: {node: '>=20'}
+    requiresBuild: true
+    peerDependencies:
+      '@taquito/taquito': '>=19.0.0'
+      web3: ^4.4.0
+      ws: ^8.16.0
+    peerDependenciesMeta:
+      ws:
+        optional: true
+    dependencies:
+      '@taquito/taquito': 19.0.2
+      web3: 4.5.0(typescript@5.3.3)
+      ws: 8.16.0
+    dev: false
 
   /@coinbase/wallet-sdk@3.9.1:
     resolution: {integrity: sha512-cGUE8wm1/cMI8irRMVOqbFWYcnNugqCtuy2lnnHfgloBg+GRLs9RsrkOUDMdv/StfUeeKhCDyYudsXXvcL1xIA==}
@@ -1874,15 +1894,6 @@ packages:
     resolution: {integrity: sha512-zDOdM9MCbcBa/M+rlJaylalw/W2DDf4WwPrhstzUaG3nWWjW+JAmsuaATXyAam7TiaWxT8dnz7cQXLpYl3pJZw==}
     peerDependencies:
       ethers: '>=6.0.0'
-    peerDependenciesMeta:
-      '@web3modal/siwe':
-        optional: true
-      react:
-        optional: true
-      react-dom:
-        optional: true
-      vue:
-        optional: true
     dependencies:
       '@coinbase/wallet-sdk': 3.9.1
       '@walletconnect/ethereum-provider': 2.11.1(react@18.2.0)
@@ -1977,13 +1988,6 @@ packages:
   /@web3modal/siwe@4.0.10(typescript@5.3.3):
     resolution: {integrity: sha512-L7YWtlqCWa4GqzzVw8bs45Vjo8qTpMI53EGgZYp4fiUd974koanScsXiCKc3+0MCd/usD3sHxs7Jm1Zlzh19IA==}
     requiresBuild: true
-    peerDependenciesMeta:
-      react:
-        optional: true
-      react-dom:
-        optional: true
-      vue:
-        optional: true
     dependencies:
       '@web3modal/core': 4.0.10(react@18.2.0)
       '@web3modal/scaffold-utils': 4.0.10(react@18.2.0)

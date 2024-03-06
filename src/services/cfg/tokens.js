@@ -61,3 +61,7 @@ export const tokenPairs = [
 
 export const nativeTezosToken = tokenPairs[0].tezos
 export const nativeEtherlinkToken = tokenPairs[0].etherlink
+
+export const tezosTokens = tokenPairs.map((p) => p.tezos)
+export const etherlinkTokens = tokenPairs.map((p) => p.etherlink)
+export const plainTokens = [...tezosTokens, ...etherlinkTokens]

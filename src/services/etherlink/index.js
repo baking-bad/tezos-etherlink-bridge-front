@@ -2,7 +2,7 @@
 import { reactive } from "vue"
 import Web3 from "web3"
 import { createWeb3Modal, defaultConfig } from "@web3modal/ethers/vue"
-import { EthersStoreUtil } from "@web3modal/scaffold-utils/ethers"
+// import { EthersStoreUtil } from "@web3modal/scaffold-utils/ethers"
 
 /** Services */
 import { config } from "@/services/cfg"
@@ -34,7 +34,7 @@ const init = () => {
 		projectId: config.walletConnectProjectId,
 		enableAnalytics: false,
 	})
-	instances.toolkit = new Web3(EthersStoreUtil.state.provider)
+	instances.toolkit = new Web3(window.ethereum)
 }
 
 export default { init, instances }
