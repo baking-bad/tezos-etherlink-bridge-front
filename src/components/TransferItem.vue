@@ -8,7 +8,6 @@ const props = defineProps({
 		required: true,
 	}
 })
-console.log(props.transfer)
 const operationTypes = {
 	0: 'deposit',
 	1: 'withdraw'

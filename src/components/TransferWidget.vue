@@ -5,6 +5,11 @@ import { ref, computed, onMounted } from "vue"
 /** Services */
 import { comma, purgeNumber } from "@/services/utils/amounts.js"
 
+import TokenBridgeService from "@/services/tokenBridge"
+import {tezosTokens, etherlinkTokens} from "@/services/cfg/tokens.js"
+
+const { tokenBridge } = TokenBridgeService.instances
+
 const reverseDirection = ref(false)
 const playRotateAnimation = ref(false)
 
@@ -99,6 +104,31 @@ const handleSwitch = () => {
 onMounted(() => {
 	fromInputEl.value.focus()
 })
+
+const balancesTezos = ref({})
+const balancesEtherlink = ref({})
+
+async function getBalances() {
+	const addresses = await Promise.all( [
+		tokenBridge.getTezosConnectedAddress(),
+		tokenBridge.getEtherlinkConnectedAddress()
+	])
+	const balances = await Promise.all([
+		tokenBridge.data.getBalances(addresses[0]),
+		tokenBridge.data.getBalances(addresses[1])
+	])
+	balancesTezos.value = balances[0]
+	balancesEtherlink.value = balances[1]
+}
+
+getBalances()
+
+function testTransfer() {
+	const token = etherlinkTokens.find((t) => t.name === "Ctez");
+	tokenBridge.startWithdraw(10000n, token)
+	// const token = tezosTokens.find((t) => t.type === "fa1.2");
+	// tokenBridge.deposit(100n, token)
+}
 </script>
 
 <template>
@@ -182,11 +212,11 @@ onMounted(() => {
 			</Flex>
 		</Flex>
 
-		<RouterLink to="/confirm">
+		<Flex>
 			<Flex align="center" justify="center" :class="$style.button">
-				<Text size="16" color="black">Continue</Text>
+				<Text size="16" color="black" @click="testTransfer">Continue</Text>
 			</Flex>
-		</RouterLink>
+		</Flex>
 	</Flex>
 </template>
 

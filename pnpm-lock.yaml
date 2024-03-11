@@ -9,14 +9,14 @@ dependencies:
     specifier: ^4.1.2
     version: 4.1.2
   '@baking-bad/tezos-etherlink-bridge-sdk':
-    specifier: ^0.1.1
-    version: 0.1.1(@taquito/taquito@19.0.2)(web3@4.5.0)(ws@8.16.0)
+    specifier: ^0.1.3
+    version: 0.1.3(@taquito/taquito@19.1.0-RC.1)(web3@4.5.0)(ws@8.16.0)
   '@taquito/beacon-wallet':
-    specifier: ^19.0.2
-    version: 19.0.2
+    specifier: 19.1.0-RC.1
+    version: 19.1.0-RC.1
   '@taquito/taquito':
-    specifier: ^19.0.2
-    version: 19.0.2
+    specifier: 19.1.0-RC.1
+    version: 19.1.0-RC.1
   '@taquito/utils':
     specifier: ^19.0.2
     version: 19.0.2
@@ -201,20 +201,26 @@ packages:
       '@babel/helper-validator-identifier': 7.22.20
       to-fast-properties: 2.0.0
 
-  /@baking-bad/tezos-etherlink-bridge-sdk@0.1.1(@taquito/taquito@19.0.2)(web3@4.5.0)(ws@8.16.0):
-    resolution: {integrity: sha512-spYOTmGpWFh/QZWlUrsk0S2YKbCbRuLNR5RQyV9eDHmhyzrhz2WRI82uLOmQzuEmxZii72GLWJKWQKxoOkaVLg==}
+  /@baking-bad/tezos-etherlink-bridge-sdk@0.1.3(@taquito/taquito@19.1.0-RC.1)(web3@4.5.0)(ws@8.16.0):
+    resolution: {integrity: sha512-cIucL0bxHPVDxsIh/CtGM4g8keEINXVjK0FOlf+e37beTWtUskSaGyE8Ho3Tr+kDsOg97yHb1VeGEhHYu3fCqg==}
     engines: {node: '>=20'}
-    requiresBuild: true
     peerDependencies:
-      '@taquito/taquito': '>=19.0.0'
+      '@taquito/taquito': ^19.1.0-RC.1
       web3: ^4.4.0
       ws: ^8.16.0
     peerDependenciesMeta:
+      '@taquito/taquito':
+        optional: true
+      web3:
+        optional: true
       ws:
         optional: true
     dependencies:
-      '@taquito/taquito': 19.0.2
+      '@taquito/taquito': 19.1.0-RC.1
+      '@taquito/utils': 19.1.0
       web3: 4.5.0(typescript@5.3.3)
+      web3-utils: 4.2.0
+      web3-validator: 2.0.4
       ws: 8.16.0
     dev: false
 
@@ -1107,13 +1113,13 @@ packages:
       '@stablelib/wipe': 1.0.1
     dev: false
 
-  /@taquito/beacon-wallet@19.0.2:
-    resolution: {integrity: sha512-p6UjYNXpVVsR4fJtZhyOo1+h7kqj+YmsaFji+XPMcFbM6MZGzPY1kpNa1rQ8tvQirjGiVH5mphd/krFYBQqI/Q==}
+  /@taquito/beacon-wallet@19.1.0-RC.1:
+    resolution: {integrity: sha512-xMqFekMkaopUQZpD+uHP39xF8ryGqq64H34TYttKN8QEtQOlmPmrzoNqIz9nvO7+Ttt+zoXGVDgqDzADVNAHrA==}
     engines: {node: '>=18'}
     dependencies:
       '@airgap/beacon-dapp': 4.1.2
-      '@taquito/core': 19.0.2
-      '@taquito/taquito': 19.0.2
+      '@taquito/core': 19.1.0
+      '@taquito/taquito': 19.1.0-RC.1
     transitivePeerDependencies:
       - '@azure/app-configuration'
       - '@azure/cosmos'
@@ -1142,69 +1148,76 @@ packages:
       json-stringify-safe: 5.0.1
     dev: false
 
-  /@taquito/http-utils@19.0.2:
-    resolution: {integrity: sha512-JhUM0Qop6T6VJkX5TBS+fOpj44oVkuRU0rOfQknsA9NBfIRuR1EbGaSXPno45oe2yrM3eSfMLnJ5eVlbaZybLw==}
+  /@taquito/core@19.1.0:
+    resolution: {integrity: sha512-gW7rQCXnznCsTaVNF04ilS6jgzxfJWRiDm7BDC0U5FrEHxIfiRXj6dDbVtOLvcai2xBmfCghFL79lCsToVYztQ==}
     engines: {node: '>=18'}
     dependencies:
-      '@taquito/core': 19.0.2
+      json-stringify-safe: 5.0.1
+    dev: false
+
+  /@taquito/http-utils@19.1.0:
+    resolution: {integrity: sha512-MDvK5rHFtgpK/c4G8ttrYj5fy4lDz/MpwryrUjfcAZG/EfWdFcw6JIaFrrIrCRUp2d09+182sogaT3xzYGq6kA==}
+    engines: {node: '>=18'}
+    dependencies:
+      '@taquito/core': 19.1.0
       node-fetch: 2.7.0
     transitivePeerDependencies:
       - encoding
     dev: false
 
-  /@taquito/local-forging@19.0.2:
-    resolution: {integrity: sha512-Sjrw9xShRYaCrAkbDolpvGhAhpSM9kanVFrGjl2RKxIIQRRBNIvUHniyPNKqGgGt88dUJWFkcCrJL6CNBw/kSw==}
+  /@taquito/local-forging@19.1.0:
+    resolution: {integrity: sha512-ZjucQX3Gv+MzYJmTY617ok93nPXLK/5P/Gtxolys4sETT5KaQAbxWCkaZIlJEYVXso/jF2JRUfiXzzoMLR9Q1w==}
     engines: {node: '>=18'}
     dependencies:
-      '@taquito/core': 19.0.2
-      '@taquito/utils': 19.0.2
+      '@taquito/core': 19.1.0
+      '@taquito/utils': 19.1.0
       bignumber.js: 9.1.2
     dev: false
 
-  /@taquito/michel-codec@19.0.2:
-    resolution: {integrity: sha512-x7duslF4krOS44PpP+BWQgwQxUs0i6q/J5OEh4WXZ9SI4gLT0xji+vmU5ohjvoj1Tv9V19OcYatSPMD0M5V4SQ==}
+  /@taquito/michel-codec@19.1.0:
+    resolution: {integrity: sha512-iIvNBPowx/x/rtaxCuVj1QL2jR3iaHaZHGfiN+gUa5jo+eL3YUJZSIDCiTQM3HKHVBNP+0x+OeBeuCmMcSMVog==}
     engines: {node: '>=18'}
     dependencies:
-      '@taquito/core': 19.0.2
+      '@taquito/core': 19.1.0
     dev: false
 
-  /@taquito/michelson-encoder@19.0.2:
-    resolution: {integrity: sha512-Ctwu1pPi1fTdXvS0G3lq6R2sldOYUesDr8LlUJQ09ks6odHYuwz28DQgka+S0XH5yxNs03T1DP5cyjM+l/NwqQ==}
+  /@taquito/michelson-encoder@19.1.0:
+    resolution: {integrity: sha512-1MG2eG6R4/UwMAzEgz8k79yWh1vfzlFfmbAQpoigC6pfDAsoc5/zaqKcdxpqrpd422TA+8LTewYFXkGBFLf/cA==}
     engines: {node: '>=18'}
     dependencies:
-      '@taquito/core': 19.0.2
-      '@taquito/rpc': 19.0.2
-      '@taquito/utils': 19.0.2
+      '@taquito/core': 19.1.0
+      '@taquito/rpc': 19.1.0
+      '@taquito/utils': 19.1.0
       bignumber.js: 9.1.2
       fast-json-stable-stringify: 2.1.0
     transitivePeerDependencies:
       - encoding
     dev: false
 
-  /@taquito/rpc@19.0.2:
-    resolution: {integrity: sha512-Jsued1kqAFU8jKYGDmg+cZ0vQHdDr5wGFWDhlUpFTpuU5yIrkplDu5jnckC64og6VEPaiieiRe9LItpNfUDBvg==}
+  /@taquito/rpc@19.1.0:
+    resolution: {integrity: sha512-dpPEmrSrY4EmnODcU9QdN4JydeEQF/k8C/2f+0Vu4OHPewaYDX48toby+OtJ9rp5ZVPv8+/XJEwOyX37m4nBng==}
     engines: {node: '>=18'}
     dependencies:
-      '@taquito/core': 19.0.2
-      '@taquito/http-utils': 19.0.2
-      '@taquito/utils': 19.0.2
+      '@taquito/core': 19.1.0
+      '@taquito/http-utils': 19.1.0
+      '@taquito/utils': 19.1.0
       bignumber.js: 9.1.2
     transitivePeerDependencies:
       - encoding
     dev: false
 
-  /@taquito/taquito@19.0.2:
-    resolution: {integrity: sha512-kVwJqnn45VVgu5uFjd4dZKZjdmrSipFZg8N2HE6SGc757pzLhDItQJ8z9cKKZUYlrTe73N3wGij4kr7CZ5r//g==}
+  /@taquito/taquito@19.1.0-RC.1:
+    resolution: {integrity: sha512-yWYnwnLiyy9GYPARINWlbc2FSxmSVmkBQ89DZX21fnr3ZHcESnatstvI20qHy92FottlzKpRzZBSlhV2rmwbQw==}
     engines: {node: '>=18'}
     requiresBuild: true
     dependencies:
-      '@taquito/core': 19.0.2
-      '@taquito/http-utils': 19.0.2
-      '@taquito/local-forging': 19.0.2
-      '@taquito/michel-codec': 19.0.2
-      '@taquito/michelson-encoder': 19.0.2
-      '@taquito/rpc': 19.0.2
-      '@taquito/utils': 19.0.2
+      '@taquito/core': 19.1.0
+      '@taquito/http-utils': 19.1.0
+      '@taquito/local-forging': 19.1.0
+      '@taquito/michel-codec': 19.1.0
+      '@taquito/michelson-encoder': 19.1.0
+      '@taquito/rpc': 19.1.0
+      '@taquito/utils': 19.1.0
       bignumber.js: 9.1.2
       rxjs: 7.8.1
     transitivePeerDependencies:
@@ -1218,6 +1231,22 @@ packages:
       '@stablelib/blake2b': 1.0.1
       '@stablelib/ed25519': 1.0.3
       '@taquito/core': 19.0.2
+      '@types/bs58check': 2.1.2
+      bignumber.js: 9.1.2
+      blakejs: 1.2.1
+      bs58check: 3.0.1
+      buffer: 6.0.3
+      elliptic: 6.5.4
+      typedarray-to-buffer: 4.0.0
+    dev: false
+
+  /@taquito/utils@19.1.0:
+    resolution: {integrity: sha512-vgEUWBb1n1PY8XpFqLJ2Axdlo/lNoIqNTeAyVHN7yxxqyVghSoMeWVsfbCJ661GJ32R1NNo4XAJrzwMR+B7soA==}
+    engines: {node: '>=18'}
+    dependencies:
+      '@stablelib/blake2b': 1.0.1
+      '@stablelib/ed25519': 1.0.3
+      '@taquito/core': 19.1.0
       '@types/bs58check': 2.1.2
       bignumber.js: 9.1.2
       blakejs: 1.2.1
