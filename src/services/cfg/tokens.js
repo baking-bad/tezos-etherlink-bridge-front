@@ -5,7 +5,7 @@ export const tokenPairs = [
 			name: "Tezos",
 			ticker: "XTZ",
 			decimals: 6,
-			iconSrc: "../assets/images/tezos.png",
+			icon: "tezos",
 			ticketHelperContractAddress: "KT1DWVsu4Jtu2ficZ1qtNheGPunm5YVniegT",
 		},
 		etherlink: {
@@ -13,7 +13,7 @@ export const tokenPairs = [
 			name: "Tezos",
 			ticker: "XTZ",
 			decimals: 18,
-			iconSrc: "../assets/images/etherlink.png",
+			icon: "etherlink",
 		},
 	},
 	{
@@ -23,7 +23,7 @@ export const tokenPairs = [
 			ticker: "CTEZ",
 			address: "KT1LpdETWYvPWCQTR2FEW6jE6dVqJqxYjdeW",
 			decimals: 0,
-			iconSrc: "../assets/images/tezos.png",
+			icon: "tezos",
 			ticketerContractAddress: "KT1RvSp4yDKUABqWmv3pKGE9fA6iCGy7bqGh",
 			ticketHelperContractAddress: "KT1DHLWJorW9WB6ztkx1XcoaJKWXeTu9yoR1",
 		},
@@ -33,7 +33,7 @@ export const tokenPairs = [
 			ticker: "CTEZ",
 			address: "0x87dcBf128677ba36E79D47dAf4eb4e51610e0150",
 			decimals: 0,
-			iconSrc: "../assets/images/etherlink.png",
+			icon: "etherlink",
 		},
 	},
 	{
@@ -44,7 +44,7 @@ export const tokenPairs = [
 			address: "KT195Eb8T524v5VJ99ZzH2wpnPfQ2wJfMi6h",
 			tokenId: "42",
 			decimals: 0,
-			iconSrc: "../assets/images/tezos.png",
+			icon: "tezos",
 			ticketerContractAddress: "KT1VybveLaWhpQHKph28WcGwSy1ud22KSEan",
 			ticketHelperContractAddress: "KT1DNtHLr9T9zksZjZvQwgtx5XJwrW9wzETB",
 		},
@@ -54,7 +54,7 @@ export const tokenPairs = [
 			ticker: "FXHASH_42",
 			address: "0xcB5d40c6B1bdf5Cd51b3801351b0A68D101a561b",
 			decimals: 0,
-			iconSrc: "../assets/images/etherlink.png",
+			icon: "etherlink",
 		},
 	},
 ]

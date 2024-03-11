@@ -20,7 +20,7 @@ const props = defineProps({
 })
 
 const emit = defineEmits(["updateSelectedToken"])
-const loadImage = (path) => new URL(path, import.meta.url).href
+const loadImage = (n) => new URL(`../assets/images/${n}.png`, import.meta.url).href
 
 const selectedToken = ref({})
 const defineSelectedToken = () => {
@@ -67,7 +67,7 @@ watch(
 	<Dropdown>
 		<template #trigger="{isOpen}">
 			<Flex align="center" gap="6" :class="$style.selector">
-				<img width="20" height="20" :src="loadImage(selectedToken.iconSrc)" />
+				<img width="20" height="20" :src="loadImage(selectedToken.icon)" />
 				<Text size="16" color="primary"> {{ selectedToken.ticker }} </Text>
 				<Icon
 					name="chevron-right"
@@ -83,7 +83,7 @@ watch(
 		<template #popup>
 			<DropdownItem v-for="item in dropdownItems" @click="selectedToken = item">
 				<Flex align="center" gap="6">
-					<img width="16" height="16" :src="loadImage(item.iconSrc)" :class="$style.img" />
+					<img width="16" height="16" :src="loadImage(item.icon)" :class="$style.img" />
 					<Text size="13" color="primary"> {{ item.ticker }} </Text>
 				</Flex>
 			</DropdownItem>
