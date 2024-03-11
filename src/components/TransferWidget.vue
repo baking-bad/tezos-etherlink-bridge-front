@@ -2,8 +2,11 @@
 /** Vendor */
 import { ref, computed, onMounted } from "vue"
 
+/** Components */
+import TokenSelector from "@/components/TokenSelector.vue"
+
 /** Services */
-import { comma, purgeNumber } from "@/services/utils/amounts.js"
+import { capitilize, comma, purgeNumber } from "@/services/utils";
 
 const reverseDirection = ref(false)
 const playRotateAnimation = ref(false)
@@ -32,10 +35,11 @@ const normalizeAmount = (target) => {
 
 /** From Data */
 const fromChain = ref({
-	name: "Tezos",
+	name: "tezos",
 	logo: "tezos",
 })
 const fromInputEl = ref()
+const fromToken = ref()
 const fromAmount = ref("")
 const fromInUSD = computed(() => parseFloat(purgeNumber(fromAmount.value)) * FAKE_USD_PRICE)
 const handleFromInput = (e) => {
@@ -52,13 +56,17 @@ const handleFromInput = (e) => {
 	/** Calc "to" */
 	toAmount.value = comma(parseFloat(purgeNumber(fromAmount.value)) * FAKE_COMPUTED_TRANSFER_PRICE.value, ",", MAX_DIGITS)
 }
+const handleFromTokenSelected = (token) => {
+	fromToken.value = token
+}
 
 /** To Data */
 const toChain = ref({
-	name: "Etherlink",
+	name: "etherlink",
 	logo: "etherlink",
 })
 const toInputEl = ref()
+const toToken = ref()
 const toAmount = ref("")
 const toInUSD = computed(() => parseFloat(purgeNumber(toAmount.value)) * FAKE_USD_PRICE)
 const handleToInput = (e) => {
@@ -75,6 +83,9 @@ const handleToInput = (e) => {
 	/** Calc "from" */
 	fromAmount.value = comma(parseFloat(purgeNumber(toAmount.value)) / FAKE_COMPUTED_TRANSFER_PRICE.value, ",", MAX_DIGITS)
 }
+const handleToTokenSelected = (token) => {
+	toToken.value = token
+}
 
 const handleSwitch = () => {
 	/** Rotate Animation */
@@ -87,6 +98,11 @@ const handleSwitch = () => {
 	const savedChain = toChain.value
 	toChain.value = fromChain.value
 	fromChain.value = savedChain
+
+	/** Reverse to/from token */
+	const savedToken = toToken.value
+	toToken.value = fromToken.value
+	fromToken.value = savedToken
 
 	if (!fromAmount.value.length) return
 
@@ -110,7 +126,7 @@ onMounted(() => {
 
 					<Flex align="center" gap="6">
 						<img width="16" height="16" :src="loadImage(fromChain.logo)" :class="$style.logo" />
-						<Text size="13" weight="semibold" color="primary">{{ fromChain.name }}</Text>
+						<Text size="13" weight="semibold" color="primary">{{ capitilize(fromChain.name) }}</Text>
 					</Flex>
 				</Flex>
 
@@ -121,11 +137,11 @@ onMounted(() => {
 					</Flex>
 
 					<Flex direction="column" align="end" gap="8">
-						<Flex align="center" gap="8" :class="$style.selector">
-							<img width="20" height="20" src="../assets/images/tezos.png" />
-							<Text size="16" color="primary">XTZ</Text>
-							<Icon name="chevron-right" size="14" color="tertiary" />
-						</Flex>
+						<TokenSelector
+							@updateSelectedToken="handleFromTokenSelected"
+							:chain="fromChain.name"
+							:token="fromToken"
+						/>
 
 						<Flex align="center" gap="4">
 							<Icon name="banknote" size="14" color="tertiary" />
@@ -145,7 +161,7 @@ onMounted(() => {
 
 					<Flex align="center" gap="6">
 						<img width="16" height="16" :src="loadImage(toChain.logo)" :class="$style.logo" />
-						<Text size="13" weight="semibold" color="primary">{{ toChain.name }}</Text>
+						<Text size="13" weight="semibold" color="primary">{{ capitilize(toChain.name) }}</Text>
 					</Flex>
 				</Flex>
 
@@ -156,11 +172,11 @@ onMounted(() => {
 					</Flex>
 
 					<Flex direction="column" align="end" gap="8">
-						<Flex align="center" gap="8" :class="$style.selector">
-							<img width="20" height="20" src="../assets/images/tezos.png" />
-							<Text size="16" color="primary">XTZ</Text>
-							<Icon name="chevron-right" size="14" color="tertiary" />
-						</Flex>
+						<TokenSelector
+							@updateSelectedToken="handleToTokenSelected"
+							:chain="toChain.name"
+							:token="toToken"
+						/>
 
 						<Flex align="center" gap="4">
 							<Icon name="banknote" size="14" color="tertiary" />
