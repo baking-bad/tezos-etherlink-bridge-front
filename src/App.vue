@@ -9,6 +9,7 @@ import TheFooter from "@/components/TheFooter.vue"
 
 <template>
 	<div id="tooltip" />
+	<div id="dropdown" />
 
 	<TheHeader />
 

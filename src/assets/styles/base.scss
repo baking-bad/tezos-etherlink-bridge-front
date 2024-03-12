@@ -13,10 +13,12 @@ $grayscale: (
 :root {
 	/* Main */
 	--app-background: #171717;
+	--card-background: #111111;;
 	--tooltip-background: #202020;
 
 	/* Text */
 	--txt-primary: rgba(255, 255, 255, 95%);
+	--txt-body: rgba(255, 255, 255, 75%);
 	--txt-secondary: rgba(255, 255, 255, 60%);
 	--txt-tertiary: rgba(255, 255, 255, 30%);
 	--txt-support: rgba(255, 255, 255, 15%);

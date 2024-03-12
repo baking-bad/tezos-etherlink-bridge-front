@@ -8,6 +8,7 @@ const props = defineProps({
 		required: true,
 	}
 })
+
 const operationTypes = {
 	0: 'deposit',
 	1: 'withdraw'
