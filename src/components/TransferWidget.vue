@@ -168,9 +168,8 @@ function testTransfer() {
 
 					<Flex direction="column" align="end" gap="8">
 						<TokenSelector
-							@updateSelectedToken="handleFromTokenSelected"
+							v-model="fromToken"
 							:chain="fromChain.name"
-							:token="fromToken"
 						/>
 
 						<Flex align="center" gap="4">
@@ -203,9 +202,8 @@ function testTransfer() {
 
 					<Flex direction="column" align="end" gap="8">
 						<TokenSelector
-							@updateSelectedToken="handleToTokenSelected"
+							v-model="toToken"
 							:chain="toChain.name"
-							:token="toToken"
 						/>
 
 						<Flex align="center" gap="4">

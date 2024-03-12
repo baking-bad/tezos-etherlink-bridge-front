@@ -212,27 +212,25 @@ const onKeydown = (event) => {
 			<slot name="trigger" :isOpen="isOpen" />
 		</div>
 
-		<ClientOnly>
-			<teleport to="#dropdown">
-				<div v-if="isOpen" :class="$style.canvas" />
+		<teleport to="#dropdown">
+			<div v-if="isOpen" :class="$style.canvas" />
 
-				<Transition name="fastfade">
-					<Flex
-						v-if="isOpen"
-						ref="dropdown"
-						@click="close"
-						:class="[$style.dropdown, dropdownStyles.top ? $style.transform_origin_top : $style.transform_origin_bottom]"
-						:style="{
-							...dropdownStyles,
-						}"
-						direction="column"
-						gap="4"
-					>
-						<slot name="popup" />
-					</Flex>
-				</Transition>
-			</teleport>
-		</ClientOnly>
+			<Transition name="fastfade">
+				<Flex
+					v-if="isOpen"
+					ref="dropdown"
+					@click="close"
+					:class="[$style.dropdown, dropdownStyles.top ? $style.transform_origin_top : $style.transform_origin_bottom]"
+					:style="{
+						...dropdownStyles,
+					}"
+					direction="column"
+					gap="4"
+				>
+					<slot name="popup" />
+				</Flex>
+			</Transition>
+		</teleport>
 	</div>
 </template>
 

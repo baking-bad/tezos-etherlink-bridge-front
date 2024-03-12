@@ -1,6 +1,6 @@
 <script setup>
 /** Vendor */
-import { ref, computed, watch } from "vue"
+import { computed, watchEffect } from "vue"
 
 /** Constants */
 import { etherlinkTokens, nativeEtherlinkToken, nativeTezosToken, tezosTokens } from "@/services/cfg/tokens";
@@ -13,53 +13,44 @@ const props = defineProps({
 		type: String,
 		default: 'tezos',
 	},
-	token: {
+	modelValue: {
 		type: Object,
 		required: false,
 	}
 })
 
-const emit = defineEmits(["updateSelectedToken"])
+const emit = defineEmits(["update:modelValue"])
 const loadImage = (n) => new URL(`../assets/images/${n}.png`, import.meta.url).href
 
-const selectedToken = ref({})
-const defineSelectedToken = () => {
-	if (!props.token) {
-		selectedToken.value = props.chain === 'tezos' ? nativeTezosToken : nativeEtherlinkToken
-	} else {
-		selectedToken.value = props.token
-	}
 
-	emit("updateSelectedToken", selectedToken.value)
-}
-defineSelectedToken()
+const selectedToken = computed({
+	get: () => {
+		if (!props.modelValue) {
+			return props.chain === 'tezos' ? nativeTezosToken : nativeEtherlinkToken
+		}
+		return props.modelValue
+	},
+	set: (newVal) => {
+		emit("update:modelValue", newVal)
+	}
+})
+
+watchEffect(() => {
+	if (!props.modelValue) {
+		emit("update:modelValue", selectedToken.value)
+	}
+})
 
 const dropdownItems = computed(() => {
 	switch (props.chain) {
 		case 'tezos':
 			return tezosTokens.filter(token => token.ticker !== selectedToken.value.ticker)
-		
 		case 'etherlink':
 			return etherlinkTokens.filter(token => token.ticker !== selectedToken.value.ticker)
-
 		default:
 			break;
 	}
 })
-
-watch(
-	() => props.chain,
-	() => {
-		defineSelectedToken()
-	},
-)
-
-watch(
-	() => selectedToken.value,
-	() => {
-		emit("updateSelectedToken", selectedToken.value)
-	},
-)
 
 </script>
 
