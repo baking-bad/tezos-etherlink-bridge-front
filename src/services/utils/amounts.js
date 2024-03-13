@@ -23,7 +23,6 @@ export const comma = (target, symbol = ",", fixed = 2) => {
 			.split(".")[0]
 			.toString()
 			.replace(/\B(?=(\d{3})+(?!\d))/g, symbol)}.${num.split(".")[1]}`
-		x
 	} else {
 		return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, symbol)
 	}
@@ -39,26 +38,13 @@ export const purgeNumber = (target) => {
 	return purgedString;
 }
 
-export const prettyNumber = (target, decimalsCount = 12, max = 9_999_999_999) => {
+export const prettyNumber = (target, decimalsCount = 12) => {
 	// gets purged num string returns i
 	// returns number in format 10 122.123213213
-	if (parseFloat(target) > max) return prettyNumber(String(max));
-	const [integralPart, fractionalPart] = target.split(".")
-	const initialIntegralLength = integralPart.length;
-	const noSpaces = initialIntegralLength <= 3;
-	const noDecimalsCut = !fractionalPart || fractionalPart.length <= decimalsCount;
-	if (noSpaces && noDecimalsCut) return target;
-	let prettyIntegralPart = integralPart;
-	let prettyFractionalPart = fractionalPart;
-	if (!noSpaces) {
-		const integralArray = integralPart.split("");
-		let spacesCount = 0;
-		for (let i = 3; i < initialIntegralLength; i += 3) {
-			integralArray.splice(-i - spacesCount, 0, "\xa0")
-			spacesCount++
-		}
-		prettyIntegralPart = integralArray.join("");
-	}
-	if (!noDecimalsCut) prettyFractionalPart = fractionalPart?.slice(0, decimalsCount);
-	return prettyIntegralPart + ((fractionalPart !== undefined) ? "." + prettyFractionalPart : "")
+	const targetNumber = parseFloat(target)
+	const targetStringWithComas = targetNumber.toLocaleString('en-us', {
+		maximumFractionDigits: decimalsCount,
+	})
+	const lastSymbol = target[target.length - 1] === "." ? "." : ""
+	return targetStringWithComas.replaceAll(",", "\xa0") + lastSymbol
 }
