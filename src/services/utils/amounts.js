@@ -41,10 +41,22 @@ export const purgeNumber = (target) => {
 export const prettyNumber = (target, decimalsCount = 12) => {
 	// gets purged num string returns i
 	// returns number in format 10 122.123213213
-	const targetNumber = parseFloat(target)
-	const targetStringWithComas = targetNumber.toLocaleString('en-us', {
-		maximumFractionDigits: decimalsCount,
-	})
-	const lastSymbol = target[target.length - 1] === "." ? "." : ""
-	return targetStringWithComas.replaceAll(",", "\xa0") + lastSymbol
+	const [integralPart, fractionalPart] = target.split(".")
+	const initialIntegralLength = integralPart.length;
+	const noSpaces = initialIntegralLength <= 3;
+	const noDecimalsCut = !fractionalPart || fractionalPart.length <= decimalsCount;
+	if (noSpaces && noDecimalsCut) return target;
+	let prettyIntegralPart = integralPart;
+	let prettyFractionalPart = fractionalPart;
+	if (!noSpaces) {
+		const integralArray = integralPart.split("");
+		let spacesCount = 0;
+		for (let i = 3; i < initialIntegralLength; i += 3) {
+			integralArray.splice(-i - spacesCount, 0, "\xa0")
+			spacesCount++
+		}
+		prettyIntegralPart = integralArray.join("");
+	}
+	if (!noDecimalsCut) prettyFractionalPart = fractionalPart?.slice(0, decimalsCount);
+	return prettyIntegralPart + ((fractionalPart !== undefined) ? "." + prettyFractionalPart : "")
 }
