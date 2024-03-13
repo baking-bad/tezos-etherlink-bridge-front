@@ -18,6 +18,7 @@ export const config = {
 			name: tezosNetworkName,
 			displayName: tezosNetworkName[0].toLocaleUpperCase() + tezosNetworkName.slice(1),
 			rpcUrl: `https://rpc.tzkt.io/${tezosNetworkName}`,
+			blockExplorerUrl: `https://${tezosNetworkName ? tezosNetworkName + '.' : ''}tzkt.io`
 		},
 	},
 	etherlink: {

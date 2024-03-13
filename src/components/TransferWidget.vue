@@ -7,7 +7,6 @@ import TokenSelector from "@/components/TokenSelector.vue"
 
 /** Services */
 import { capitilize, comma, purgeNumber } from "@/services/utils";
-
 import TokenBridgeService from "@/services/tokenBridge"
 import {tezosTokens, etherlinkTokens} from "@/services/cfg/tokens.js"
 

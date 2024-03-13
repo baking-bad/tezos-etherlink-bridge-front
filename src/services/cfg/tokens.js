@@ -65,3 +65,17 @@ export const nativeEtherlinkToken = tokenPairs[0].etherlink
 export const tezosTokens = tokenPairs.map((p) => p.tezos)
 export const etherlinkTokens = tokenPairs.map((p) => p.etherlink)
 export const plainTokens = [...tezosTokens, ...etherlinkTokens]
+
+export function findPair(type, address) {
+	if (type === 'native') {
+		return tokenPairs[0]
+	} else {
+		for (const pair of tokenPairs) {
+			if (pair.tezos.address === address || pair.etherlink.address === address) {
+				return pair;
+			}
+		}
+	}
+
+	return null
+}
