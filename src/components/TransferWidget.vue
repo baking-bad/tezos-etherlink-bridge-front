@@ -42,6 +42,8 @@ const normalizeAmount = (target) => {
 const fromChain = ref({
 	name: "tezos",
 	logo: "tezos",
+	tokens: tezosTokens,
+	exchange: tokenBridge.deposit.bind(tokenBridge),
 })
 const fromInputEl = ref()
 const fromToken = ref()
@@ -69,6 +71,8 @@ const handleFromTokenSelected = (token) => {
 const toChain = ref({
 	name: "etherlink",
 	logo: "etherlink",
+	tokens: etherlinkTokens,
+	exchange: tokenBridge.startWithdraw.bind(tokenBridge)
 })
 const toInputEl = ref()
 const toToken = ref()
@@ -140,10 +144,18 @@ async function getBalances() {
 getBalances()
 
 function testTransfer() {
-	const token = etherlinkTokens.find((t) => t.name === "Ctez");
-	tokenBridge.startWithdraw(10000n, token)
-	// const token = tezosTokens.find((t) => t.type === "fa1.2");
-	// tokenBridge.deposit(100n, token)
+	const bigIntSum = BigInt(
+		Number(
+			fromAmount.value.replaceAll(",", "")
+		) * (10 ** fromToken.value.decimals)
+	)
+	const _address = fromToken.value.address
+	const _token = {
+		type: fromToken.value.type,
+		...(_address && {address: _address})
+	}
+	console.log(bigIntSum, _token);
+	fromChain.value.exchange(bigIntSum, _token)
 }
 </script>
 
