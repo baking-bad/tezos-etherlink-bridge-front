@@ -6,7 +6,7 @@ import { ref, computed, onMounted } from "vue"
 import TokenSelector from "@/components/TokenSelector.vue"
 
 /** Services */
-import { capitilize, comma, purgeNumber } from "@/services/utils";
+import { capitilize, comma, prettyNumber, purgeNumber } from "@/services/utils"
 
 import TokenBridgeService from "@/services/tokenBridge"
 import {tezosTokens, etherlinkTokens} from "@/services/cfg/tokens.js"
@@ -23,19 +23,8 @@ const FAKE_COMPUTED_TRANSFER_PRICE = computed(() => (!reverseDirection.value ? F
 
 const loadImage = (n) => new URL(`../assets/images/${n}.png`, import.meta.url).href
 
-const normalizeAmount = (target) => {
-	if (target === ".") return "0."
-
-	let dotCounter = 0
-	target.split("").forEach((char) => {
-		if (char === ".") dotCounter++
-	})
-	if (dotCounter > 1) return target.slice(0, target.length - 1)
-
-	if (target[target.length - 1] === ".") return target
-	if (!target.length) return ""
-	if (target.length === 1 && !/^(0|[1-9]\d*)(\.\d+)?$/.test(target)) return ""
-	if (parseFloat(purgeNumber(target)) >= 9_999_999_999_999) return "9,999,999,999,999"
+const normalizeAmount = (target, decimals) => {
+	return prettyNumber(purgeNumber(target), decimals);
 }
 
 /** From Data */
@@ -52,7 +41,7 @@ const fromInUSD = computed(() => parseFloat(purgeNumber(fromAmount.value)) * FAK
 const handleFromInput = (e) => {
 	if (!fromAmount.value.length) toAmount.value = ""
 
-	const normalizedAmount = normalizeAmount(fromAmount.value)
+	const normalizedAmount = normalizeAmount(fromAmount.value, fromToken.value.decimals)
 	if (typeof normalizedAmount === "string") {
 		fromAmount.value = normalizedAmount
 		return
@@ -81,7 +70,7 @@ const toInUSD = computed(() => parseFloat(purgeNumber(toAmount.value)) * FAKE_US
 const handleToInput = (e) => {
 	if (!toAmount.value.length) fromAmount.value = ""
 
-	const normalizedAmount = normalizeAmount(toAmount.value)
+	const normalizedAmount = normalizeAmount(toAmount.value, toToken.value.decimals)
 	if (typeof normalizedAmount === "string") {
 		toAmount.value = normalizedAmount
 		return
@@ -91,9 +80,6 @@ const handleToInput = (e) => {
 
 	/** Calc "from" */
 	fromAmount.value = comma(parseFloat(purgeNumber(toAmount.value)) / FAKE_COMPUTED_TRANSFER_PRICE.value, ",", MAX_DIGITS)
-}
-const handleToTokenSelected = (token) => {
-	toToken.value = token
 }
 
 const handleSwitch = () => {
