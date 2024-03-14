@@ -4,20 +4,14 @@ export const capitilize = (s) => {
 
 export const shortHash = (hash) => {
 	if (!hash) return ''
-	
-	if (hash.length > 16) {
-		return `${hash.slice(0, 4)} ••• ${hash.slice(-4)}`
-	} else {
-		return hash
-	}
+	if (hash.length > 16) return `${hash.slice(0, 4)} ••• ${hash.slice(-4)}`
+	return hash
+
 }
 
 export const midHash = (hash) => {
 	if (!hash) return ''
-
-	if (hash.length > 24) {
+	if (hash.length > 24)
 		return `${hash.slice(0, 4)} ${hash.slice(4, 8)} ••• ${hash.slice(-8,-4)} ${hash.slice(-4)}`
-	} else {
-		return hash
-	}
+	return hash
 }

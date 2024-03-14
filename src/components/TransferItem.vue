@@ -8,7 +8,7 @@ import ExplorerLink from "@/components/ExplorerLink.vue"
 import Tooltip from "@/components/ui/Tooltip.vue"
 
 /** Services */
-import { getPairedToken, plainTokens, getTokenKey } from "@/services/cfg/tokens.js"
+import { plainTokens, getTokenKey } from "@/services/cfg/tokens.js"
 import { capitilize, getStatus } from "@/services/utils";
 
 const props = defineProps({
@@ -33,41 +33,42 @@ const token = computed(() => {
 	})
 })
 const operation = ref({})
-const tokenPair = computed(() => getPairedToken(token.value))
 const fillOperation = () => {
 	operation.value.kind = props.transfer.kind
 	operation.value.status = getStatus(props.transfer.status)
-	operation.value.source = {
+
+	const tezosOperation = {
 		chain: 'tezos',
-		address: props.transfer.source,
 		opHash: props.transfer.tezosOperation?.hash,
 		time: props.transfer.tezosOperation?.timestamp,
-		// token: {
-		// 	...tokenPair.tezos
-		// },
 	}
-	operation.value.destination = {
+
+	const etherlinkOperation = {
 		chain: 'etherlink',
-		address: props.transfer.receiver,
 		opHash: props.transfer.etherlinkOperation?.hash,
 		time: props.transfer.etherlinkOperation?.timestamp,
-		// token: {
-		// 	...tokenPair.etherlink
-		// },
 	}
 
 	if (props.transfer.kind === 1) {
-		let stage = operation.value.source
-		operation.value.source = operation.value.destination
-		operation.value.destination = stage
+		operation.value.source = {
+			address: props.transfer.source,
+			...etherlinkOperation,
+		}
+		operation.value.destination = {
+			address: props.transfer.receiver,
+			...tezosOperation,
+		}
+	} else {
+		operation.value.source = {
+			address: props.transfer.source,
+			...tezosOperation,
+		}
+		operation.value.destination = {
+			address: props.transfer.receiver,
+			...etherlinkOperation,
+		}
 	}
 }
-
-// const token = plainTokens
-// 	.find((t) => t.address === props.transfer.tezosOperation?.token?.address) ??
-// 	nativeTezosToken // maybe nativeEtherlink, but not supported now
-
-// const tokenWithAmount = `${ ((props.transfer?.tezosOperation?.amount || BigInt(10)) / BigInt(10 ** token.decimals)).toString() || '000' } ${ token.name }`
 
 fillOperation()
 
