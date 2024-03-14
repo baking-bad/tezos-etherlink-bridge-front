@@ -1,14 +1,14 @@
 <script setup>
 /** Vendor */
 import { DateTime } from "luxon"
-import { ref } from "vue"
+import { computed, ref } from "vue"
 
 /** Components */
 import ExplorerLink from "@/components/ExplorerLink.vue"
 import Tooltip from "@/components/ui/Tooltip.vue"
 
 /** Services */
-import { findPair, nativeTezosToken, plainTokens } from "@/services/cfg/tokens.js"
+import { getPairedToken, plainTokens, getTokenKey } from "@/services/cfg/tokens.js"
 import { capitilize, getStatus } from "@/services/utils";
 
 const props = defineProps({
@@ -24,9 +24,16 @@ const operationTypes = {
 	0: 'deposit',
 	1: 'withdraw'
 }
+const token = computed(() => {
+	return plainTokens.find((pt) => {
+		return getTokenKey(
+			(props.transfer.tezosOperation?.token && { fakeAddress: 'tezosNative' }) ||
+			(props.transfer.etherlinkOperation?.token && { fakeAddress: 'etherlinkNative' })
+		) === getTokenKey(pt)
+	})
+})
 const operation = ref({})
-const tokenPair = findPair(props.transfer.tezosOperation?.token?.type, props.transfer.tezosOperation ? props.transfer.tezosOperation?.token?.address : props.transfer.etherlinkOperation.token.address )
-
+const tokenPair = computed(() => getPairedToken(token.value))
 const fillOperation = () => {
 	operation.value.kind = props.transfer.kind
 	operation.value.status = getStatus(props.transfer.status)
@@ -35,18 +42,18 @@ const fillOperation = () => {
 		address: props.transfer.source,
 		opHash: props.transfer.tezosOperation?.hash,
 		time: props.transfer.tezosOperation?.timestamp,
-		token: {
-			...tokenPair.tezos
-		},
+		// token: {
+		// 	...tokenPair.tezos
+		// },
 	}
 	operation.value.destination = {
 		chain: 'etherlink',
 		address: props.transfer.receiver,
 		opHash: props.transfer.etherlinkOperation?.hash,
 		time: props.transfer.etherlinkOperation?.timestamp,
-		token: {
-			...tokenPair.etherlink
-		},
+		// token: {
+		// 	...tokenPair.etherlink
+		// },
 	}
 
 	if (props.transfer.kind === 1) {
@@ -56,11 +63,11 @@ const fillOperation = () => {
 	}
 }
 
-const token = plainTokens
-	.find((t) => t.address === props.transfer.tezosOperation?.token?.address) ??
-	nativeTezosToken // maybe nativeEtherlink, but not supported now
+// const token = plainTokens
+// 	.find((t) => t.address === props.transfer.tezosOperation?.token?.address) ??
+// 	nativeTezosToken // maybe nativeEtherlink, but not supported now
 
-const tokenWithAmount = `${ ((props.transfer?.tezosOperation?.amount || BigInt(10)) / BigInt(10 ** token.decimals)).toString() || '000' } ${ token.name }`
+// const tokenWithAmount = `${ ((props.transfer?.tezosOperation?.amount || BigInt(10)) / BigInt(10 ** token.decimals)).toString() || '000' } ${ token.name }`
 
 fillOperation()
 
@@ -70,8 +77,8 @@ fillOperation()
 	<Flex direction="column" gap="10" :class="$style.transfer">
 		<Flex align="center" justify="between" :class="$style.header">
 			<Flex align="center" gap="8">
-				<img width="20" height="20" :src="loadImage(tokenPair.tezos.icon)" :class="$style.img"/>
-				<Text size="16" color="primary"> {{ tokenPair.tezos.ticker }} </Text>
+				<img width="20" height="20" :src="loadImage(token.icon)" :class="$style.img"/>
+				<Text size="16" color="primary"> {{ token.ticker }} </Text>
 			</Flex>
 
 			<Text> {{ operation.status }} </Text>

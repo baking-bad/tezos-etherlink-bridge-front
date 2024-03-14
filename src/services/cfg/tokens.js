@@ -68,7 +68,7 @@ export const tezosTokens = tokenPairs.map((p) => p.tezos)
 export const etherlinkTokens = tokenPairs.map((p) => p.etherlink)
 export const plainTokens = [...tezosTokens, ...etherlinkTokens]
 
-const getTokenKey = (token) => {
+export const getTokenKey = (token) => {
 	return token?.address || token?.fakeAddress || undefined
 }
 export const pairsMap = {}
