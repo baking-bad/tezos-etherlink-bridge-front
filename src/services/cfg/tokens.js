@@ -3,6 +3,7 @@ export const tokenPairs = [
 		tezos: {
 			type: "native",
 			name: "Tezos",
+			fakeAddress: 'tezosNative',
 			ticker: "XTZ",
 			decimals: 6,
 			icon: "tezos",
@@ -11,6 +12,7 @@ export const tokenPairs = [
 		etherlink: {
 			type: "native",
 			name: "Tezos",
+			fakeAddress: 'etherlinkNative',
 			ticker: "XTZ",
 			decimals: 18,
 			icon: "etherlink",
@@ -65,3 +67,16 @@ export const nativeEtherlinkToken = tokenPairs[0].etherlink
 export const tezosTokens = tokenPairs.map((p) => p.tezos)
 export const etherlinkTokens = tokenPairs.map((p) => p.etherlink)
 export const plainTokens = [...tezosTokens, ...etherlinkTokens]
+
+export const pairsMap = {}
+tokenPairs.forEach((p) => {
+	const tezosKey = p.tezos.address || p.tezos.fakeAddress;
+	const etherlinkKey = p.etherlink.address || p.etherlink.fakeAddress
+	pairsMap[tezosKey] = etherlinkKey
+	pairsMap[etherlinkKey] = tezosKey
+})
+
+
+
+
+

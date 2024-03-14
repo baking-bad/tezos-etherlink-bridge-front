@@ -1,6 +1,6 @@
 <script setup>
 /** Vendor */
-import { ref, computed, onMounted } from "vue"
+import { ref, computed, onMounted, watch } from "vue"
 
 /** Components */
 import TokenSelector from "@/components/TokenSelector.vue"
@@ -9,7 +9,7 @@ import TokenSelector from "@/components/TokenSelector.vue"
 import { capitilize, comma, prettyNumber, purgeNumber } from "@/services/utils"
 
 import TokenBridgeService from "@/services/tokenBridge"
-import {tezosTokens, etherlinkTokens} from "@/services/cfg/tokens.js"
+import {tezosTokens, etherlinkTokens, pairsMap, plainTokens} from "@/services/cfg/tokens.js"
 
 const { tokenBridge } = TokenBridgeService.instances
 
@@ -51,9 +51,6 @@ const handleFromInput = (e) => {
 
 	/** Calc "to" */
 	toAmount.value = comma(parseFloat(purgeNumber(fromAmount.value)) * FAKE_COMPUTED_TRANSFER_PRICE.value, ",", MAX_DIGITS)
-}
-const handleFromTokenSelected = (token) => {
-	fromToken.value = token
 }
 
 /** To Data */
@@ -140,9 +137,35 @@ function testTransfer() {
 		type: fromToken.value.type,
 		...(_address && {address: _address})
 	}
-	console.log(bigIntSum, _token);
 	fromChain.value.exchange(bigIntSum, _token)
 }
+
+watch(
+	() => [fromToken.value, toToken.value],
+	([newFromToken, newToToken], [oldFromToken, oldToToken]) => {
+		const getTokenKey = (token) => {
+			return token?.address || token?.fakeAddress || undefined
+		}
+		const isPairedToken = (tokenA, tokenB) => {
+			return pairsMap[getTokenKey(tokenA)] === getTokenKey(tokenB)
+		}
+		const isSameToken = (newToken, oldToken) => {
+			return getTokenKey(newToken) === getTokenKey(oldToken)
+		}
+		const setPairedToken = (target, compareWith) => {
+			target.value = plainTokens.find((t) => {
+				return getTokenKey(t) === pairsMap[getTokenKey(compareWith)]
+			})
+		}
+		if (!isPairedToken(newFromToken, newToToken)) {
+			if (!isSameToken(newFromToken, oldFromToken)) {
+				setPairedToken(toToken, newFromToken)
+			} else if (!isSameToken(newToToken, oldToToken)) {
+				setPairedToken(fromToken, newToToken)
+			}
+		}
+	}
+)
 </script>
 
 <template>
