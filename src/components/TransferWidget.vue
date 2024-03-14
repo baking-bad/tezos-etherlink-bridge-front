@@ -9,7 +9,13 @@ import TokenSelector from "@/components/TokenSelector.vue"
 import { capitilize, comma, prettyNumber, purgeNumber } from "@/services/utils"
 
 import TokenBridgeService from "@/services/tokenBridge"
-import {tezosTokens, etherlinkTokens, pairsMap, plainTokens} from "@/services/cfg/tokens.js"
+import {
+	tezosTokens,
+	etherlinkTokens,
+	isPairedToken,
+	isSameToken,
+	getPairedToken
+} from "@/services/cfg/tokens.js"
 
 const { tokenBridge } = TokenBridgeService.instances
 
@@ -143,25 +149,11 @@ function testTransfer() {
 watch(
 	() => [fromToken.value, toToken.value],
 	([newFromToken, newToToken], [oldFromToken, oldToToken]) => {
-		const getTokenKey = (token) => {
-			return token?.address || token?.fakeAddress || undefined
-		}
-		const isPairedToken = (tokenA, tokenB) => {
-			return pairsMap[getTokenKey(tokenA)] === getTokenKey(tokenB)
-		}
-		const isSameToken = (newToken, oldToken) => {
-			return getTokenKey(newToken) === getTokenKey(oldToken)
-		}
-		const setPairedToken = (target, compareWith) => {
-			target.value = plainTokens.find((t) => {
-				return getTokenKey(t) === pairsMap[getTokenKey(compareWith)]
-			})
-		}
 		if (!isPairedToken(newFromToken, newToToken)) {
 			if (!isSameToken(newFromToken, oldFromToken)) {
-				setPairedToken(toToken, newFromToken)
+				toToken.value = getPairedToken(newFromToken)
 			} else if (!isSameToken(newToToken, oldToToken)) {
-				setPairedToken(fromToken, newToToken)
+				fromToken.value = getPairedToken(newToToken)
 			}
 		}
 	}
