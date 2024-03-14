@@ -9,7 +9,7 @@ import Tooltip from "@/components/ui/Tooltip.vue"
 
 /** Services */
 import { findPair, nativeTezosToken, plainTokens } from "@/services/cfg/tokens.js"
-import { capitilize, midHash } from "@/services/utils";
+import { capitilize, getStatus } from "@/services/utils";
 
 const props = defineProps({
 	transfer: {
@@ -29,7 +29,7 @@ const tokenPair = findPair(props.transfer.tezosOperation?.token?.type, props.tra
 
 const fillOperation = () => {
 	operation.value.kind = props.transfer.kind
-	operation.value.status = props.transfer.status
+	operation.value.status = getStatus(props.transfer.status)
 	operation.value.source = {
 		chain: 'tezos',
 		address: props.transfer.source,
@@ -67,8 +67,8 @@ fillOperation()
 </script>
 
 <template>
-	<Flex align="center" direction="column" gap="8" :class="[$style.transfer]">
-		<Flex align="center" justify="between">
+	<Flex direction="column" gap="10" :class="$style.transfer">
+		<Flex align="center" justify="between" :class="$style.header">
 			<Flex align="center" gap="8">
 				<img width="20" height="20" :src="loadImage(tokenPair.tezos.icon)" :class="$style.img"/>
 				<Text size="16" color="primary"> {{ tokenPair.tezos.ticker }} </Text>
@@ -78,12 +78,12 @@ fillOperation()
 		</Flex>
 
 		<Flex align="center" justify="between">
-			<Flex align="center" gap="8">
+			<Flex align="center" gap="6">
 				<img width="20" height="20" :src="loadImage(operation.source.chain)" :class="$style.img"/>
 				<Text size="16" color="primary"> {{ capitilize(operation.source.chain) }} </Text>
 			</Flex>
 
-			<Flex align="center" gap="8">
+			<Flex align="center" gap="6">
 				<img width="20" height="20" :src="loadImage(operation.destination.chain)" :class="$style.img"/>
 				<Text size="16" color="primary"> {{ capitilize(operation.destination.chain) }} </Text>
 			</Flex>
@@ -95,6 +95,8 @@ fillOperation()
 			<ExplorerLink :hash="operation.destination.address" :network="operation.destination.chain" type="address" />
 		</Flex>
 
+		<div :class="$style.divider" />
+
 		<Flex align="center" justify="between">
 			<ExplorerLink :hash="operation.source.opHash" :network="operation.source.chain" type="tx" />
 
@@ -103,18 +105,18 @@ fillOperation()
 
 		<Flex align="center" justify="between">
 			<Tooltip>
-				<Text size="16" color="primary"> {{ DateTime.fromISO(operation.source.time).toRelative({ locale: "en", style: "long" }) }} </Text>
+				<Text size="14" color="secondary"> {{ DateTime.fromISO(operation.source.time).toRelative({ locale: "en", style: "long" }) }} </Text>
 
 				<template #content>
-					<Text size="16" color="primary"> {{ DateTime.fromISO(operation.source.time).setLocale("en").toFormat("LLL d, y, tt") }} </Text>
+					<Text size="14" color="secondary"> {{ DateTime.fromISO(operation.source.time).setLocale("en").toFormat("LLL d, y, tt") }} </Text>
 				</template>
 			</Tooltip>
 
 			<Tooltip>
-				<Text size="16" color="primary"> {{ DateTime.fromISO(operation.destination.time).toRelative({ locale: "en", style: "long" }) }} </Text>
+				<Text size="14" color="secondary"> {{ DateTime.fromISO(operation.destination.time).toRelative({ locale: "en", style: "long" }) }} </Text>
 
 				<template #content>
-					<Text size="16" color="primary"> {{ DateTime.fromISO(operation.destination.time).setLocale("en").toFormat("LLL d, y, tt") }} </Text>
+					<Text size="14" color="secondary"> {{ DateTime.fromISO(operation.destination.time).setLocale("en").toFormat("LLL d, y, tt") }} </Text>
 				</template>
 			</Tooltip>
 		</Flex>
@@ -134,14 +136,27 @@ fillOperation()
 	background: linear-gradient(rgba(0, 0, 0, 40%), rgba(0, 0, 0, 0%));
 	box-shadow: 0 0 0 2px var(--op-5);
 
-	padding: 8px;
+	padding: 16px;
 
 	margin: 16px 0;
 
 	color: var(--txt-secondary);
+
+	.header {
+		padding-bottom: 6px;
+	}
 }
 
 .img {
 	border-radius: 50%;	
+}
+
+.divider {
+	width: 100%;
+	height: 2px;
+	background: var(--op-5);
+
+	margin-top: 2px;
+	margin-bottom: 2px;
 }
 </style>

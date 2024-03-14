@@ -15,8 +15,8 @@ const props = defineProps({
 	<Flex
 		direction="column"
 		align="center"
-		gap="16"
-		:class="[$style.wrapper]"
+		gap="8"
+		:class="$style.wrapper"
 	>
 		<TransferItem
 			v-for="t in transfers"
@@ -27,7 +27,9 @@ const props = defineProps({
 
 <style module>
 .wrapper {
-	max-width: 500px;
-	width: 500px;
+	height: calc(100vh - 70px - 48px);;
+	width: 100%;
+
+	overflow-y: auto;
 }
 </style>

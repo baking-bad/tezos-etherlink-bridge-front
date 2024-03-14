@@ -1,6 +1,6 @@
 <script setup>
 /** Services */
-import { getLinkToExplorer, shortHash } from "@/services/utils"
+import { getLinkToExplorer, midHash, shortHash } from "@/services/utils"
 
 const props = defineProps({
 	hash: {
@@ -26,12 +26,13 @@ const props = defineProps({
 		target="_blank"
 		:class="$style.link"
 	>
-		{{ shortHash(hash) }}
+		{{ midHash(hash) }}
 	</a>
 </template>
 
 <style module>
 .link {
+	font-size: 13px;
 	color: var(--txt-primary);
 
 	&:hover {

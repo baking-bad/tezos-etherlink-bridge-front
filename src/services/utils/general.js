@@ -1,4 +1,4 @@
-import { config  } from "@/services/cfg";
+import { config, statusMapping } from "@/services/cfg";
 
 export const getLinkToExplorer = (hash, network, type) => {
 	if (!hash) return ''
@@ -12,4 +12,8 @@ export const getLinkToExplorer = (hash, network, type) => {
 			return `${config.etherlink.network.blockExplorerUrl}/tx/${hash}`
 		}
 	}
+}
+
+export const getStatus = (num) => {
+	return statusMapping[num]
 }

@@ -46,3 +46,11 @@ export const config = {
 	},
 	walletConnectProjectId: import.meta.env.VITE_WALLET_CONNECT_PROJECT_ID,
 }
+
+export const statusMapping = {
+	0: "Pending",
+	100: "Created",
+	200: "Sealed",
+	300: "Finished",
+	400: "Failed",
+}
