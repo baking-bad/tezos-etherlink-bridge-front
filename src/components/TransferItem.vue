@@ -49,24 +49,16 @@ const fillOperation = () => {
 		time: props.transfer.etherlinkOperation?.timestamp,
 	}
 
-	if (props.transfer.kind === 1) {
-		operation.value.source = {
-			address: props.transfer.source,
-			...etherlinkOperation,
-		}
-		operation.value.destination = {
-			address: props.transfer.receiver,
-			...tezosOperation,
-		}
-	} else {
-		operation.value.source = {
-			address: props.transfer.source,
-			...tezosOperation,
-		}
-		operation.value.destination = {
-			address: props.transfer.receiver,
-			...etherlinkOperation,
-		}
+	const sourceOperation = props.transfer.kind === 1 ? etherlinkOperation : tezosOperation
+	const recieverOperation = props.transfer.kind === 1 ? tezosOperation : etherlinkOperation
+
+	operation.value.source = {
+		address: props.transfer.source,
+		...sourceOperation,
+	}
+	operation.value.destination = {
+		address: props.transfer.receiver,
+		...recieverOperation,
 	}
 }
 
