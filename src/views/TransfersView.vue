@@ -1,7 +1,11 @@
 <script setup>
+/** Vendor */
 import { ref } from "vue"
-import Flex from "@/components/global/Flex.vue"
-import TransferItem from "@/components/TransferItem.vue"
+
+/** Components */
+import TransfersList from "@/components/TransfersList.vue"
+
+/** Services */
 import TokenBridgeService from "@/services/tokenBridge"
 
 const transfers = ref([])
@@ -16,10 +20,8 @@ Promise.all( [
 
 <template>
 <Flex direction="column" align="center">
-	<TransferItem
-		v-for="transfer in transfers"
-		:transfer="transfer"
-		:key="transfer.id"
+	<TransfersList
+		:transfers="transfers"
 	/>
 </Flex>
 </template>

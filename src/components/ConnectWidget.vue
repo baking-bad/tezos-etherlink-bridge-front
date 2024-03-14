@@ -5,6 +5,9 @@ import { computed } from "vue"
 /** UI */
 import Tooltip from "@/components/ui/Tooltip.vue"
 
+/** Service */
+import { midHash, shortHash } from "@/services/utils";
+
 /** Constants */
 import { ConnectionStatus } from "@/services/constants/wallets"
 
@@ -54,14 +57,14 @@ const handleConnectEtherlink = async () => {
 					<template #content>
 						<Flex direction="column" align="center" gap="6">
 							<Text weight="600">Tezos is not connected</Text>
-							<Text weight="600" color="secondary">Click on tasks below to resolve</Text>
+							<Text weight="600" color="secondary">Click on task below to resolve</Text>
 						</Flex>
 					</template>
 				</Tooltip>
 
 				<Flex align="center" gap="8" :class="isReady && $style.ready_icon">
-					<Icon name="left-connect" size="24" color="tertiary" />
-					<Icon name="right-connect" size="24" color="tertiary" />
+					<Icon name="left-connect" size="24" :color="tezosStatus === ConnectionStatus.CONNECTED ? 'green' : 'tertiary'" />
+					<Icon name="right-connect" size="24" :color="etherlinkStatus === ConnectionStatus.CONNECTED ? 'green' : 'tertiary'" />
 				</Flex>
 
 				<Tooltip :disabled="etherlinkStatus === ConnectionStatus.CONNECTED">
@@ -79,7 +82,7 @@ const handleConnectEtherlink = async () => {
 					<template #content>
 						<Flex direction="column" align="center" gap="6">
 							<Text weight="600">Etherlink is not connected</Text>
-							<Text weight="600" color="secondary">Click on tasks below to resolve</Text>
+							<Text weight="600" color="secondary">Click on task below to resolve</Text>
 						</Flex>
 					</template>
 				</Tooltip>
@@ -116,7 +119,7 @@ const handleConnectEtherlink = async () => {
 								<Text size="14" color="primary">Missing Tezos </Text>
 							</Flex>
 
-							<Text size="13" color="tertiary" :class="$style.description">Connect Beacon Wallet</Text>
+							<Text size="13" color="tertiary" :class="$style.description">Beacon Wallet</Text>
 						</Flex>
 
 						<Flex align="center" gap="4">
@@ -132,7 +135,7 @@ const handleConnectEtherlink = async () => {
 							</Flex>
 
 							<Text size="13" color="tertiary" :class="$style.description">
-								{{ tezosAddress.slice(0, 4) }} ... {{ tezosAddress.slice(-4) }}
+								{{ shortHash(tezosAddress) }}
 							</Text>
 						</Flex>
 
@@ -155,10 +158,10 @@ const handleConnectEtherlink = async () => {
 						<Flex direction="column" gap="6">
 							<Flex align="center" gap="8">
 								<Icon name="info" size="14" color="yellow" />
-								<Text size="14" color="primary">Missing Tezos </Text>
+								<Text size="14" color="primary">Missing Etherlink </Text>
 							</Flex>
 
-							<Text size="13" color="tertiary" :class="$style.description">Connect Beacon Wallet</Text>
+							<Text size="13" color="tertiary" :class="$style.description">WalletConnect</Text>
 						</Flex>
 
 						<Flex align="center" gap="4">
@@ -174,7 +177,7 @@ const handleConnectEtherlink = async () => {
 							</Flex>
 
 							<Text size="13" color="tertiary" :class="$style.description">
-								{{ etherlinkAddress.slice(0, 4) }} ... {{ etherlinkAddress.slice(-4) }}
+								{{ shortHash(etherlinkAddress) }}
 							</Text>
 						</Flex>
 

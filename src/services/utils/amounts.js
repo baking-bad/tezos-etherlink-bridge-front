@@ -23,13 +23,40 @@ export const comma = (target, symbol = ",", fixed = 2) => {
 			.split(".")[0]
 			.toString()
 			.replace(/\B(?=(\d{3})+(?!\d))/g, symbol)}.${num.split(".")[1]}`
-		x
 	} else {
 		return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, symbol)
 	}
 }
 
 export const purgeNumber = (target) => {
-	if (/^(0|[1-9]\d*)(\.\d+)?$/.test(target)) return target
-	return target.replace(/[^0-9.]/g, "")
+	// remove all non-digit symbols except first dot, add zero to start if dot is a first symbol
+	// changes first coma to dot
+	// returns in format 1012.123124324 or 0.123124214
+	const numArray = target.replace(",", ".").replace(/[^0-9.]/g, "").split(".");
+	const afterDot = numArray.slice(1).join("");
+	const purgedString = BigInt(numArray[0] || '0').toString() + (numArray.length > 1 ? '.' + afterDot : '')
+	return purgedString;
+}
+
+export const prettyNumber = (target, decimalsCount = 12) => {
+	// gets purged num string returns i
+	// returns number in format 10 122.123213213
+	const [integralPart, fractionalPart] = target.split(".")
+	const initialIntegralLength = integralPart.length;
+	const noSpaces = initialIntegralLength <= 3;
+	const noDecimalsCut = !fractionalPart || fractionalPart.length <= decimalsCount;
+	if (noSpaces && noDecimalsCut) return target;
+	let prettyIntegralPart = integralPart;
+	let prettyFractionalPart = fractionalPart;
+	if (!noSpaces) {
+		const integralArray = integralPart.split("");
+		let spacesCount = 0;
+		for (let i = 3; i < initialIntegralLength; i += 3) {
+			integralArray.splice(-i - spacesCount, 0, "\xa0")
+			spacesCount++
+		}
+		prettyIntegralPart = integralArray.join("");
+	}
+	if (!noDecimalsCut) prettyFractionalPart = fractionalPart?.slice(0, decimalsCount);
+	return prettyIntegralPart + ((fractionalPart !== undefined) ? "." + prettyFractionalPart : "")
 }
