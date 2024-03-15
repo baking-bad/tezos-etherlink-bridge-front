@@ -7,9 +7,15 @@ import { computed, ref } from "vue"
 import ExplorerLink from "@/components/ExplorerLink.vue"
 import Tooltip from "@/components/ui/Tooltip.vue"
 
+/** Stores */
+import { useTokensStore } from "@/stores/tokens.js"
+const tokensStore = useTokensStore()
+const { plainTokens } = storeToRefs(tokensStore)
+const { getTokenKey } = tokensStore
+
 /** Services */
-import { plainTokens, getTokenKey } from "@/services/cfg/tokens.js"
 import { capitilize, getStatus } from "@/services/utils";
+import { storeToRefs } from "pinia"
 
 const props = defineProps({
 	transfer: {
@@ -20,12 +26,8 @@ const props = defineProps({
 
 const loadImage = (n) => new URL(`../assets/images/${n}.png`, import.meta.url).href
 
-const operationTypes = {
-	0: 'deposit',
-	1: 'withdraw'
-}
 const token = computed(() => {
-	return plainTokens.find((pt) => {
+	return plainTokens.value.find((pt) => {
 		return getTokenKey(
 			(props.transfer.tezosOperation?.token && { fakeAddress: 'tezosNative' }) ||
 			(props.transfer.etherlinkOperation?.token && { fakeAddress: 'etherlinkNative' })

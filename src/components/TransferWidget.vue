@@ -1,23 +1,27 @@
 <script setup>
 /** Vendor */
 import { ref, computed, onMounted, watch } from "vue"
+import { storeToRefs } from "pinia"
+
 
 /** Components */
 import TokenSelector from "@/components/TokenSelector.vue"
 
 /** Services */
 import { capitilize, comma, prettyNumber, purgeNumber } from "@/services/utils"
-
 import TokenBridgeService from "@/services/tokenBridge"
-import {
+const { tokenBridge } = TokenBridgeService.instances
+
+/** Stores */
+import { useTokensStore } from "@/stores/tokens.js"
+const tokensStore = useTokensStore()
+const {
 	tezosTokens,
 	etherlinkTokens,
-	isPairedToken,
-	isSameToken,
-	getPairedToken
-} from "@/services/cfg/tokens.js"
+} = storeToRefs(tokensStore)
+const { isPairedToken, isSameToken, getPairedToken } = tokensStore
 
-const { tokenBridge } = TokenBridgeService.instances
+tokensStore.mergeBalances(tokenBridge)
 
 const reverseDirection = ref(false)
 const playRotateAnimation = ref(false)
@@ -114,24 +118,6 @@ onMounted(() => {
 	fromInputEl.value.focus()
 })
 
-const balancesTezos = ref({})
-const balancesEtherlink = ref({})
-
-async function getBalances() {
-	const addresses = await Promise.all( [
-		tokenBridge.getTezosConnectedAddress(),
-		tokenBridge.getEtherlinkConnectedAddress()
-	])
-	const balances = await Promise.all([
-		tokenBridge.data.getBalances(addresses[0]),
-		tokenBridge.data.getBalances(addresses[1])
-	])
-	balancesTezos.value = balances[0]
-	balancesEtherlink.value = balances[1]
-}
-
-getBalances()
-
 function testTransfer() {
 	const bigIntSum = BigInt(
 		Number(
@@ -187,7 +173,7 @@ watch(
 
 						<Flex align="center" gap="4">
 							<Icon name="banknote" size="14" color="tertiary" />
-							<Text size="12" weight="semibold" color="tertiary">152,620</Text>
+							<Text size="12" weight="semibold" color="tertiary">{{ fromToken.balance }}</Text>
 						</Flex>
 					</Flex>
 				</Flex>
@@ -221,7 +207,7 @@ watch(
 
 						<Flex align="center" gap="4">
 							<Icon name="banknote" size="14" color="tertiary" />
-							<Text size="12" weight="semibold" color="tertiary">152,620</Text>
+							<Text size="12" weight="semibold" color="tertiary">{{ toToken.balance }}</Text>
 						</Flex>
 					</Flex>
 				</Flex>
