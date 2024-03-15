@@ -29,7 +29,5 @@ const props = defineProps({
 .wrapper {
 	height: calc(100vh - 70px - 48px);;
 	width: 100%;
-
-	overflow-y: auto;
 }
 </style>

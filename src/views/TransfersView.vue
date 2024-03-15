@@ -22,9 +22,14 @@ Promise.all( [
 <Flex direction="column" align="center">
 	<TransfersList
 		:transfers="transfers"
+		:class="$style.wrapper"
 	/>
 </Flex>
 </template>
 
 <style module>
+
+.wrapper {
+	overflow-y: auto;
+}
 </style>
