@@ -2,6 +2,9 @@
 /** Vendor */
 import { computed, onMounted, ref } from "vue"
 
+/** Services */
+import { isEven } from "@/services/utils";
+
 /** Components */
 import Tooltip from "@/components/ui/Tooltip.vue"
 
@@ -14,10 +17,12 @@ const props = defineProps({
 
 const stepperEl = ref(null)
 const stepperWidth = ref(0)
-const statusDotSize = computed(() => stepperWidth.value / 100 * 3.5)
+const statusDotSize = computed(() => Math.round(stepperWidth.value / 100 * 3.5))
 const stepWidth = computed(() => (stepperWidth.value - statusDotSize.value) / (props.steps.length - 1))
-const dividerDotSize = computed(() => (stepperWidth.value - (statusDotSize.value * props.steps.length)) / (30 + 30 + (props.steps.length - 1)))
-const dotsCount = computed(() => (Math.round(((stepWidth.value - statusDotSize.value) / dividerDotSize.value) - 1) / 2))
+const dividerDotSize = computed(() => (Math.round((stepperWidth.value - (statusDotSize.value * props.steps.length)) / (30 + 30 + (props.steps.length - 1)))))
+const dotsSpace = computed(() => Math.round((stepWidth.value - statusDotSize.value) / dividerDotSize.value))
+const dotsCount = computed(() => isEven(dotsSpace.value) ? dotsSpace.value / 2 : (dotsSpace.value - 1) / 2  ) // check if odd
+const marginSize = computed(() => (((stepWidth.value - statusDotSize.value) - (dividerDotSize.value * dotsCount.value)) / (dotsCount.value + 1)))
 
 const isFailed = props.steps[props.steps.length - 1].step === 'Failed'
 
@@ -37,7 +42,7 @@ onMounted(() => {
 					:style="{
 						width: `${statusDotSize}px`,
 						height: `${statusDotSize}px`,
-						'margin-right': `${dividerDotSize}px`
+						'margin-right': `${marginSize}px`
 					}"
 				/>
 
@@ -61,7 +66,7 @@ onMounted(() => {
 					:style="{
 						width: `${dividerDotSize}px`,
 						height: `${dividerDotSize}px`,
-						'margin-right': `${dividerDotSize}px`
+						'margin-right': `${marginSize}px`
 					}">
 				</div>
 
@@ -71,6 +76,7 @@ onMounted(() => {
 						:style="{
 							width: `${statusDotSize}px`,
 							height: `${statusDotSize}px`,
+							'margin-right': i === steps.length - 1 ? '0px' : `${marginSize}px`,
 						}">
 					</div>
 
@@ -100,19 +106,42 @@ onMounted(() => {
 	cursor: pointer;
 
 	background-color: var(--txt-support);
+
+	animation: skeleton 1.8s ease infinite;
 }
 
 .divider_dot {
 	border-radius: 50%;
 
 	background-color: var(--txt-support);
+
+	animation: skeleton 1.8s ease infinite;
 }
 
 .passed {
 	background-color: var(--green);
+
+	animation: none;
 }
 
 .failed {
 	background-color: var(--red);
+
+	animation: none;
 }
+
+@keyframes skeleton {
+	0% {
+		opacity: 1;
+	}
+
+	50% {
+		opacity: 0.5;
+	}
+
+	100% {
+		opacity: 1;
+	}
+}
+
 </style>

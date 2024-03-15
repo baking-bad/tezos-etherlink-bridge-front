@@ -1,3 +1,7 @@
+export const isEven = (n) => {
+    return (n % 2 == 0)
+}
+
 export const comma = (target, symbol = ",", fixed = 2) => {
 	if (!target) return 0
 
