@@ -61,34 +61,11 @@ export const tokenPairs = [
 	},
 ]
 
-export const nativeTezosToken = tokenPairs[0].tezos
-export const nativeEtherlinkToken = tokenPairs[0].etherlink
-
-export const tezosTokens = tokenPairs.map((p) => p.tezos)
-export const etherlinkTokens = tokenPairs.map((p) => p.etherlink)
-export const plainTokens = [...tezosTokens, ...etherlinkTokens]
-
 export const getTokenKey = (token) => {
 	return token?.address || token?.fakeAddress || undefined
 }
-export const pairsMap = {}
-tokenPairs.forEach((p) => {
-	const tezosKey = getTokenKey(p.tezos)
-	const etherlinkKey = getTokenKey(p.etherlink)
-	pairsMap[tezosKey] = etherlinkKey
-	pairsMap[etherlinkKey] = tezosKey
-})
-
-export const isPairedToken = (tokenA, tokenB) => {
-	return pairsMap[getTokenKey(tokenA)] === getTokenKey(tokenB)
-}
 export const isSameToken = (tokenA, tokenB) => {
 	return getTokenKey(tokenA) === getTokenKey(tokenB)
-}
-export const getPairedToken = (compareWith) => {
-	return plainTokens.find((t) => {
-		return getTokenKey(t) === pairsMap[getTokenKey(compareWith)]
-	})
 }
 
 

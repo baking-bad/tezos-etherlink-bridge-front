@@ -1,12 +1,25 @@
 <script setup>
 /** Vendor */
 import { computed, watchEffect } from "vue"
+import { storeToRefs } from "pinia"
 
-/** Constants */
-import { etherlinkTokens, nativeEtherlinkToken, nativeTezosToken, tezosTokens } from "@/services/cfg/tokens";
+/** Services */
+import TokenBridgeService from "@/services/tokenBridge"
+const { tokenBridge } = TokenBridgeService.instances
+
+/** Stores */
+import { useTokensStore } from "@/stores/tokens.js"
+const tokensStore = useTokensStore()
+const {
+	tezosNativeToken,
+	etherlinkNativeToken,
+	tezosTokens,
+	etherlinkTokens,
+} = storeToRefs(tokensStore)
 
 /** UI */
 import { Dropdown, DropdownItem } from "@/components/ui/Dropdown"
+
 
 const props = defineProps({
 	chain: {
@@ -26,7 +39,7 @@ const loadImage = (n) => new URL(`../assets/images/${n}.png`, import.meta.url).h
 const selectedToken = computed({
 	get: () => {
 		if (!props.modelValue) {
-			return props.chain === 'tezos' ? nativeTezosToken : nativeEtherlinkToken
+			return props.chain === 'tezos' ? tezosNativeToken.value : etherlinkNativeToken.value
 		}
 		return props.modelValue
 	},
@@ -44,9 +57,9 @@ watchEffect(() => {
 const dropdownItems = computed(() => {
 	switch (props.chain) {
 		case 'tezos':
-			return tezosTokens.filter(token => token.ticker !== selectedToken.value.ticker)
+			return tezosTokens.value.filter(token => token?.ticker !== selectedToken.value?.ticker)
 		case 'etherlink':
-			return etherlinkTokens.filter(token => token.ticker !== selectedToken.value.ticker)
+			return etherlinkTokens.value.filter(token => token?.ticker !== selectedToken.value?.ticker)
 		default:
 			break;
 	}
@@ -76,6 +89,7 @@ const dropdownItems = computed(() => {
 				<Flex align="center" gap="6">
 					<img width="16" height="16" :src="loadImage(item.icon)" :class="$style.img" />
 					<Text size="13" color="primary"> {{ item.ticker }} </Text>
+					<Text size="13" color="primary"> {{ item.prettyBalance }} </Text>
 				</Flex>
 			</DropdownItem>
 		</template>
