@@ -89,7 +89,7 @@ const dropdownItems = computed(() => {
 				<Flex align="center" gap="6">
 					<img width="16" height="16" :src="loadImage(item.icon)" :class="$style.img" />
 					<Text size="13" color="primary"> {{ item.ticker }} </Text>
-					<Text size="13" color="primary"> {{ item.balance }} </Text>
+					<Text size="13" color="primary"> {{ item.prettyBalance }} </Text>
 				</Flex>
 			</DropdownItem>
 		</template>

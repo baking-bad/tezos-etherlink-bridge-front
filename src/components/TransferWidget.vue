@@ -173,7 +173,7 @@ watch(
 
 						<Flex align="center" gap="4">
 							<Icon name="banknote" size="14" color="tertiary" />
-							<Text size="12" weight="semibold" color="tertiary">{{ fromToken.balance }}</Text>
+							<Text size="12" weight="semibold" color="tertiary">{{ fromToken.prettyBalance }}</Text>
 						</Flex>
 					</Flex>
 				</Flex>
@@ -207,7 +207,7 @@ watch(
 
 						<Flex align="center" gap="4">
 							<Icon name="banknote" size="14" color="tertiary" />
-							<Text size="12" weight="semibold" color="tertiary">{{ toToken.balance }}</Text>
+							<Text size="12" weight="semibold" color="tertiary">{{ toToken.prettyBalance }}</Text>
 						</Flex>
 					</Flex>
 				</Flex>

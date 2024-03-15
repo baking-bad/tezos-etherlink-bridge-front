@@ -1,19 +1,27 @@
 import { defineStore } from "pinia"
 import { tokenPairs, getTokenKey, isSameToken } from "@/services/cfg/tokens.js"
 import { computed, ref } from "vue"
+import { prettyNumber } from "@/services/utils/index.js"
 
 export const useTokensStore = defineStore("tokens", () => {
 	function modifyPair({tezos, etherlink}) {
 		return {
 			tezos: {
 				...tezos,
-				balance: -1,
-				pairKey: getTokenKey(etherlink)
+				balance: BigInt(0),
+				pairKey: getTokenKey(etherlink),
+				get prettyBalance() {
+					console.log(Number(this.balance) / (10 ** this.decimals))
+					return prettyNumber((Number(this.balance) / (10 ** this.decimals)).toString())
+				}
 			},
 			etherlink: {
 				...etherlink,
-				balance: -1,
-				pairKey: getTokenKey(tezos)
+				balance: BigInt(0),
+				pairKey: getTokenKey(tezos),
+				get prettyBalance() {
+					return prettyNumber((Number(this.balance) / (10 ** this.decimals)).toString())
+				}
 			}
 		}
 	}
