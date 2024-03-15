@@ -6,6 +6,7 @@ import { computed, ref } from "vue"
 /** Components */
 import ExplorerLink from "@/components/ExplorerLink.vue"
 import Tooltip from "@/components/ui/Tooltip.vue"
+import Stepper from "@/components/ui/Stepper.vue"
 
 /** Services */
 import { plainTokens, getTokenKey } from "@/services/cfg/tokens.js"
@@ -77,11 +78,13 @@ fillOperation()
 			<Text> {{ operation.status }} </Text>
 		</Flex>
 
-		<Flex align="center" justify="between">
+		<Flex align="center" justify="between" gap="12">
 			<Flex align="center" gap="6">
 				<img width="20" height="20" :src="loadImage(operation.source.chain)" :class="$style.img"/>
 				<Text size="16" color="primary"> {{ capitilize(operation.source.chain) }} </Text>
 			</Flex>
+
+			<Stepper />
 
 			<Flex align="center" gap="6">
 				<img width="20" height="20" :src="loadImage(operation.destination.chain)" :class="$style.img"/>

@@ -1,6 +1,6 @@
 <script setup>
 /** Components */
-import TransferItem from "@/components/TransferItem.vue";
+import TransferItem from "@/components/TransferItem.vue"
 
 const props = defineProps({
 	transfers: {

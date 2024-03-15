@@ -14,7 +14,7 @@ Promise.all( [
 	tokenBridge.getTezosConnectedAddress(),
 	tokenBridge.getEtherlinkConnectedAddress()
 ]).then((res) => {
-	return tokenBridge.data.getAccountTokenTransfers(res, 0, 300)
+	return tokenBridge.data.getAccountTokenTransfers(res, 0, 1)
 }).then((res) => transfers.value = res)
 </script>
 
