@@ -3,9 +3,15 @@
 import { ref, computed, onMounted, watch } from "vue"
 import { storeToRefs } from "pinia"
 
+/** Constants */
+import { ConnectionStatus } from "@/services/constants/wallets"
 
 /** Components */
 import TokenSelector from "@/components/TokenSelector.vue"
+
+/** Composables */
+import { useTezos } from "@/composables/tezos.js"
+import { useEtherlink } from "@/composables/etherlink.js"
 
 /** Services */
 import { capitilize, comma, prettyNumber, purgeNumber } from "@/services/utils"
@@ -36,6 +42,10 @@ const loadImage = (n) => new URL(`../assets/images/${n}.png`, import.meta.url).h
 const normalizeAmount = (target, decimals) => {
 	return prettyNumber(purgeNumber(target), decimals);
 }
+
+const { status: tezosStatus } = useTezos()
+const { status: etherlinkStatus } = useEtherlink()
+const isWalletsConnected = computed(() => tezosStatus.value === ConnectionStatus.CONNECTED && etherlinkStatus.value === ConnectionStatus.CONNECTED)
 
 /** From Data */
 const fromChain = ref({
@@ -226,8 +236,15 @@ watch(
 		</Flex>
 
 		<Flex>
-			<Flex align="center" justify="center" :class="$style.button">
-				<Text size="16" color="black" @click="testTransfer">Continue</Text>
+			<RouterLink v-if="!isWalletsConnected" to="/config" :class="[$style.button, $style.connect_wallets]">
+				<Flex align="center" justify="center" :style="{height: '100%'}">
+					<Text size="16" color="black">Connect Wallets</Text>
+				</Flex>
+			</RouterLink>
+
+			<Flex v-else align="center" justify="center" :class="[$style.button, !(fromAmount > 0) && $style.disabled]">
+				<Text v-if="fromAmount > 0" size="16" color="black" @click="testTransfer"> {{ fromChain.name === 'tezos' ? 'Deposit' : 'Withdraw' }}</Text>
+				<Text v-else size="16" color="black"> Enter amount to {{ fromChain.name === 'tezos' ? 'deposit' : 'withdraw' }} </Text>
 			</Flex>
 		</Flex>
 	</Flex>
@@ -358,8 +375,27 @@ watch(
 
 	border-radius: 8px;
 	background: var(--green);
+	opacity: 0.8;
 	cursor: pointer;
 
 	margin: 0 12px;
+}
+
+.button:hover {
+	box-shadow: 0 0 0 2px var(--op-5);
+	opacity: 1;
+}
+
+.disabled {
+	opacity: 0.4;
+	cursor: auto;
+}
+
+.disabled:hover {
+	opacity: 0.4;
+}
+
+.connect_wallets {
+	background: var(--yellow);
 }
 </style>
