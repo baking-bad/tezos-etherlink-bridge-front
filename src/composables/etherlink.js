@@ -2,9 +2,6 @@
 import { computed } from "vue"
 import { useWeb3Modal, useWeb3ModalAccount, useDisconnect } from "@web3modal/ethers/vue"
 
-/** Services */
-import EtherlinkService from "@/services/etherlink"
-
 /** Constants */
 import { ConnectionStatus } from "@/services/constants/wallets"
 
@@ -26,10 +23,8 @@ export const useEtherlink = () => {
 	const disconnect = () => {
 		address.value = null
 		isConnected.value = ConnectionStatus.NOT_CONNECTED
-		disconnectWallet()
 
-		// useDisconnect()
-		// return EtherlinkService.instances.tokenBridge.disconnect()
+		disconnectWallet()
 	}
 
 	return { address, status, connect, disconnect }
