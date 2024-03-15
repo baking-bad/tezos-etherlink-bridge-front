@@ -2,10 +2,12 @@
 /** Vendor */
 import { DateTime } from "luxon"
 import { computed, ref } from "vue"
+import { storeToRefs } from "pinia"
 
 /** Components */
 import ExplorerLink from "@/components/ExplorerLink.vue"
 import Tooltip from "@/components/ui/Tooltip.vue"
+import Stepper from "@/components/ui/Stepper.vue"
 
 /** Stores */
 import { useTokensStore } from "@/stores/tokens.js"
@@ -14,8 +16,7 @@ const { plainTokens } = storeToRefs(tokensStore)
 const { getTokenKey } = tokensStore
 
 /** Services */
-import { capitilize, getStatus } from "@/services/utils";
-import { storeToRefs } from "pinia"
+import { capitilize, getStatus, getSteps } from "@/services/utils";
 
 const props = defineProps({
 	transfer: {
@@ -64,6 +65,8 @@ const fillOperation = () => {
 	}
 }
 
+const steps = getSteps(props.transfer)
+
 fillOperation()
 
 </script>
@@ -79,11 +82,13 @@ fillOperation()
 			<Text> {{ operation.status }} </Text>
 		</Flex>
 
-		<Flex align="center" justify="between">
+		<Flex align="center" justify="between" gap="12" :class="$style.progress">
 			<Flex align="center" gap="6">
 				<img width="20" height="20" :src="loadImage(operation.source.chain)" :class="$style.img"/>
 				<Text size="16" color="primary"> {{ capitilize(operation.source.chain) }} </Text>
 			</Flex>
+
+			<Stepper :steps="steps" />
 
 			<Flex align="center" gap="6">
 				<img width="20" height="20" :src="loadImage(operation.destination.chain)" :class="$style.img"/>
@@ -146,6 +151,10 @@ fillOperation()
 
 	.header {
 		padding-bottom: 6px;
+	}
+
+	.progress {
+		height: 40px;
 	}
 }
 

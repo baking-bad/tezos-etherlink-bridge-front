@@ -1,6 +1,6 @@
 <script setup>
 /** Components */
-import TransferItem from "@/components/TransferItem.vue";
+import TransferItem from "@/components/TransferItem.vue"
 
 const props = defineProps({
 	transfers: {
@@ -29,7 +29,5 @@ const props = defineProps({
 .wrapper {
 	height: calc(100vh - 70px - 48px);;
 	width: 100%;
-
-	overflow-y: auto;
 }
 </style>

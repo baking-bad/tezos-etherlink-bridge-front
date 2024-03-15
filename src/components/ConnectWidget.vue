@@ -5,7 +5,7 @@ import { computed } from "vue"
 /** UI */
 import Tooltip from "@/components/ui/Tooltip.vue"
 
-/** Service */
+/** Services */
 import { midHash, shortHash } from "@/services/utils";
 
 /** Constants */
@@ -31,15 +31,6 @@ const handleConnectEtherlink = async () => {
 
 <template>
 	<Flex direction="column" align="center" justify="center" gap="6" :class="$style.wrapper">
-		<Flex wide>
-			<RouterLink to="/">
-				<Flex align="center" gap="4" :class="$style.button">
-					<Icon name="back" size="14" color="secondary" />
-					<Text size="13" weight="semibold" color="secondary">Home</Text>
-				</Flex>
-			</RouterLink>
-		</Flex>
-
 		<Flex direction="column" align="center" gap="24">
 			<Flex align="center" gap="12">
 				<Tooltip :disabled="tezosStatus === ConnectionStatus.CONNECTED">
@@ -211,7 +202,7 @@ const handleConnectEtherlink = async () => {
 	background: linear-gradient(rgba(0, 0, 0, 40%), rgba(0, 0, 0, 0%));
 	box-shadow: 0 0 0 2px var(--op-5);
 
-	padding: 8px 8px 20px 8px;
+	padding: 20px 8px 20px 8px;
 
 	margin: 32px 16px;
 }

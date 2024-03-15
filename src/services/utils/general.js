@@ -12,3 +12,53 @@ export const getLinkToExplorer = (hash, network, type) => {
 export const getStatus = (num) => {
 	return statusMapping[num]
 }
+
+export const getSteps = (transfer) => {
+	let steps = [
+		{
+			step: 'Pending',
+			passed: true,
+		},
+	]
+
+	if (transfer.status === 400) {
+		steps.push(
+			{
+				step: 'Failed',
+				passed: true,
+			},
+		)
+	} else if (transfer.kind === 0) {
+		steps.push(
+			...[
+				{
+					step: 'Created',
+					passed: transfer.status > 0
+				},
+				{
+					step: 'Finished',
+					passed: transfer.status > 200
+				},
+			]
+		)
+	} else if (transfer.kind === 1) {
+		steps.push(
+			...[
+				{
+					step: 'Created',
+					passed: transfer.status > 0
+				},
+				{
+					step: 'Sealed',
+					passed: transfer.status > 100
+				},
+				{
+					step: 'Finished',
+					passed: transfer.status > 200
+				},
+			]
+		)
+	}
+
+	return steps
+}

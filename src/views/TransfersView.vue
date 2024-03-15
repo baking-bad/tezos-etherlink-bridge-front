@@ -14,7 +14,7 @@ Promise.all( [
 	tokenBridge.getTezosConnectedAddress(),
 	tokenBridge.getEtherlinkConnectedAddress()
 ]).then((res) => {
-	return tokenBridge.data.getAccountTokenTransfers(res, 0, 300)
+	return tokenBridge.data.getAccountTokenTransfers(res, 0, 30)
 }).then((res) => transfers.value = res)
 </script>
 
@@ -22,9 +22,14 @@ Promise.all( [
 <Flex direction="column" align="center">
 	<TransfersList
 		:transfers="transfers"
+		:class="$style.wrapper"
 	/>
 </Flex>
 </template>
 
 <style module>
+
+.wrapper {
+	overflow-y: auto;
+}
 </style>
