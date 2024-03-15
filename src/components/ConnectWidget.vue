@@ -2,8 +2,11 @@
 /** Vendor */
 import { computed } from "vue"
 
-/** UI */
+/** Components */
 import Tooltip from "@/components/ui/Tooltip.vue"
+import { Dropdown, DropdownItem, DropdownTitle } from "@/components/ui/Dropdown"
+import ExplorerLink from "@/components/ExplorerLink.vue";
+import CopyButton from "@/components/ui/CopyButton.vue";
 
 /** Services */
 import { midHash, shortHash } from "@/services/utils";
@@ -15,8 +18,8 @@ import { ConnectionStatus } from "@/services/constants/wallets"
 import { useTezos } from "@/composables/tezos.js"
 import { useEtherlink } from "@/composables/etherlink.js"
 
-const { address: tezosAddress, status: tezosStatus, connect: connectTezos } = useTezos()
-const { address: etherlinkAddress, status: etherlinkStatus, connect: connectEtherlink } = useEtherlink()
+const { address: tezosAddress, status: tezosStatus, connect: connectTezos, disconnect: disconnectTezos } = useTezos()
+const { address: etherlinkAddress, status: etherlinkStatus, connect: connectEtherlink, disconnect: disconnectEtherlink } = useEtherlink()
 
 const isReady = computed(() => tezosStatus.value === ConnectionStatus.CONNECTED && etherlinkStatus.value === ConnectionStatus.CONNECTED)
 
@@ -27,6 +30,15 @@ const handleConnectTezos = async () => {
 const handleConnectEtherlink = async () => {
 	connectEtherlink()
 }
+
+const handleDisconnectTezos = async () => {
+	disconnectTezos()
+}
+
+const handleDisconnectEtherlink = async () => {
+	disconnectEtherlink()
+}
+
 </script>
 
 <template>
@@ -118,23 +130,47 @@ const handleConnectEtherlink = async () => {
 							<Text size="13" weight="semibold" color="primary">Connect</Text>
 						</Flex>
 					</Flex>
-					<Flex v-else justify="between" align="center" :class="[$style.task, $style.done]">
-						<Flex direction="column" gap="6">
-							<Flex align="center" gap="8">
-								<Icon name="check-circle" size="14" color="green" />
-								<Text size="14" color="primary">Tezos is ready </Text>
+					<Dropdown v-else :class="$style.dropdown">
+						<template #trigger="{isOpen}">
+							<Flex justify="between" align="center" :class="[$style.task, $style.done]">
+								<Flex direction="column" gap="6">
+									<Flex align="center" gap="8">
+										<Icon name="check-circle" size="14" color="green" />
+										<Text size="14" color="primary">Tezos is ready </Text>
+									</Flex>
+
+									<Text size="13" color="tertiary" :class="$style.description">
+										{{ shortHash(tezosAddress) }}
+									</Text>
+								</Flex>
+
+								<Flex align="center" gap="4">
+									<Icon name="check-circle" size="14" color="green" />
+									<Text size="13" weight="semibold" color="secondary">Ready</Text>
+								</Flex>
 							</Flex>
-
-							<Text size="13" color="tertiary" :class="$style.description">
-								{{ shortHash(tezosAddress) }}
-							</Text>
-						</Flex>
-
-						<Flex align="center" gap="4">
-							<Icon name="check-circle" size="14" color="green" />
-							<Text size="13" weight="semibold" color="secondary">Ready</Text>
-						</Flex>
-					</Flex>
+						</template>
+						<template #popup>
+							<DropdownTitle>
+								<Flex align="center" :class="$style.dd_title" gap="4">
+									<img width="15" height="15" src="@/assets/images/tezos.png" />
+									<Text size="14" color="secondary">Tezos Oxfordnet</Text>
+								</Flex>
+							</DropdownTitle>
+							<DropdownItem :class="[$style.dd_item, $style.dd_cursor]">
+								<Flex justify="end" gap="6" wide>
+									<ExplorerLink :hash="tezosAddress" network="tezos" type="address" />
+									<CopyButton :text="tezosAddress" size="13" />
+								</Flex>
+							</DropdownItem>
+							<DropdownItem @click="handleDisconnectTezos" :class="$style.dd_item">
+								<Flex align="center" justify="end" gap="6" wide>
+									<Text size="13" color="primary">Disconnect</Text>
+									<Icon name="log-out" size="13" color="tertiary" />
+								</Flex>
+							</DropdownItem>
+						</template>
+					</Dropdown>
 				</transition>
 
 				<!-- Etherlink Tasks -->
@@ -160,23 +196,47 @@ const handleConnectEtherlink = async () => {
 							<Text size="13" weight="semibold" color="primary">Connect</Text>
 						</Flex>
 					</Flex>
-					<Flex v-else justify="between" align="center" :class="[$style.task, $style.done]">
-						<Flex direction="column" gap="6">
-							<Flex align="center" gap="8">
-								<Icon name="check-circle" size="14" color="green" />
-								<Text size="14" color="primary">Etherlink is ready </Text>
+					<Dropdown v-else :class="$style.dropdown">
+						<template #trigger="{isOpen}">
+							<Flex justify="between" align="center" :class="[$style.task, $style.done]">
+								<Flex direction="column" gap="6">
+									<Flex align="center" gap="8">
+										<Icon name="check-circle" size="14" color="green" />
+										<Text size="14" color="primary">Etherlink is ready </Text>
+									</Flex>
+
+									<Text size="13" color="tertiary" :class="$style.description">
+										{{ shortHash(etherlinkAddress) }}
+									</Text>
+								</Flex>
+
+								<Flex align="center" gap="4">
+									<Icon name="check-circle" size="14" color="green" />
+									<Text size="13" weight="semibold" color="secondary">Ready</Text>
+								</Flex>
 							</Flex>
-
-							<Text size="13" color="tertiary" :class="$style.description">
-								{{ shortHash(etherlinkAddress) }}
-							</Text>
-						</Flex>
-
-						<Flex align="center" gap="4">
-							<Icon name="check-circle" size="14" color="green" />
-							<Text size="13" weight="semibold" color="secondary">Ready</Text>
-						</Flex>
-					</Flex>
+						</template>
+						<template #popup>
+							<DropdownTitle>
+								<Flex align="center" :class="$style.dd_title" gap="4">
+									<img width="15" height="15" src="@/assets/images/etherlink.png" />
+									<Text size="14" color="secondary">Etherlink Testnet</Text>
+								</Flex>
+							</DropdownTitle>
+							<DropdownItem :class="[$style.dd_item, $style.dd_cursor]">
+								<Flex justify="end" gap="6" wide>
+									<ExplorerLink :hash="etherlinkAddress" network="etherlink" type="address" />
+									<CopyButton :text="etherlinkAddress" size="13" />
+								</Flex>
+							</DropdownItem>
+							<DropdownItem @click="handleDisconnectEtherlink" :class="$style.dd_item">
+								<Flex align="center" justify="end" gap="6" wide>
+									<Text size="13" color="primary">Disconnect</Text>
+									<Icon name="log-out" size="13" color="tertiary" />
+								</Flex>
+							</DropdownItem>
+						</template>
+					</Dropdown>					
 				</transition>
 			</Flex>
 
@@ -285,6 +345,32 @@ const handleConnectEtherlink = async () => {
 	}
 }
 
+.dropdown {
+	cursor: pointer;
+}
+
+.dd_title {
+	padding-bottom: 4px;
+	border-bottom: 2px solid var(--op-5);
+}
+
+.dd_item {
+	width: 190px;
+	height: 35px;
+	background: none;
+}
+
+.dd_cursor {
+	cursor: auto;
+}
+/* .dd_item:hover {
+	background: none;
+} */
+
+.dd_item:focus {
+	outline: none;
+	background: none;
+}
 .description {
 	margin-left: 22px;
 }

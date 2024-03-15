@@ -17,7 +17,7 @@ const {
 	etherlinkTokens,
 } = storeToRefs(tokensStore)
 
-/** UI */
+/** Components */
 import { Dropdown, DropdownItem } from "@/components/ui/Dropdown"
 
 
@@ -86,7 +86,7 @@ const dropdownItems = computed(() => {
 		</template>
 		<template #popup>
 			<DropdownItem v-for="item in dropdownItems" @click="selectedToken = item">
-				<Flex gap="6" wide>
+				<Flex align="center" gap="6" wide>
 					<img width="20" height="20" :src="loadImage(item.icon)" :class="$style.img" />
 					<Flex align="center" justify="between" gap="12" wide>
 						<Flex direction="column" gap="2">
