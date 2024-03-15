@@ -65,7 +65,19 @@ const fillOperation = () => {
 	}
 }
 
-const steps = getSteps(props.transfer)
+const steps = computed(() => getSteps(props.transfer))
+const statusStyle = computed(() => {
+	let lastStep = steps.value[steps.value.length - 1]
+	if (lastStep.passed) {
+		if (lastStep.step === 'Failed') {
+			return {color: `var(--red)`}
+		}
+
+		return {color: `var(--green)`, opacity: 0.8}
+	}
+
+	return {color: `var(--blue)`}
+})
 
 fillOperation()
 
@@ -79,7 +91,7 @@ fillOperation()
 				<Text size="16" color="primary"> {{ token.ticker }} </Text>
 			</Flex>
 
-			<Text> {{ operation.status }} </Text>
+			<Text :style="statusStyle"> {{ operation.status }} </Text>
 		</Flex>
 
 		<Flex align="center" justify="between" gap="12" :class="$style.progress">

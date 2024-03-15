@@ -103,7 +103,6 @@ onMounted(() => {
 
 .status {
 	border-radius: 50%;
-	cursor: pointer;
 
 	background-color: var(--txt-support);
 
