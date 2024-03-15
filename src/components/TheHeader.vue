@@ -103,7 +103,7 @@ watch(
 			</Flex>
 		</div>
 
-		<RouterLink to="/connect">
+		<RouterLink to="/config">
 			<Flex align="center" :class="[$style.button, isConnected && $style.connected]">
 				<Text size="14" color="black">{{ isConnected ? "Connected" : "Connect" }} </Text>
 			</Flex>
