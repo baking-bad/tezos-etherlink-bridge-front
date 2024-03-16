@@ -8,6 +8,7 @@ import { ConnectionStatus } from "@/services/constants/wallets"
 
 /** Components */
 import TokenSelector from "@/components/TokenSelector.vue"
+import TransferItem from "@/components/TransferItem.vue";
 
 /** Composables */
 import { useTezos } from "@/composables/tezos.js"
@@ -128,7 +129,10 @@ onMounted(() => {
 	fromInputEl.value.focus()
 })
 
-function testTransfer() {
+const lastTransfer = ref({})
+console.log(lastTransfer.value);
+
+async function testTransfer() {
 	const bigIntSum = BigInt(
 		Number(
 			fromAmount.value.replaceAll(",", "")
@@ -139,7 +143,13 @@ function testTransfer() {
 		type: fromToken.value.type,
 		...(_address && {address: _address})
 	}
-	fromChain.value.exchange(bigIntSum, _token)
+
+	let transfer = await fromChain.value.exchange(bigIntSum, _token)
+	
+	if (transfer.tokenTransfer) {
+		lastTransfer.value = transfer.tokenTransfer
+		console.log(lastTransfer.value);
+	}
 }
 
 watch(
@@ -157,101 +167,109 @@ watch(
 </script>
 
 <template>
-	<Flex direction="column" gap="20" :class="$style.wrapper">
-		<Flex direction="column" gap="4" :class="$style.inputs">
-			<Flex @click="fromInputEl.focus()" direction="column" gap="16" :class="$style.from">
-				<Flex align="center" justify="between" :class="$style.top">
-					<Text size="14" color="secondary">From</Text>
+	<Flex align="center" justify="center" direction="column" gap="20" :class="$style.wrapper">
+		<Flex direction="column" gap="20" :class="$style.operation_window">
+			<Flex direction="column" gap="4" :class="$style.inputs">
+				<Flex @click="fromInputEl.focus()" direction="column" gap="16" :class="$style.from">
+					<Flex align="center" justify="between" :class="$style.top">
+						<Text size="14" color="secondary">From</Text>
 
-					<Flex align="center" gap="6">
-						<img width="16" height="16" :src="loadImage(fromChain.logo)" :class="$style.logo" />
-						<Text size="13" weight="semibold" color="primary">{{ capitilize(fromChain.name) }}</Text>
+						<Flex align="center" gap="6">
+							<img width="16" height="16" :src="loadImage(fromChain.logo)" :class="$style.logo" />
+							<Text size="13" weight="semibold" color="primary">{{ capitilize(fromChain.name) }}</Text>
+						</Flex>
+					</Flex>
+
+					<Flex justify="between">
+						<Flex direction="column" gap="8">
+							<input ref="fromInputEl" v-model="fromAmount" @input="handleFromInput" placeholder="0.00" :class="$style.input" />
+							<Text size="14" color="tertiary">${{ comma(fromInUSD) }}</Text>
+						</Flex>
+
+						<Flex direction="column" align="end" gap="8">
+							<TokenSelector
+								v-model="fromToken"
+								:chain="fromChain.name"
+							/>
+
+							<Flex align="center" gap="4">
+								<Icon name="banknote" size="14" color="tertiary" />
+								<Text size="12" weight="semibold" color="tertiary">{{ fromToken.prettyBalance }}</Text>
+							</Flex>
+						</Flex>
 					</Flex>
 				</Flex>
 
-				<Flex justify="between">
-					<Flex direction="column" gap="8">
-						<input ref="fromInputEl" v-model="fromAmount" @input="handleFromInput" placeholder="0.00" :class="$style.input" />
-						<Text size="14" color="tertiary">${{ comma(fromInUSD) }}</Text>
+				<Flex @click="handleSwitch" :class="[$style.switcher, playRotateAnimation && $style.rotate]">
+					<Icon name="logo" size="24" color="primary" />
+				</Flex>
+
+				<Flex @click="toInputEl.focus()" direction="column" gap="16" :class="$style.to">
+					<Flex align="center" justify="between" :class="$style.top">
+						<Text size="14" color="secondary">To</Text>
+
+						<Flex align="center" gap="6">
+							<img width="16" height="16" :src="loadImage(toChain.logo)" :class="$style.logo" />
+							<Text size="13" weight="semibold" color="primary">{{ capitilize(toChain.name) }}</Text>
+						</Flex>
 					</Flex>
 
-					<Flex direction="column" align="end" gap="8">
-						<TokenSelector
-							v-model="fromToken"
-							:chain="fromChain.name"
-						/>
+					<Flex justify="between">
+						<Flex direction="column" gap="8">
+							<input ref="toInputEl" v-model="toAmount" @input="handleToInput" placeholder="0.00" :class="$style.input" />
+							<Text size="14" color="tertiary">${{ comma(toInUSD) }}</Text>
+						</Flex>
 
-						<Flex align="center" gap="4">
-							<Icon name="banknote" size="14" color="tertiary" />
-							<Text size="12" weight="semibold" color="tertiary">{{ fromToken.prettyBalance }}</Text>
+						<Flex direction="column" align="end" gap="8">
+							<TokenSelector
+								v-model="toToken"
+								:chain="toChain.name"
+							/>
+
+							<Flex align="center" gap="4">
+								<Icon name="banknote" size="14" color="tertiary" />
+								<Text size="12" weight="semibold" color="tertiary">{{ toToken.prettyBalance }}</Text>
+							</Flex>
 						</Flex>
 					</Flex>
 				</Flex>
 			</Flex>
 
-			<Flex @click="handleSwitch" :class="[$style.switcher, playRotateAnimation && $style.rotate]">
-				<Icon name="logo" size="24" color="primary" />
+			<Flex direction="column" gap="12" :class="$style.metadata">
+				<Flex align="center" justify="between">
+					<Text size="13" color="tertiary">Estimated Time</Text>
+					<Text size="13" color="secondary">15 min</Text>
+				</Flex>
+				<Flex align="center" justify="between">
+					<Text size="13" color="tertiary">Estimated Gas Fee</Text>
+					<Text size="13" color="secondary">$2.62</Text>
+				</Flex>
 			</Flex>
 
-			<Flex @click="toInputEl.focus()" direction="column" gap="16" :class="$style.to">
-				<Flex align="center" justify="between" :class="$style.top">
-					<Text size="14" color="secondary">To</Text>
-
-					<Flex align="center" gap="6">
-						<img width="16" height="16" :src="loadImage(toChain.logo)" :class="$style.logo" />
-						<Text size="13" weight="semibold" color="primary">{{ capitilize(toChain.name) }}</Text>
+			<Flex>
+				<RouterLink v-if="!isWalletsConnected" to="/config" :class="[$style.button, $style.connect_wallets]">
+					<Flex align="center" justify="center" :style="{height: '100%'}">
+						<Text size="16" color="black">Connect Wallets</Text>
 					</Flex>
-				</Flex>
+				</RouterLink>
 
-				<Flex justify="between">
-					<Flex direction="column" gap="8">
-						<input ref="toInputEl" v-model="toAmount" @input="handleToInput" placeholder="0.00" :class="$style.input" />
-						<Text size="14" color="tertiary">${{ comma(toInUSD) }}</Text>
-					</Flex>
-
-					<Flex direction="column" align="end" gap="8">
-						<TokenSelector
-							v-model="toToken"
-							:chain="toChain.name"
-						/>
-
-						<Flex align="center" gap="4">
-							<Icon name="banknote" size="14" color="tertiary" />
-							<Text size="12" weight="semibold" color="tertiary">{{ toToken.prettyBalance }}</Text>
-						</Flex>
-					</Flex>
+				<Flex v-else align="center" justify="center" :class="[$style.button, !(fromAmount > 0) && $style.disabled]">
+					<Text v-if="fromAmount > 0" size="16" color="black" @click="testTransfer"> {{ fromChain.name === 'tezos' ? 'Deposit' : 'Withdraw' }}</Text>
+					<Text v-else size="16" color="black"> Enter amount to {{ fromChain.name === 'tezos' ? 'deposit' : 'withdraw' }} </Text>
 				</Flex>
 			</Flex>
 		</Flex>
 
-		<Flex direction="column" gap="12" :class="$style.metadata">
-			<Flex align="center" justify="between">
-				<Text size="13" color="tertiary">Estimated Time</Text>
-				<Text size="13" color="secondary">15 min</Text>
-			</Flex>
-			<Flex align="center" justify="between">
-				<Text size="13" color="tertiary">Estimated Gas Fee</Text>
-				<Text size="13" color="secondary">$2.62</Text>
-			</Flex>
-		</Flex>
-
-		<Flex>
-			<RouterLink v-if="!isWalletsConnected" to="/config" :class="[$style.button, $style.connect_wallets]">
-				<Flex align="center" justify="center" :style="{height: '100%'}">
-					<Text size="16" color="black">Connect Wallets</Text>
-				</Flex>
-			</RouterLink>
-
-			<Flex v-else align="center" justify="center" :class="[$style.button, !(fromAmount > 0) && $style.disabled]">
-				<Text v-if="fromAmount > 0" size="16" color="black" @click="testTransfer"> {{ fromChain.name === 'tezos' ? 'Deposit' : 'Withdraw' }}</Text>
-				<Text v-else size="16" color="black"> Enter amount to {{ fromChain.name === 'tezos' ? 'deposit' : 'withdraw' }} </Text>
-			</Flex>
-		</Flex>
+		<TransferItem v-if="lastTransfer.source" :transfer="lastTransfer" :class="$style.fade" />
 	</Flex>
 </template>
 
 <style module>
 .wrapper {
+	max-width: 100%;
+}
+
+.operation_window {
 	max-width: 400px;
 	width: 400px;
 
@@ -261,9 +279,8 @@ watch(
 
 	padding: 8px 8px 20px 8px;
 
-	margin: 32px 16px;
+	margin: 32px 16px 8px 16px;
 }
-
 .inputs {
 	position: relative;
 }
@@ -375,7 +392,7 @@ watch(
 
 	border-radius: 8px;
 	background: var(--green);
-	opacity: 0.8;
+	opacity: 0.85;
 	cursor: pointer;
 
 	margin: 0 12px;
