@@ -14,6 +14,10 @@ const props = defineProps({
 	type: {
 		type: String,
 		default: '',
+	},
+	short: {
+		type: Boolean,
+		default: false,
 	}
 })
 
@@ -26,7 +30,7 @@ const props = defineProps({
 		target="_blank"
 		:class="$style.link"
 	>
-		{{ midHash(hash) }}
+		{{ short ? shortHash(hash) : midHash(hash) }}
 	</a>
 </template>
 

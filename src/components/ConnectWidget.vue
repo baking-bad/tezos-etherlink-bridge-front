@@ -9,7 +9,7 @@ import ExplorerLink from "@/components/ExplorerLink.vue";
 import CopyButton from "@/components/ui/CopyButton.vue";
 
 /** Services */
-import { midHash, shortHash } from "@/services/utils";
+import { shortHash } from "@/services/utils";
 
 /** Constants */
 import { ConnectionStatus } from "@/services/constants/wallets"
@@ -130,47 +130,24 @@ const handleDisconnectEtherlink = async () => {
 							<Text size="13" weight="semibold" color="primary">Connect</Text>
 						</Flex>
 					</Flex>
-					<Dropdown v-else :class="$style.dropdown">
-						<template #trigger="{isOpen}">
-							<Flex justify="between" align="center" :class="[$style.task, $style.done]">
-								<Flex direction="column" gap="6">
-									<Flex align="center" gap="8">
-										<Icon name="check-circle" size="14" color="green" />
-										<Text size="14" color="primary">Tezos is ready </Text>
-									</Flex>
+					<Flex v-else direction="column" :class="[$style.task, $style.done]" gap="6">
+						<Flex align="center" gap="8">
+							<Icon name="check-circle" size="14" color="green" />
+							<Text size="14" color="primary">Tezos is ready </Text>
+						</Flex>
 
-									<Text size="13" color="tertiary" :class="$style.description">
-										{{ shortHash(tezosAddress) }}
-									</Text>
-								</Flex>
-
-								<Flex align="center" gap="4">
-									<Icon name="check-circle" size="14" color="green" />
-									<Text size="13" weight="semibold" color="secondary">Ready</Text>
-								</Flex>
+						<Flex justify="between">
+							<Flex align="center" gap="6">
+								<ExplorerLink :hash="tezosAddress" network="tezos" type="address" short :class="[$style.description, $style.link]"/>
+								<CopyButton :text="tezosAddress" size="11" />
 							</Flex>
-						</template>
-						<template #popup>
-							<DropdownTitle>
-								<Flex align="center" :class="$style.dd_title" gap="4">
-									<img width="15" height="15" src="@/assets/images/tezos.png" />
-									<Text size="14" color="secondary">Tezos Oxfordnet</Text>
-								</Flex>
-							</DropdownTitle>
-							<DropdownItem :class="[$style.dd_item, $style.dd_cursor]">
-								<Flex justify="end" gap="6" wide>
-									<ExplorerLink :hash="tezosAddress" network="tezos" type="address" />
-									<CopyButton :text="tezosAddress" size="13" />
-								</Flex>
-							</DropdownItem>
-							<DropdownItem @click="handleDisconnectTezos" :class="$style.dd_item">
-								<Flex align="center" justify="end" gap="6" wide>
-									<Text size="13" color="primary">Disconnect</Text>
-									<Icon name="log-out" size="13" color="tertiary" />
-								</Flex>
-							</DropdownItem>
-						</template>
-					</Dropdown>
+
+							<Flex @click="handleDisconnectTezos" align="center" gap="6" :class="$style.disconnect">
+								<Text size="13">Disconnect</Text>
+								<Icon name="log-out" size="13" />
+							</Flex>
+						</Flex>
+					</Flex>
 				</transition>
 
 				<!-- Etherlink Tasks -->
@@ -196,47 +173,24 @@ const handleDisconnectEtherlink = async () => {
 							<Text size="13" weight="semibold" color="primary">Connect</Text>
 						</Flex>
 					</Flex>
-					<Dropdown v-else :class="$style.dropdown">
-						<template #trigger="{isOpen}">
-							<Flex justify="between" align="center" :class="[$style.task, $style.done]">
-								<Flex direction="column" gap="6">
-									<Flex align="center" gap="8">
-										<Icon name="check-circle" size="14" color="green" />
-										<Text size="14" color="primary">Etherlink is ready </Text>
-									</Flex>
+					<Flex v-else direction="column" :class="[$style.task, $style.done]" gap="6">
+						<Flex align="center" gap="8">
+							<Icon name="check-circle" size="14" color="green" />
+							<Text size="14" color="primary">Etherlink is ready </Text>
+						</Flex>
 
-									<Text size="13" color="tertiary" :class="$style.description">
-										{{ shortHash(etherlinkAddress) }}
-									</Text>
-								</Flex>
-
-								<Flex align="center" gap="4">
-									<Icon name="check-circle" size="14" color="green" />
-									<Text size="13" weight="semibold" color="secondary">Ready</Text>
-								</Flex>
+						<Flex justify="between">
+							<Flex align="center" gap="6">
+								<ExplorerLink :hash="etherlinkAddress" network="etherlink" type="address" short :class="[$style.description, $style.link]"/>
+								<CopyButton :text="etherlinkAddress" size="11" />
 							</Flex>
-						</template>
-						<template #popup>
-							<DropdownTitle>
-								<Flex align="center" :class="$style.dd_title" gap="4">
-									<img width="15" height="15" src="@/assets/images/etherlink.png" />
-									<Text size="14" color="secondary">Etherlink Testnet</Text>
-								</Flex>
-							</DropdownTitle>
-							<DropdownItem :class="[$style.dd_item, $style.dd_cursor]">
-								<Flex justify="end" gap="6" wide>
-									<ExplorerLink :hash="etherlinkAddress" network="etherlink" type="address" />
-									<CopyButton :text="etherlinkAddress" size="13" />
-								</Flex>
-							</DropdownItem>
-							<DropdownItem @click="handleDisconnectEtherlink" :class="$style.dd_item">
-								<Flex align="center" justify="end" gap="6" wide>
-									<Text size="13" color="primary">Disconnect</Text>
-									<Icon name="log-out" size="13" color="tertiary" />
-								</Flex>
-							</DropdownItem>
-						</template>
-					</Dropdown>					
+
+							<Flex @click="handleDisconnectEtherlink" align="center" gap="6" :class="$style.disconnect">
+								<Text size="13">Disconnect</Text>
+								<Icon name="log-out" size="13" />
+							</Flex>
+						</Flex>
+					</Flex>
 				</transition>
 			</Flex>
 
@@ -332,7 +286,7 @@ const handleDisconnectEtherlink = async () => {
 	background: var(--op-5);
 	cursor: pointer;
 
-	padding: 10px 16px 10px 10px;
+	padding: 10px 10px 10px 10px;
 
 	transition: all 0.1s ease;
 
@@ -341,36 +295,26 @@ const handleDisconnectEtherlink = async () => {
 	}
 
 	&.done {
-		pointer-events: none;
+		cursor: auto;
 	}
 }
 
-.dropdown {
+.link {
+	color: var(--txt-tertiary);
+}
+
+.disconnect {
+	color: var(--txt-tertiary);
+	fill: var(--txt-tertiary);
 	cursor: pointer;
 }
 
-.dd_title {
-	padding-bottom: 4px;
-	border-bottom: 2px solid var(--op-5);
+.disconnect:hover {
+	fill: var(--red);
+	color: var(--red);
+	opacity: 0.8;
 }
 
-.dd_item {
-	width: 190px;
-	height: 35px;
-	background: none;
-}
-
-.dd_cursor {
-	cursor: auto;
-}
-/* .dd_item:hover {
-	background: none;
-} */
-
-.dd_item:focus {
-	outline: none;
-	background: none;
-}
 .description {
 	margin-left: 22px;
 }
