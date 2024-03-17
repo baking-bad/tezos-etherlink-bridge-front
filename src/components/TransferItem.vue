@@ -16,7 +16,7 @@ const { plainTokens } = storeToRefs(tokensStore)
 const { getTokenKey } = tokensStore
 
 /** Services */
-import { capitilize, getStatus, getSteps } from "@/services/utils";
+import { capitilize, getStatus } from "@/services/utils";
 
 const props = defineProps({
 	transfer: {
@@ -35,10 +35,11 @@ const token = computed(() => {
 		) === getTokenKey(pt)
 	})
 })
-const operation = ref({})
-const fillOperation = () => {
-	operation.value.kind = props.transfer.kind
-	operation.value.status = getStatus(props.transfer.status)
+
+const operation = computed(() => {
+	let op = {}
+	op.kind = props.transfer.kind
+	op.status = getStatus(props.transfer.status)
 
 	const tezosOperation = {
 		chain: 'tezos',
@@ -55,19 +56,20 @@ const fillOperation = () => {
 	const sourceOperation = props.transfer.kind === 1 ? etherlinkOperation : tezosOperation
 	const recieverOperation = props.transfer.kind === 1 ? tezosOperation : etherlinkOperation
 
-	operation.value.source = {
+	op.source = {
 		address: props.transfer.source,
 		...sourceOperation,
 	}
-	operation.value.destination = {
+	op.destination = {
 		address: props.transfer.receiver,
 		...recieverOperation,
 	}
-}
 
-const steps = computed(() => getSteps(props.transfer))
+	return op
+})
+
 const statusStyle = computed(() => {
-	let lastStep = steps.value[steps.value.length - 1]
+	let lastStep = props.transfer.steps[props.transfer.steps.length - 1]
 	if (lastStep.passed) {
 		if (lastStep.step === 'Failed') {
 			return {color: `var(--red)`}
@@ -78,8 +80,6 @@ const statusStyle = computed(() => {
 
 	return {color: `var(--blue)`}
 })
-
-fillOperation()
 
 </script>
 
@@ -100,7 +100,7 @@ fillOperation()
 				<Text size="16" color="primary"> {{ capitilize(operation.source.chain) }} </Text>
 			</Flex>
 
-			<Stepper :steps="steps" />
+			<Stepper :steps="transfer.steps" />
 
 			<Flex align="center" gap="6">
 				<img width="20" height="20" :src="loadImage(operation.destination.chain)" :class="$style.img"/>

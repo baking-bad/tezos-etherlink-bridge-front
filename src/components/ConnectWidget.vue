@@ -4,12 +4,8 @@ import { computed } from "vue"
 
 /** Components */
 import Tooltip from "@/components/ui/Tooltip.vue"
-import { Dropdown, DropdownItem, DropdownTitle } from "@/components/ui/Dropdown"
 import ExplorerLink from "@/components/ExplorerLink.vue";
 import CopyButton from "@/components/ui/CopyButton.vue";
-
-/** Services */
-import { shortHash } from "@/services/utils";
 
 /** Constants */
 import { ConnectionStatus } from "@/services/constants/wallets"

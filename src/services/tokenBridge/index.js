@@ -11,7 +11,7 @@ import { reactive } from "vue"
 const defaultDataProvider = new DefaultDataProvider({
 	dipDup: {
 		baseUrl: 'https://etherlink-bridge-indexer.dipdup.net',
-		webSocketApiBaseUrl: 'wss://etherlink-indexer.dipdup.net'
+		webSocketApiBaseUrl: 'wss://etherlink-bridge-indexer.dipdup.net'
 	},
 	tzKTApiBaseUrl: 'https://api.oxfordnet.tzkt.io',
 	etherlinkRpcUrl: 'https://etherlink.dipdup.net',

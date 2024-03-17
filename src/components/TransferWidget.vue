@@ -20,6 +20,7 @@ import TokenBridgeService from "@/services/tokenBridge"
 const { tokenBridge } = TokenBridgeService.instances
 
 /** Stores */
+import { useTransfersStore } from "@/stores/transfers.js"
 import { useTokensStore } from "@/stores/tokens.js"
 const tokensStore = useTokensStore()
 const {
@@ -29,6 +30,10 @@ const {
 const { isPairedToken, isSameToken, getPairedToken } = tokensStore
 
 tokensStore.mergeBalances(tokenBridge)
+
+const transfersStore = useTransfersStore()
+const { lastTransfer } = storeToRefs(transfersStore)
+tokenBridge.addEventListener('tokenTransferUpdated', transfersStore.updateTransfer)
 
 const reverseDirection = ref(false)
 const playRotateAnimation = ref(false)
@@ -129,8 +134,6 @@ onMounted(() => {
 	fromInputEl.value.focus()
 })
 
-const lastTransfer = ref({})
-console.log(lastTransfer.value);
 
 async function testTransfer() {
 	const bigIntSum = BigInt(
@@ -147,8 +150,7 @@ async function testTransfer() {
 	let transfer = await fromChain.value.exchange(bigIntSum, _token)
 	
 	if (transfer.tokenTransfer) {
-		lastTransfer.value = transfer.tokenTransfer
-		console.log(lastTransfer.value);
+		transfersStore.addLastTransfer(transfer.tokenTransfer)
 	}
 }
 
@@ -253,14 +255,14 @@ watch(
 					</Flex>
 				</RouterLink>
 
-				<Flex v-else align="center" justify="center" :class="[$style.button, !(fromAmount > 0) && $style.disabled]">
-					<Text v-if="fromAmount > 0" size="16" color="black" @click="testTransfer"> {{ fromChain.name === 'tezos' ? 'Deposit' : 'Withdraw' }}</Text>
+				<Flex v-else @click="testTransfer" align="center" justify="center" :class="[$style.button, !(fromAmount > 0) && $style.disabled]">
+					<Text v-if="fromAmount > 0" size="16" color="black"> {{ fromChain.name === 'tezos' ? 'Deposit' : 'Withdraw' }}</Text>
 					<Text v-else size="16" color="black"> Enter amount to {{ fromChain.name === 'tezos' ? 'deposit' : 'withdraw' }} </Text>
 				</Flex>
 			</Flex>
 		</Flex>
 
-		<TransferItem v-if="lastTransfer.source" :transfer="lastTransfer" :class="$style.fade" />
+		<TransferItem v-if="lastTransfer.source" :transfer="lastTransfer" />
 	</Flex>
 </template>
 
