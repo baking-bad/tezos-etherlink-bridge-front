@@ -1,6 +1,6 @@
 <script setup>
 /** Vendor */
-import { onMounted, ref } from "vue"
+import { onBeforeUnmount, onMounted, ref } from "vue"
 import { storeToRefs } from "pinia"
 
 /** Components */
@@ -14,13 +14,12 @@ import TokenBridgeService from "@/services/tokenBridge"
 import { useTransfersStore } from "@/stores/transfers.js";
 const transfersStore = useTransfersStore()
 const { allTransfers } = storeToRefs(transfersStore)
-transfersStore.clearStore()
 
 const { tokenBridge } = TokenBridgeService.instances
 
 const transfersListEl = ref(null)
 const handleScroll = () => {
-	if (transfersListEl.value.wrapper.scrollHeight - transfersListEl.value.wrapper.scrollTop <= transfersListEl.value.wrapper.clientHeight + 1) {
+	if (transfersListEl.value.wrapper.scrollHeight - transfersListEl.value.wrapper.scrollTop - 600 <= transfersListEl.value.wrapper.clientHeight) {
 		loadTransfers()
 	}
 }
@@ -35,17 +34,33 @@ const loadTransfers = () => {
 
 	isLoading.value = true
 
+	// setTimeout(() => {
+	// 	Promise.all( [
+	// 	tokenBridge.getTezosConnectedAddress(),
+	// 	tokenBridge.getEtherlinkConnectedAddress()
+	// 	]).then((res) => {
+	// 		return tokenBridge.data.getAccountTokenTransfers(res, offset.value, limit.value)
+	// 	}).then((res) => {
+	// 		transfersStore.addTransfers(res, 'all')
+	// 		offset.value += limit.value
+	// 	}).finally(() => {
+	// 		isLoading.value = false
+	// })
+		
+	// }, 5000);
+
 	Promise.all( [
 		tokenBridge.getTezosConnectedAddress(),
 		tokenBridge.getEtherlinkConnectedAddress()
-	]).then((res) => {
-		return tokenBridge.data.getAccountTokenTransfers(res, offset.value, limit.value)
-	}).then((res) => {
-		transfersStore.addTransfers(res, 'all')
-		offset.value += limit.value
-	}).finally(() => {
-		isLoading.value = false
+		]).then((res) => {
+			return tokenBridge.data.getAccountTokenTransfers(res, offset.value, limit.value)
+		}).then((res) => {
+			transfersStore.addTransfers(res, 'all')
+			offset.value += limit.value
+		}).finally(() => {
+			isLoading.value = false
 	})
+
 }
 
 loadTransfers()
@@ -54,6 +69,10 @@ onMounted(() => {
 	transfersListEl.value.wrapper.addEventListener('scroll', handleScroll)
 });
 
+onBeforeUnmount(() => {
+	transfersStore.clearStore()
+	transfersListEl.value.wrapper.removeEventListener('scroll', handleScroll)
+})
 </script>
 
 <template>
@@ -63,11 +82,17 @@ onMounted(() => {
 
 			<Text>Filter2</Text>
 		</Flex>
+		<Flex v-if="isLoading" :class="$style.overlay">
+			<Flex align="center" gap="10" :class="$style.spinner">
+				<Spinner size="20" />
+				<Text size="20" weight="600" color="secondary">Loading transfers..</Text>
+				<!-- To do (?): for looong loading -->
+			</Flex>
+		</Flex>
 		<TransfersList
 			:transfers="allTransfers"
 		/>
 
-		<Spinner v-if="isLoading" size="50" />
 	</Flex>
 </template>
 
@@ -82,5 +107,22 @@ onMounted(() => {
 	width: 500px;
 	
 	margin: 15px 0 25px 0;
+}
+
+.spinner {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.1);
+  z-index: 999;
 }
 </style>

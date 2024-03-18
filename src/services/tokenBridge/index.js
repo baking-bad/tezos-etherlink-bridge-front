@@ -18,9 +18,9 @@ const defaultDataProvider = new DefaultDataProvider({
 	tokenPairs
 })
 
-const instances = reactive({
+const instances = {
 	tokenBridge: null
-})
+}
 
 const init = () => {
 	instances.tokenBridge = new TokenBridge({

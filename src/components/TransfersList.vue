@@ -1,4 +1,7 @@
 <script setup>
+/** Vendor */
+import { onBeforeUnmount, onMounted, ref } from "vue";
+
 /** Components */
 import TransferItem from "@/components/TransferItem.vue"
 
@@ -13,20 +16,45 @@ const props = defineProps({
 	}
 })
 
+const listWrapperEl = ref(null)
+
+const handleWheel = (event) => {
+	if (Math.abs(event.deltaX) > Math.abs(event.deltaY)) return
+	
+	event.preventDefault()
+
+	listWrapperEl.value.wrapper.scrollBy({
+		left: event.deltaY < 0 ? -10 : 10,
+	})
+}
+
+onBeforeUnmount(() => {
+	listWrapperEl.value.wrapper.removeEventListener('wheel', handleWheel)
+})
+
+onMounted(() => {
+	if (props.direction === 'row') {
+		listWrapperEl.value.wrapper.addEventListener('wheel', handleWheel)
+	}
+});
+
 </script>
 
 <template>
 	<Flex
+		ref="listWrapperEl"
 		:direction="direction"
 		align="center"
-		gap="20"
 		:class="[$style.wrapper, direction === 'column' && $style.columns, direction === 'row' && $style.row]"
 	>
-		<TransferItem
-			v-for="t in transfers"
-			:transfer="t"
-			:removable="t.removable"
-		/>
+		<TransitionGroup name="navigation" tag="div" :class="direction === 'row' && $style.items_row" >
+			<TransferItem
+				v-for="t in transfers"
+				:key="t.tezosOperation?.hash || t.etherlinkOperation?.hash"
+				:transfer="t"
+				:removable="t.removable"
+			/>
+		</TransitionGroup>
 	</Flex>
 </template>
 
@@ -35,9 +63,15 @@ const props = defineProps({
 	width: 100%;
 }
 
-/* .row {
-	
-} */
+::-webkit-scrollbar {
+  height: 3px;
+}
+
+.items_row {
+	width: 100%;
+	display: flex;
+	flex-direction: row;
+}
 
 .row {
 	width: 100%;
@@ -50,23 +84,10 @@ const props = defineProps({
 }
 
 .row_transfer {
-	/* display: inline-block; */
 	height: 200px;
 }
 
 .columns {
 	height: calc(100vh - 70px - 48px);
 }
-
-/* @keyframes slidein {
-	from {
-		transform: translateX(50px);
-		opacity: 0;
-	}
-
-	to {
-		transform: 0;
-		opacity: 1;
-	}
-} */
 </style>

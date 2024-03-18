@@ -13,7 +13,7 @@ $grayscale: (
 :root {
 	/* Main */
 	--app-background: #171717;
-	--card-background: #111111;;
+	--card-background: #141414;;
 	--tooltip-background: #202020;
 
 	/* Text */
@@ -147,11 +147,12 @@ body {
 
 .navigation-enter-active,
 .navigation-leave-active {
-	transition: all 0.1s ease;
+	transition: all 0.3s ease;
 }
 
 .navigation-enter-from,
 .navigation-leave-to {
 	opacity: 0;
 	transform: translateY(-10px);
+	transform: translateX(30px);
 }

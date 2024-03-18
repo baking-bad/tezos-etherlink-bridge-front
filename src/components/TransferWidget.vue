@@ -186,7 +186,7 @@ watch(
 </script>
 
 <template>
-	<Flex align="center" justify="center" direction="column" gap="20" :class="$style.wrapper">
+	<Flex align="center" justify="center" direction="column" gap="40" :class="$style.wrapper">
 		<Flex direction="column" gap="20" :class="$style.operation_window">
 			<Flex direction="column" gap="4" :class="$style.inputs">
 				<Flex @click="fromInputEl.focus()" direction="column" gap="16" :class="$style.from">

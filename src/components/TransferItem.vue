@@ -185,15 +185,16 @@ const handleRemove = () => {
 <style module>
 .transfer {
 	max-width: 500px;
-	width: 500px;
+	min-width: 500px;
 
 	border-radius: 16px;
-	background: linear-gradient(rgba(0, 0, 0, 40%), rgba(0, 0, 0, 0%));
-	box-shadow: 0 0 0 2px var(--op-5);
+	/* background: linear-gradient(rgba(0, 0, 0, 40%), rgba(0, 0, 0, 0%)); */
+	background: var(--card-background);
+	box-shadow: inset 0 0 0 2px var(--op-5);
 
 	padding: 16px;
 
-	/* margin: 16px 0; */
+	margin: 16px;
 
 	color: var(--txt-secondary);
 
