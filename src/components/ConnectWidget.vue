@@ -2,11 +2,10 @@
 /** Vendor */
 import { computed } from "vue"
 
-/** UI */
+/** Components */
 import Tooltip from "@/components/ui/Tooltip.vue"
-
-/** Services */
-import { midHash, shortHash } from "@/services/utils";
+import ExplorerLink from "@/components/ExplorerLink.vue";
+import CopyButton from "@/components/ui/CopyButton.vue";
 
 /** Constants */
 import { ConnectionStatus } from "@/services/constants/wallets"
@@ -15,8 +14,8 @@ import { ConnectionStatus } from "@/services/constants/wallets"
 import { useTezos } from "@/composables/tezos.js"
 import { useEtherlink } from "@/composables/etherlink.js"
 
-const { address: tezosAddress, status: tezosStatus, connect: connectTezos } = useTezos()
-const { address: etherlinkAddress, status: etherlinkStatus, connect: connectEtherlink } = useEtherlink()
+const { address: tezosAddress, status: tezosStatus, connect: connectTezos, disconnect: disconnectTezos } = useTezos()
+const { address: etherlinkAddress, status: etherlinkStatus, connect: connectEtherlink, disconnect: disconnectEtherlink } = useEtherlink()
 
 const isReady = computed(() => tezosStatus.value === ConnectionStatus.CONNECTED && etherlinkStatus.value === ConnectionStatus.CONNECTED)
 
@@ -27,6 +26,15 @@ const handleConnectTezos = async () => {
 const handleConnectEtherlink = async () => {
 	connectEtherlink()
 }
+
+const handleDisconnectTezos = async () => {
+	disconnectTezos()
+}
+
+const handleDisconnectEtherlink = async () => {
+	disconnectEtherlink()
+}
+
 </script>
 
 <template>
@@ -118,21 +126,22 @@ const handleConnectEtherlink = async () => {
 							<Text size="13" weight="semibold" color="primary">Connect</Text>
 						</Flex>
 					</Flex>
-					<Flex v-else justify="between" align="center" :class="[$style.task, $style.done]">
-						<Flex direction="column" gap="6">
-							<Flex align="center" gap="8">
-								<Icon name="check-circle" size="14" color="green" />
-								<Text size="14" color="primary">Tezos is ready </Text>
-							</Flex>
-
-							<Text size="13" color="tertiary" :class="$style.description">
-								{{ shortHash(tezosAddress) }}
-							</Text>
+					<Flex v-else direction="column" :class="[$style.task, $style.done]" gap="6">
+						<Flex align="center" gap="8">
+							<Icon name="check-circle" size="14" color="green" />
+							<Text size="14" color="primary">Tezos is ready </Text>
 						</Flex>
 
-						<Flex align="center" gap="4">
-							<Icon name="check-circle" size="14" color="green" />
-							<Text size="13" weight="semibold" color="secondary">Ready</Text>
+						<Flex justify="between">
+							<Flex align="center" gap="6">
+								<ExplorerLink :hash="tezosAddress" network="tezos" type="address" short :class="[$style.description, $style.link]"/>
+								<CopyButton :text="tezosAddress" size="11" />
+							</Flex>
+
+							<Flex @click="handleDisconnectTezos" align="center" gap="6" :class="$style.disconnect">
+								<Text size="13">Disconnect</Text>
+								<Icon name="log-out" size="13" />
+							</Flex>
 						</Flex>
 					</Flex>
 				</transition>
@@ -160,21 +169,22 @@ const handleConnectEtherlink = async () => {
 							<Text size="13" weight="semibold" color="primary">Connect</Text>
 						</Flex>
 					</Flex>
-					<Flex v-else justify="between" align="center" :class="[$style.task, $style.done]">
-						<Flex direction="column" gap="6">
-							<Flex align="center" gap="8">
-								<Icon name="check-circle" size="14" color="green" />
-								<Text size="14" color="primary">Etherlink is ready </Text>
-							</Flex>
-
-							<Text size="13" color="tertiary" :class="$style.description">
-								{{ shortHash(etherlinkAddress) }}
-							</Text>
+					<Flex v-else direction="column" :class="[$style.task, $style.done]" gap="6">
+						<Flex align="center" gap="8">
+							<Icon name="check-circle" size="14" color="green" />
+							<Text size="14" color="primary">Etherlink is ready </Text>
 						</Flex>
 
-						<Flex align="center" gap="4">
-							<Icon name="check-circle" size="14" color="green" />
-							<Text size="13" weight="semibold" color="secondary">Ready</Text>
+						<Flex justify="between">
+							<Flex align="center" gap="6">
+								<ExplorerLink :hash="etherlinkAddress" network="etherlink" type="address" short :class="[$style.description, $style.link]"/>
+								<CopyButton :text="etherlinkAddress" size="11" />
+							</Flex>
+
+							<Flex @click="handleDisconnectEtherlink" align="center" gap="6" :class="$style.disconnect">
+								<Text size="13">Disconnect</Text>
+								<Icon name="log-out" size="13" />
+							</Flex>
 						</Flex>
 					</Flex>
 				</transition>
@@ -272,7 +282,7 @@ const handleConnectEtherlink = async () => {
 	background: var(--op-5);
 	cursor: pointer;
 
-	padding: 10px 16px 10px 10px;
+	padding: 10px 10px 10px 10px;
 
 	transition: all 0.1s ease;
 
@@ -281,8 +291,24 @@ const handleConnectEtherlink = async () => {
 	}
 
 	&.done {
-		pointer-events: none;
+		cursor: auto;
 	}
+}
+
+.link {
+	color: var(--txt-tertiary);
+}
+
+.disconnect {
+	color: var(--txt-tertiary);
+	fill: var(--txt-tertiary);
+	cursor: pointer;
+}
+
+.disconnect:hover {
+	fill: var(--red);
+	color: var(--red);
+	opacity: 0.8;
 }
 
 .description {

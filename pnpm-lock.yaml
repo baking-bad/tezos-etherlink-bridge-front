@@ -44,6 +44,9 @@ dependencies:
   sass-loader:
     specifier: ^14.1.0
     version: 14.1.1(sass@1.71.1)
+  uuid:
+    specifier: 9.0.1
+    version: 9.0.1
   vue:
     specifier: ^3.4.15
     version: 3.4.21(typescript@5.4.2)
@@ -4349,6 +4352,11 @@ packages:
       is-generator-function: 1.0.10
       is-typed-array: 1.1.13
       which-typed-array: 1.1.15
+
+  /uuid@9.0.1:
+    resolution: {integrity: sha512-b+1eJOlsR9K8HJpow9Ok3fiWOWSIcIzXodvv0rQjVoOVNpWMpxf1wZNpt4y9h10odCNrqnYp1OBzRktckBe3sA==}
+    hasBin: true
+    dev: false
 
   /valtio@1.11.2(react@18.2.0):
     resolution: {integrity: sha512-1XfIxnUXzyswPAPXo1P3Pdx2mq/pIqZICkWN60Hby0d9Iqb+MEIpqgYVlbflvHdrp2YR/q3jyKWRPJJ100yxaw==}

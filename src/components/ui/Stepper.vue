@@ -103,11 +103,14 @@ onMounted(() => {
 
 .status {
 	border-radius: 50%;
-	cursor: pointer;
 
 	background-color: var(--txt-support);
 
 	animation: skeleton 1.8s ease infinite;
+}
+
+.status:hover {
+	transform: scale(1.15);
 }
 
 .divider_dot {

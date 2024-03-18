@@ -1,15 +1,13 @@
 /** Vendor */
 import { computed } from "vue"
-import { useWeb3Modal, useWeb3ModalAccount } from "@web3modal/ethers/vue"
-
-/** Services */
-import EtherlinkService from "@/services/etherlink"
+import { useWeb3Modal, useWeb3ModalAccount, useDisconnect } from "@web3modal/ethers/vue"
 
 /** Constants */
 import { ConnectionStatus } from "@/services/constants/wallets"
 
 export const useEtherlink = () => {
 	const { address, isConnected } = useWeb3ModalAccount()
+	const { disconnect: disconnectWallet } = useDisconnect()
 
 	const status = computed(() => (isConnected.value ? ConnectionStatus.CONNECTED : ConnectionStatus.NOT_CONNECTED))
 
@@ -24,9 +22,9 @@ export const useEtherlink = () => {
 
 	const disconnect = () => {
 		address.value = null
-		status.value = ConnectionStatus.NOT_CONNECTED
+		isConnected.value = ConnectionStatus.NOT_CONNECTED
 
-		return TezosService.instances.beacon.client.disconnect()
+		disconnectWallet()
 	}
 
 	return { address, status, connect, disconnect }
