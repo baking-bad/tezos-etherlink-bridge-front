@@ -8,7 +8,9 @@ import { ConnectionStatus } from "@/services/constants/wallets"
 
 /** Components */
 import TokenSelector from "@/components/TokenSelector.vue"
-import TransferItem from "@/components/TransferItem.vue";
+import TransfersList from "@/components/TransfersList.vue"
+import Spinner from "@/components/ui/Spinner.vue";
+
 
 /** Composables */
 import { useTezos } from "@/composables/tezos.js"
@@ -32,7 +34,7 @@ const { isPairedToken, isSameToken, getPairedToken } = tokensStore
 tokensStore.mergeBalances(tokenBridge)
 
 const transfersStore = useTransfersStore()
-const { lastTransfer } = storeToRefs(transfersStore)
+const { recentTransfers } = storeToRefs(transfersStore)
 tokenBridge.addEventListener('tokenTransferUpdated', transfersStore.updateTransfer)
 
 const reverseDirection = ref(false)
@@ -134,8 +136,11 @@ onMounted(() => {
 	fromInputEl.value.focus()
 })
 
+const isLoading = ref(false)
 
 async function testTransfer() {
+	isLoading.value = true
+
 	const bigIntSum = BigInt(
 		Number(
 			fromAmount.value.replaceAll(",", "")
@@ -147,11 +152,23 @@ async function testTransfer() {
 		...(_address && {address: _address})
 	}
 
-	let transfer = await fromChain.value.exchange(bigIntSum, _token)
-	
-	if (transfer.tokenTransfer) {
-		transfersStore.addLastTransfer(transfer.tokenTransfer)
-	}
+	fromChain.value.exchange(bigIntSum, _token)
+    .then(transfer => {
+        if (transfer.tokenTransfer) {
+            transfersStore.addTransfers([transfer.tokenTransfer], 'recent')
+        }
+    })
+    .catch(e => {
+		if (e.title === 'Aborted') {
+			console.log(e.description);
+		} else {
+			console.error(e);
+		}
+        // To do: catch for walletConnect abortion and unsupporting native token witdrawing
+    })
+    .finally(() => {
+        isLoading.value = false
+    });
 }
 
 watch(
@@ -255,14 +272,20 @@ watch(
 					</Flex>
 				</RouterLink>
 
-				<Flex v-else @click="testTransfer" align="center" justify="center" :class="[$style.button, !(fromAmount > 0) && $style.disabled]">
-					<Text v-if="fromAmount > 0" size="16" color="black"> {{ fromChain.name === 'tezos' ? 'Deposit' : 'Withdraw' }}</Text>
+				<Flex v-else @click="testTransfer" align="center" justify="center" :class="[$style.button, (!(fromAmount > 0) || isLoading) && $style.disabled]">
+					<Flex v-if="isLoading" align="center" gap="6">
+						<Spinner size="14" />
+						<Text size="16" color="black">Waiting for transfer creation..</Text>
+					</Flex>
+
+					<Text v-else-if="fromAmount > 0" size="16" color="black"> {{ fromChain.name === 'tezos' ? 'Deposit' : 'Withdraw' }}</Text>
+
 					<Text v-else size="16" color="black"> Enter amount to {{ fromChain.name === 'tezos' ? 'deposit' : 'withdraw' }} </Text>
 				</Flex>
 			</Flex>
 		</Flex>
 
-		<TransferItem v-if="lastTransfer.source" :transfer="lastTransfer" />
+		<TransfersList :transfers="recentTransfers" direction="row" />
 	</Flex>
 </template>
 
@@ -398,6 +421,8 @@ watch(
 	cursor: pointer;
 
 	margin: 0 12px;
+
+	transition: transform 0.1s ease;
 }
 
 .button:hover {
@@ -405,9 +430,14 @@ watch(
 	opacity: 1;
 }
 
+.button:active {
+	transform: scale(0.985);
+}
+
 .disabled {
 	opacity: 0.4;
 	cursor: auto;
+	pointer-events: none;
 }
 
 .disabled:hover {

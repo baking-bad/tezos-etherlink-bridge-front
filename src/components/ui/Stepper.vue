@@ -109,6 +109,10 @@ onMounted(() => {
 	animation: skeleton 1.8s ease infinite;
 }
 
+.status:hover {
+	transform: scale(1.15);
+}
+
 .divider_dot {
 	border-radius: 50%;
 

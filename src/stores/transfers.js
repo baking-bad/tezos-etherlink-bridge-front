@@ -8,45 +8,70 @@ import { getSteps } from "@/services/utils";
 import TokenBridgeService from "@/services/tokenBridge"
 
 export const useTransfersStore = defineStore("transfers", () => {
-	const transfers = ref([])
-	const lastTransfer = ref({})
+	const allTransfers = ref([])
+	const recentTransfers = ref([])
 
 	const tokenBridge = computed(() => TokenBridgeService.instances.tokenBridge)
 
-	function addTransfers(newTransfers) {
+	function addTransfers(newTransfers, store) {
 		newTransfers.forEach(t => {
-			// t.id = uuidv4()
+			t.id = uuidv4()
 			t.steps = getSteps(t)
+			t.removable = store === 'recent'
+			checkSubscribe(t)
 		})
 
-		transfers.value.push(...newTransfers)
-	}
-
-	function addLastTransfer(newTransfer) {
-		// newTransfer.id = uuidv4()
-		newTransfer.steps = getSteps(newTransfer)
-
-		lastTransfer.value = newTransfer
-		tokenBridge.value.stream.subscribeToTokenTransfer(newTransfer)
-	}
-
-	function updateTransfer(transfer) {
-		if (compareTransfers(lastTransfer.value, transfer)) {
-			let steps = getSteps(transfer)
-			lastTransfer.value = {
-				...transfer,
-				steps: steps,
-			}
-
-			if (steps[steps.length - 1].passed) {
-				tokenBridge.stream.unsubscribeFromTokenTransfer(transfer)
-			}
+		if (store === 'recent') {
+			recentTransfers.value.unshift(...newTransfers)
+		} else if (store === 'all') {
+			allTransfers.value.push(...newTransfers)
 		}
 	}
 
-	function compareTransfers(a, b) {
-		return a.tezosOperation?.hash === b.tezosOperation?.hash || a.etherlinkOperation?.hash === b.etherlinkOperation?.hash
+	function updateTransfer(transfer) {
+		let foundTransfer = searchTransfer(transfer)
+		if (foundTransfer) {
+			transfer.steps = getSteps(transfer)
+			Object.assign(foundTransfer, transfer)
+			checkSubscribe(foundTransfer)
+		} else {
+			// To do: add notification
+		}
 	}
 
-	return { lastTransfer, transfers, addLastTransfer, addTransfers, updateTransfer }
+	function searchTransfer(transfer) {
+		let res = recentTransfers.value.find(t => {
+			return t.tezosOperation?.hash === transfer.tezosOperation?.hash || t.etherlinkOperation?.hash === transfer.etherlinkOperation?.hash
+		})
+		if (!res) {
+			res = allTransfers.value.find(t => {
+				return t.tezosOperation?.hash === transfer.tezosOperation?.hash || t.etherlinkOperation?.hash === transfer.etherlinkOperation?.hash
+			})
+		}
+		
+		return res
+	}
+
+	function checkSubscribe(transfer) {
+		let lastStep = transfer.steps[transfer.steps?.length - 1]
+		if (!lastStep.passed && !transfer.subscribed) {
+			tokenBridge.value.stream.subscribeToTokenTransfer(transfer)
+			transfer.subscribed = true
+		} else if (lastStep.passed && transfer.subscribed) {
+			tokenBridge.value.stream.unsubscribeFromTokenTransfer(transfer)
+			transfer.subscribed = false
+		}
+	}
+
+	function removeRecentTransfer(transfer) {
+		recentTransfers.value = recentTransfers.value.filter((t) => t.id !== transfer.id)
+	}
+
+	function clearStore() {
+		tokenBridge.value.stream.unsubscribeFromAllSubscriptions()
+		allTransfers.value = []
+		recentTransfers.value = []
+	}
+
+	return { recentTransfers, allTransfers, addTransfers, clearStore, removeRecentTransfer, updateTransfer }
 })
