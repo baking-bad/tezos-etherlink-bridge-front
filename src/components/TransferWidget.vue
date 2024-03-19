@@ -18,7 +18,7 @@ import { useTezos } from "@/composables/tezos.js"
 import { useEtherlink } from "@/composables/etherlink.js"
 
 /** Services */
-import { capitilize, comma, prettyNumber, purgeNumber } from "@/services/utils"
+import { capitilize, prettyNumber, purgeNumber } from "@/services/utils"
 import TokenBridgeService from "@/services/tokenBridge"
 const { tokenBridge } = TokenBridgeService.instances
 
@@ -86,8 +86,9 @@ function calculateBigInt(stringAmount, decimals) {
 }
 const USDAmount = ref("0")
 watch(
-	() => [amount.value, fromToken?.value?.decimals],
-	([newAmount = "", newDecimals = 12]) => {
+	() => [amount.value, fromToken?.value?.decimals, toToken?.value?.decimals],
+	([newAmount = "", newFromDecimals = 12, newToDecimals = 12]) => {
+		const newDecimals = Math.min(newFromDecimals, newToDecimals)
 		if (!newAmount.length) {
 			amount.value = ""
 			bigIntAmount.value = 0n
