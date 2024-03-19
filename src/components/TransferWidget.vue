@@ -170,6 +170,10 @@ watch(
 		}
 	}
 )
+
+function setAmount(val) {
+	amount.value = val
+}
 </script>
 
 <template>
@@ -189,7 +193,7 @@ watch(
 					<Flex justify="between">
 						<Flex direction="column" gap="8">
 							<input ref="fromInputEl" v-model="amount" placeholder="0.00" :class="$style.input" />
-							<Text size="14" color="tertiary">${{ USDAmount }}</Text>
+<!--							<Text size="14" color="tertiary">${{ USDAmount }}</Text>-->
 						</Flex>
 
 						<Flex direction="column" align="end" gap="8">
@@ -200,7 +204,14 @@ watch(
 
 							<Flex align="center" gap="4">
 								<Icon name="banknote" size="14" color="tertiary" />
-								<Text size="12" weight="semibold" color="tertiary">{{ fromToken.prettyBalance }}</Text>
+								<Text
+									size="12"
+									weight="semibold"
+									color="tertiary"
+									:class="[$style.cursor_pointer]"
+									@click="setAmount(fromToken.prettyBalance)">
+									{{ fromToken.prettyBalance }}
+								</Text>
 							</Flex>
 						</Flex>
 					</Flex>
@@ -223,7 +234,7 @@ watch(
 					<Flex justify="between">
 						<Flex direction="column" gap="8">
 							<input ref="toInputEl" v-model="amount" placeholder="0.00" :class="$style.input" />
-							<Text size="14" color="tertiary">${{ USDAmount }}</Text>
+<!--							<Text size="14" color="tertiary">${{ USDAmount }}</Text>-->
 						</Flex>
 
 						<Flex direction="column" align="end" gap="8">
@@ -234,23 +245,31 @@ watch(
 
 							<Flex align="center" gap="4">
 								<Icon name="banknote" size="14" color="tertiary" />
-								<Text size="12" weight="semibold" color="tertiary">{{ toToken.prettyBalance }}</Text>
+								<Text
+									size="12"
+									weight="semibold"
+									color="tertiary"
+									:class="[$style.cursor_pointer]"
+									@click="setAmount(toToken.prettyBalance)"
+								>
+									{{ toToken.prettyBalance }}
+								</Text>
 							</Flex>
 						</Flex>
 					</Flex>
 				</Flex>
 			</Flex>
 
-			<Flex direction="column" gap="12" :class="$style.metadata">
-				<Flex align="center" justify="between">
-					<Text size="13" color="tertiary">Estimated Time</Text>
-					<Text size="13" color="secondary">15 min</Text>
-				</Flex>
-				<Flex align="center" justify="between">
-					<Text size="13" color="tertiary">Estimated Gas Fee</Text>
-					<Text size="13" color="secondary">$2.62</Text>
-				</Flex>
-			</Flex>
+<!--			<Flex direction="column" gap="12" :class="$style.metadata">-->
+<!--				<Flex align="center" justify="between">-->
+<!--					<Text size="13" color="tertiary">Estimated Time</Text>-->
+<!--					<Text size="13" color="secondary">15 min</Text>-->
+<!--				</Flex>-->
+<!--				<Flex align="center" justify="between">-->
+<!--					<Text size="13" color="tertiary">Estimated Gas Fee</Text>-->
+<!--					<Text size="13" color="secondary">$2.62</Text>-->
+<!--				</Flex>-->
+<!--			</Flex>-->
 
 			<Flex>
 				<RouterLink v-if="!isWalletsConnected" to="/config" :class="[$style.button, $style.connect_wallets]">
@@ -439,5 +458,9 @@ watch(
 
 .connect_wallets {
 	background: var(--yellow);
+}
+
+.cursor_pointer {
+	cursor: pointer;
 }
 </style>
