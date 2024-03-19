@@ -47,7 +47,13 @@ onMounted(() => {
 		align="center"
 		:class="[$style.wrapper, direction === 'column' && $style.columns, direction === 'row' && $style.row]"
 	>
-		<TransitionGroup name="navigation" tag="div" :class="direction === 'row' && $style.items_row" >
+		<TransferItem
+			v-if="direction === 'column'"
+			v-for="t in transfers"
+			:transfer="t"
+		/>
+
+		<TransitionGroup v-else name="navigation" tag="div" :class="$style.items_row" >
 			<TransferItem
 				v-for="t in transfers"
 				:key="t.tezosOperation?.hash || t.etherlinkOperation?.hash"

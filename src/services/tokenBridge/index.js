@@ -22,7 +22,7 @@ const instances = {
 	tokenBridge: null
 }
 
-const init = () => {
+const init = async () => {
 	instances.tokenBridge = new TokenBridge({
 		tezos: {
 			toolkit: tezos.instances.toolkit,

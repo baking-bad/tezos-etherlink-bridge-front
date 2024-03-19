@@ -24,7 +24,7 @@ import router from "./router"
  */
 TezosWallet.init()
 EtherlinkWallet.init()
-TokenBridgeService.init()
+await TokenBridgeService.init()
 /**
  * Vue
  */

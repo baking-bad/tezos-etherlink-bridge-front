@@ -11,7 +11,8 @@ export const useTransfersStore = defineStore("transfers", () => {
 	const allTransfers = ref([])
 	const recentTransfers = ref([])
 
-	const tokenBridge = computed(() => TokenBridgeService.instances.tokenBridge)
+	const tokenBridge = ref(TokenBridgeService.instances.tokenBridge)
+	tokenBridge.value.addEventListener('tokenTransferUpdated', updateTransfer)
 
 	function addTransfers(newTransfers, store) {
 		newTransfers.forEach(t => {
@@ -29,35 +30,38 @@ export const useTransfersStore = defineStore("transfers", () => {
 	}
 
 	function updateTransfer(transfer) {
-		let foundTransfer = searchTransfer(transfer)
-		if (foundTransfer) {
+		console.log('update', transfer);
+		let foundTransfers = searchTransfers(transfer)
+		console.log('found', foundTransfers);
+		if (foundTransfers.length > 0) {
 			transfer.steps = getSteps(transfer)
-			Object.assign(foundTransfer, transfer)
-			checkSubscribe(foundTransfer)
+			foundTransfers.forEach(t => {
+				Object.assign(t, transfer)
+				checkSubscribe(t)
+			})
 		} else {
 			// To do: add notification
 		}
+
 	}
 
-	function searchTransfer(transfer) {
-		let res = recentTransfers.value.find(t => {
-			return t.tezosOperation?.hash === transfer.tezosOperation?.hash || t.etherlinkOperation?.hash === transfer.etherlinkOperation?.hash
-		})
-		if (!res) {
-			res = allTransfers.value.find(t => {
-				return t.tezosOperation?.hash === transfer.tezosOperation?.hash || t.etherlinkOperation?.hash === transfer.etherlinkOperation?.hash
-			})
-		}
+	function searchTransfers(transfer) {
+		console.log('start search', transfer);
+		let res = [...recentTransfers.value, ...allTransfers.value]
 		
-		return res
+		return res.filter(t => {
+			return t.tezosOperation ? t.tezosOperation.hash === transfer.tezosOperation.hash : t.etherlinkOperation.hash === transfer.etherlinkOperation.hash
+		})
 	}
 
 	function checkSubscribe(transfer) {
 		let lastStep = transfer.steps[transfer.steps?.length - 1]
 		if (!lastStep.passed && !transfer.subscribed) {
+			console.log('subscribe', transfer);
 			tokenBridge.value.stream.subscribeToTokenTransfer(transfer)
 			transfer.subscribed = true
 		} else if (lastStep.passed && transfer.subscribed) {
+			console.log('unsubscribe', transfer);
 			tokenBridge.value.stream.unsubscribeFromTokenTransfer(transfer)
 			transfer.subscribed = false
 		}

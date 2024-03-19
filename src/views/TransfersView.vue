@@ -1,17 +1,26 @@
 <script setup>
 /** Vendor */
-import { onBeforeUnmount, onMounted, ref } from "vue"
+import { computed, onBeforeUnmount, onMounted, ref } from "vue"
 import { storeToRefs } from "pinia"
 
 /** Components */
+import { Dropdown, DropdownItem } from "@/components/ui/Dropdown"
 import TransfersList from "@/components/TransfersList.vue"
-import Spinner from "@/components/ui/Spinner.vue";
+import Spinner from "@/components/ui/Spinner.vue"
 
 /** Services */
 import TokenBridgeService from "@/services/tokenBridge"
+import { capitilize, getStatuses } from "@/services/utils";
+
+/** Composables */
+import { useTezos } from "@/composables/tezos.js"
+import { useEtherlink } from "@/composables/etherlink.js"
+
+const { address: tezosAddress, status: tezosStatus, connect: connectTezos, disconnect: disconnectTezos } = useTezos()
+const { address: etherlinkAddress, status: etherlinkStatus, connect: connectEtherlink, disconnect: disconnectEtherlink } = useEtherlink()
 
 /** Store */
-import { useTransfersStore } from "@/stores/transfers.js";
+import { useTransfersStore } from "@/stores/transfers.js"
 const transfersStore = useTransfersStore()
 const { allTransfers } = storeToRefs(transfersStore)
 
@@ -29,10 +38,35 @@ const isLoading = ref(false)
 const offset = ref(0)
 const limit = ref(20)
 
+const wallets = ref([])
+const fetchWallets = () => {
+	tokenBridge.getTezosConnectedAddress()
+	.then((res) => {
+		if (res) wallets.value.push(res)
+	}).catch(e => {})
+
+	tokenBridge.getEtherlinkConnectedAddress()
+	.then((res) => {
+		if (res) wallets.value.push(res)
+	}).catch(e => {})
+}
+
 const loadTransfers = () => {
 	if (isLoading.value) return
 
 	isLoading.value = true
+
+	if (wallets.value.length === 0) {
+		fetchWallets()
+	}
+
+	tokenBridge.data.getAccountTokenTransfers(wallets.value, offset.value, limit.value)
+	.then((res) => {
+		transfersStore.addTransfers(res, 'all')
+		offset.value += limit.value
+	}).finally(() => {
+		isLoading.value = false
+	})
 
 	// setTimeout(() => {
 	// 	Promise.all( [
@@ -48,22 +82,37 @@ const loadTransfers = () => {
 	// })
 		
 	// }, 5000);
-
-	Promise.all( [
-		tokenBridge.getTezosConnectedAddress(),
-		tokenBridge.getEtherlinkConnectedAddress()
-		]).then((res) => {
-			return tokenBridge.data.getAccountTokenTransfers(res, offset.value, limit.value)
-		}).then((res) => {
-			transfersStore.addTransfers(res, 'all')
-			offset.value += limit.value
-		}).finally(() => {
-			isLoading.value = false
-	})
+	
+	// Promise.all([
+	// 	tokenBridge.getTezosConnectedAddress(),
+	// 	tokenBridge.getEtherlinkConnectedAddress()
+	// 	]).then((res) => {
+	// 		return tokenBridge.data.getAccountTokenTransfers(res, offset.value, limit.value)
+	// 	}).then((res) => {
+	// 		transfersStore.addTransfers(res, 'all')
+	// 		offset.value += limit.value
+	// 	}).finally(() => {
+	// 		isLoading.value = false
+	// })
 
 }
-
+// await fetchWallets()
 loadTransfers()
+
+/** Filters */
+const selectedState = ref('all states')
+const transferStates = ref(getStatuses())
+transferStates.value.unshift(selectedState.value)
+const handleStatusSelect = (status) => {
+	selectedState.value = status
+}
+
+const selectedKind = ref('all transfers')
+const transferKinds = ['all transfers', 'deposits', 'withdrawals']
+
+const handleKindSelect = (kind) => {
+	selectedKind.value = kind
+}
 
 onMounted(() => {
 	transfersListEl.value.wrapper.addEventListener('scroll', handleScroll)
@@ -78,14 +127,55 @@ onBeforeUnmount(() => {
 <template>
 	<Flex direction="column" align="center" ref="transfersListEl" :class="$style.wrapper">
 		<Flex align="center" justify="between" wide :class="$style.filters">
-			<Text>Filter1</Text>
+			<Dropdown>
+				<template #trigger="{isOpen}">
+					<Flex align="center" gap="6" :class="$style.selector">
+						<Text size="16" color="secondary"> {{ capitilize(selectedKind) }} </Text>
+						<Icon
+							name="chevron-right"
+							size="14"
+							color="tertiary"
+							:style="{
+										transform: `rotate(${!isOpen ? '90deg' : '-90deg'})`,
+										transition: 'all 200ms ease',
+									}"
+						/>
+					</Flex>
+				</template>
+				<template #popup>
+					<DropdownItem v-for="kind in transferKinds.filter(k => k !== selectedKind)" @click="handleKindSelect(kind)">
+						<Text size="13" color="secondary"> {{ capitilize(kind) }} </Text>
+					</DropdownItem>
+				</template>
+			</Dropdown>
 
-			<Text>Filter2</Text>
+
+			<Dropdown>
+				<template #trigger="{isOpen}">
+					<Flex align="center" gap="6" :class="$style.selector">
+						<Text size="16" color="secondary"> {{ capitilize(selectedState) }} </Text>
+						<Icon
+							name="chevron-right"
+							size="14"
+							color="tertiary"
+							:style="{
+										transform: `rotate(${!isOpen ? '90deg' : '-90deg'})`,
+										transition: 'all 200ms ease',
+									}"
+						/>
+					</Flex>
+				</template>
+				<template #popup>
+					<DropdownItem v-for="status in transferStates.filter(s => s !== selectedState)" @click="handleStatusSelect(status)">
+						<Text size="13" color="secondary"> {{ capitilize(status) }} </Text>
+					</DropdownItem>
+				</template>
+			</Dropdown>
 		</Flex>
 		<Flex v-if="isLoading" :class="$style.overlay">
 			<Flex align="center" gap="10" :class="$style.spinner">
 				<Spinner size="20" />
-				<Text size="20" weight="600" color="secondary">Loading transfers..</Text>
+				<Text size="20" weight="800" color="secondary">Loading transfers..</Text>
 				<!-- To do (?): for looong loading -->
 			</Flex>
 		</Flex>
