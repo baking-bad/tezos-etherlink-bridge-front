@@ -1,21 +1,20 @@
 <script setup>
 /** Vendor */
-import { DateTime } from "luxon"
 import { computed, ref } from "vue"
 import { storeToRefs } from "pinia"
 
 /** Components */
 import ExplorerLink from "@/components/ExplorerLink.vue"
-import Tooltip from "@/components/ui/Tooltip.vue"
+import RelativeDateTime from "@/components/ui/RelativeDateTime.vue"
 import Stepper from "@/components/ui/Stepper.vue"
-import Spinner from "@/components/ui/Spinner.vue";
+import Spinner from "@/components/ui/Spinner.vue"
 
 /** Services */
 import TokenBridgeService from "@/services/tokenBridge"
-import { capitilize, getStatus } from "@/services/utils";
+import { capitilize, getStatus, parseTime } from "@/services/utils"
 
 /** Stores */
-import { useTransfersStore } from "@/stores/transfers.js";
+import { useTransfersStore } from "@/stores/transfers.js"
 import { useTokensStore } from "@/stores/tokens.js"
 const tokensStore = useTokensStore()
 const { plainTokens } = storeToRefs(tokensStore)
@@ -56,13 +55,13 @@ const operation = computed(() => {
 	const tezosOperation = {
 		chain: 'tezos',
 		opHash: props.transfer.tezosOperation?.hash,
-		time: props.transfer.tezosOperation?.timestamp,
+		time: parseTime(props.transfer.tezosOperation?.timestamp),
 	}
 
 	const etherlinkOperation = {
 		chain: 'etherlink',
 		opHash: props.transfer.etherlinkOperation?.hash,
-		time: props.transfer.etherlinkOperation?.timestamp,
+		time: parseTime(props.transfer.etherlinkOperation?.timestamp),
 	}
 
 	const sourceOperation = props.transfer.kind === 1 ? etherlinkOperation : tezosOperation
@@ -96,10 +95,21 @@ const statusStyle = computed(() => {
 const finishWithdraw = async () => {
 	isProcessingWithdraw.value = true
 
-	let { tokenTransfer } = await tokenBridge.finishWithdraw(props.transfer)
-	updateTransfer(tokenTransfer)
-
-	isProcessingWithdraw.value = false
+	tokenBridge.finishWithdraw(props.transfer)
+	.then((res) => {
+		console.log('finish', res);
+		updateTransfer(res.tokenTransfer)
+	}).catch(e => {
+		if (e.title === 'Aborted') {
+			console.log(e.description);
+		} else {
+			console.error(e);
+		}
+        // To do: catch for walletConnect abortions
+    }).finally(() => {
+		console.log('finally');
+		// isProcessingWithdraw.value = false
+	})
 }
 
 const handleRemove = () => {
@@ -146,35 +156,26 @@ const handleRemove = () => {
 		<Flex align="center" justify="between">
 			<ExplorerLink :hash="operation.source.opHash" :network="operation.source.chain" type="tx" />
 
-			<ExplorerLink :hash="operation.destination.opHash" :network="operation.destination.chain" type="tx" />
+			<ExplorerLink v-if="operation.destination.opHash" :hash="operation.destination.opHash" :network="operation.destination.chain" type="tx" />
 		</Flex>
 
 		<Flex align="center" justify="between">
-			<Tooltip>
-				<Text size="14" color="secondary"> {{ DateTime.fromISO(operation.source.time).toRelative({ locale: "en", style: "long" }) }} </Text>
+			<RelativeDateTime v-if="operation.source.time" :time="operation.source.time" />
 
-				<template #content>
-					<Text size="14" color="secondary"> {{ DateTime.fromISO(operation.source.time).setLocale("en").toFormat("LLL d, y, tt") }} </Text>
-				</template>
-			</Tooltip>
-
-			<Flex v-if="transfer.status === 200" @click="finishWithdraw" align="center" justify="center" :class="$style.button">
-				<Flex v-if="isProcessingWithdraw" gap="6">
-					<Spinner size="14" />
-					<Text  size="14" color="black">Processing..</Text>
-				</Flex>
-				
-				<Text v-else size="14" color="black">Finish withdraw</Text>
-			</Flex>
-
-			<Tooltip>
-				<Text size="14" color="secondary"> {{ DateTime.fromISO(operation.destination.time).toRelative({ locale: "en", style: "long" }) }} </Text>
-
-				<template #content>
-					<Text size="14" color="secondary"> {{ DateTime.fromISO(operation.destination.time).setLocale("en").toFormat("LLL d, y, tt") }} </Text>
-				</template>
-			</Tooltip>
+			<RelativeDateTime v-if="operation.destination.time" :time="operation.destination.time" />
 		</Flex>
+
+		<Flex justify="center">
+		<Flex v-if="transfer.status === 200" @click="finishWithdraw" align="center" justify="center" :class="[$style.button, isProcessingWithdraw && $style.disabled]" wide>
+			<Flex v-if="isProcessingWithdraw" gap="6">
+				<Spinner size="14" />
+				<Text size="16" color="black">Processing..</Text>
+			</Flex>
+			
+			<Text v-else size="16" color="black">Finish withdraw</Text>
+		</Flex>
+		</Flex>
+
 
 		<!-- <Flex>
 			<Text>{{ tokenWithAmount }} from {{ transfer.source }} to {{ transfer.receiver }}</Text>
@@ -185,15 +186,15 @@ const handleRemove = () => {
 <style module>
 .transfer {
 	max-width: 500px;
-	width: 500px;
+	min-width: 500px;
 
 	border-radius: 16px;
-	background: linear-gradient(rgba(0, 0, 0, 40%), rgba(0, 0, 0, 0%));
-	box-shadow: 0 0 0 2px var(--op-5);
+	background: var(--card-background);
+	box-shadow: inset 0 0 0 2px var(--op-5);
 
-	padding: 16px;
+	padding: 16px 16px 12px 16px;
 
-	/* margin: 16px 0; */
+	margin: 16px;
 
 	color: var(--txt-secondary);
 
@@ -227,19 +228,32 @@ const handleRemove = () => {
 }
 
 .button {
-	width: 200px;
-	height: 20px;
+	width: 100%;
+	height: 32px;
 
 	border-radius: 8px;
 	background: var(--green);
 	opacity: 0.85;
 	cursor: pointer;
 
-	margin: 6px 0px;
+	margin-top: 6px;
+	margin-bottom: 4px;
+
+	transition: transform 0.1s ease;
 }
 
 .button:hover {
 	box-shadow: 0 0 0 2px var(--op-5);
 	opacity: 1;
+}
+
+.button:active {
+	transform: scale(0.985);
+}
+
+.disabled {
+	opacity: 0.4;
+	cursor: auto;
+	pointer-events: none;
 }
 </style>

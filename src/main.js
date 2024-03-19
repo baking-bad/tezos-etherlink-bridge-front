@@ -25,16 +25,18 @@ import router from "./router"
 TezosWallet.init()
 EtherlinkWallet.init()
 TokenBridgeService.init()
-/**
- * Vue
- */
-const app = createApp(App)
+.then(() => {
+    /**
+     * Vue
+     */
+    const app = createApp(App)
 
-app.use(createPinia())
-app.use(router)
+    app.use(createPinia())
+    app.use(router)
 
-app.component("Flex", Flex)
-app.component("Icon", Icon)
-app.component("Text", Text)
+    app.component("Flex", Flex)
+    app.component("Icon", Icon)
+    app.component("Text", Text)
 
-app.mount("#app")
+    app.mount("#app")
+})

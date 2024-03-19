@@ -13,6 +13,10 @@ export const getStatus = (num) => {
 	return statusMapping[num]
 }
 
+export const getStatuses = () => {
+	return Object.values(statusMapping)
+}
+
 export const getSteps = (transfer) => {
 	let steps = [
 		{

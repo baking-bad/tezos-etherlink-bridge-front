@@ -31,11 +31,10 @@ const {
 	etherlinkTokens,
 } = storeToRefs(tokensStore)
 const { isPairedToken, isSameToken, getPairedToken } = tokensStore
+tokensStore.mergeBalances(tokenBridge)
 const transfersStore = useTransfersStore()
 const { recentTransfers } = storeToRefs(transfersStore)
-
-tokensStore.mergeBalances(tokenBridge)
-tokenBridge.addEventListener('tokenTransferUpdated', transfersStore.updateTransfer)
+// tokenBridge.addEventListener('tokenTransferUpdated', transfersStore.updateTransfer)
 
 const reverseDirection = ref(false)
 const playRotateAnimation = ref(false)
@@ -152,7 +151,7 @@ async function testTransfer() {
 		} else {
 			console.error(e);
 		}
-        // To do: catch for walletConnect abortion and unsupporting native token witdrawing
+        // To do: catch for walletConnect abortions and unsupporting native token witdrawing
     })
     .finally(() => {
         isLoading.value = false
@@ -174,7 +173,7 @@ watch(
 </script>
 
 <template>
-	<Flex align="center" justify="center" direction="column" gap="20" :class="$style.wrapper">
+	<Flex align="center" justify="center" direction="column" gap="40" :class="$style.wrapper">
 		<Flex direction="column" gap="20" :class="$style.operation_window">
 			<Flex direction="column" gap="4" :class="$style.inputs">
 				<Flex @click="fromInputEl.focus()" direction="column" gap="16" :class="$style.from">
@@ -259,6 +258,12 @@ watch(
 						<Text size="16" color="black">Connect Wallets</Text>
 					</Flex>
 				</RouterLink>
+
+				<Flex v-else-if="fromChain.name === 'etherlink' && fromToken.type === 'native'" align="center" justify="center" :class="[$style.button, $style.disabled]">
+					<Flex align="center" gap="6">
+						<Text size="16" color="black">Native token withdrawal is not yet supported</Text>
+					</Flex>
+				</Flex>
 
 				<Flex v-else @click="testTransfer" align="center" justify="center" :class="[$style.button, (!(amount > 0) || isLoading) && $style.disabled]">
 					<Flex v-if="isLoading" align="center" gap="6">
