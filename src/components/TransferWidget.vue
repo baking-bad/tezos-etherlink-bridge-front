@@ -2,6 +2,7 @@
 /** Vendor */
 import { ref, computed, onMounted, watch } from "vue"
 import { storeToRefs } from "pinia"
+import BigNumber from "bignumber.js"
 
 /** Constants */
 import { ConnectionStatus } from "@/services/constants/wallets"
@@ -30,11 +31,10 @@ const {
 	etherlinkTokens,
 } = storeToRefs(tokensStore)
 const { isPairedToken, isSameToken, getPairedToken } = tokensStore
-
-tokensStore.mergeBalances(tokenBridge)
-
 const transfersStore = useTransfersStore()
 const { recentTransfers } = storeToRefs(transfersStore)
+
+tokensStore.mergeBalances(tokenBridge)
 tokenBridge.addEventListener('tokenTransferUpdated', transfersStore.updateTransfer)
 
 const reverseDirection = ref(false)
@@ -64,22 +64,6 @@ const fromChain = ref({
 })
 const fromInputEl = ref()
 const fromToken = ref()
-const fromAmount = ref("")
-const fromInUSD = computed(() => parseFloat(purgeNumber(fromAmount.value)) * FAKE_USD_PRICE)
-const handleFromInput = (e) => {
-	if (!fromAmount.value.length) toAmount.value = ""
-
-	const normalizedAmount = normalizeAmount(fromAmount.value, fromToken.value.decimals)
-	if (typeof normalizedAmount === "string") {
-		fromAmount.value = normalizedAmount
-		return
-	}
-
-	fromAmount.value = comma(purgeNumber(fromAmount.value), ",", MAX_DIGITS)
-
-	/** Calc "to" */
-	toAmount.value = comma(parseFloat(purgeNumber(fromAmount.value)) * FAKE_COMPUTED_TRANSFER_PRICE.value, ",", MAX_DIGITS)
-}
 
 /** To Data */
 const toChain = ref({
@@ -90,22 +74,36 @@ const toChain = ref({
 })
 const toInputEl = ref()
 const toToken = ref()
-const toAmount = ref("")
-const toInUSD = computed(() => parseFloat(purgeNumber(toAmount.value)) * FAKE_USD_PRICE)
-const handleToInput = (e) => {
-	if (!toAmount.value.length) fromAmount.value = ""
 
-	const normalizedAmount = normalizeAmount(toAmount.value, toToken.value.decimals)
-	if (typeof normalizedAmount === "string") {
-		toAmount.value = normalizedAmount
-		return
-	}
-
-	toAmount.value = comma(purgeNumber(toAmount.value), ",", MAX_DIGITS)
-
-	/** Calc "from" */
-	fromAmount.value = comma(parseFloat(purgeNumber(toAmount.value)) / FAKE_COMPUTED_TRANSFER_PRICE.value, ",", MAX_DIGITS)
+/** Common amounts */
+const amount = ref("")
+const bigIntAmount = ref(0n)
+function calculateBigInt(stringAmount, decimals) {
+	return  BigInt(
+		BigNumber(purgeNumber(stringAmount)) *
+		BigNumber(10 ** decimals)
+	)
 }
+const USDAmount = ref("0")
+watch(
+	() => [amount.value, fromToken?.value?.decimals],
+	([newAmount = "", newDecimals = 12]) => {
+		if (!newAmount.length) {
+			amount.value = ""
+			bigIntAmount.value = 0n
+			USDAmount.value = "0"
+		}
+		else {
+			amount.value = normalizeAmount(newAmount, newDecimals)
+			bigIntAmount.value = calculateBigInt(amount.value, newDecimals)
+			USDAmount.value = prettyNumber(
+				(
+					BigNumber(bigIntAmount.value.toString()) *
+					BigNumber(FAKE_USD_PRICE) /
+					BigNumber(10 ** fromToken.value.decimals)
+				).toString(), 2)
+		}
+	})
 
 const handleSwitch = () => {
 	/** Rotate Animation */
@@ -123,12 +121,6 @@ const handleSwitch = () => {
 	const savedToken = toToken.value
 	toToken.value = fromToken.value
 	fromToken.value = savedToken
-
-	if (!fromAmount.value.length) return
-
-	toAmount.value = fromAmount.value
-	fromAmount.value = comma(parseFloat(purgeNumber(toAmount.value)) * FAKE_COMPUTED_TRANSFER_PRICE.value, ",", MAX_DIGITS)
-
 	reverseDirection.value = !reverseDirection.value
 }
 
@@ -141,18 +133,13 @@ const isLoading = ref(false)
 async function testTransfer() {
 	isLoading.value = true
 
-	const bigIntSum = BigInt(
-		Number(
-			fromAmount.value.replaceAll(",", "")
-		) * (10 ** fromToken.value.decimals)
-	)
 	const _address = fromToken.value.address
 	const _token = {
 		type: fromToken.value.type,
 		...(_address && {address: _address})
 	}
 
-	fromChain.value.exchange(bigIntSum, _token)
+	fromChain.value.exchange(bigIntAmount.value, _token)
     .then(transfer => {
         if (transfer.tokenTransfer) {
             transfersStore.addTransfers([transfer.tokenTransfer], 'recent')
@@ -201,8 +188,8 @@ watch(
 
 					<Flex justify="between">
 						<Flex direction="column" gap="8">
-							<input ref="fromInputEl" v-model="fromAmount" @input="handleFromInput" placeholder="0.00" :class="$style.input" />
-							<Text size="14" color="tertiary">${{ comma(fromInUSD) }}</Text>
+							<input ref="fromInputEl" v-model="amount" placeholder="0.00" :class="$style.input" />
+							<Text size="14" color="tertiary">${{ USDAmount }}</Text>
 						</Flex>
 
 						<Flex direction="column" align="end" gap="8">
@@ -235,8 +222,8 @@ watch(
 
 					<Flex justify="between">
 						<Flex direction="column" gap="8">
-							<input ref="toInputEl" v-model="toAmount" @input="handleToInput" placeholder="0.00" :class="$style.input" />
-							<Text size="14" color="tertiary">${{ comma(toInUSD) }}</Text>
+							<input ref="toInputEl" v-model="amount" placeholder="0.00" :class="$style.input" />
+							<Text size="14" color="tertiary">${{ USDAmount }}</Text>
 						</Flex>
 
 						<Flex direction="column" align="end" gap="8">
@@ -272,13 +259,13 @@ watch(
 					</Flex>
 				</RouterLink>
 
-				<Flex v-else @click="testTransfer" align="center" justify="center" :class="[$style.button, (!(fromAmount > 0) || isLoading) && $style.disabled]">
+				<Flex v-else @click="testTransfer" align="center" justify="center" :class="[$style.button, (!(amount > 0) || isLoading) && $style.disabled]">
 					<Flex v-if="isLoading" align="center" gap="6">
 						<Spinner size="14" />
 						<Text size="16" color="black">Waiting for transfer creation..</Text>
 					</Flex>
 
-					<Text v-else-if="fromAmount > 0" size="16" color="black"> {{ fromChain.name === 'tezos' ? 'Deposit' : 'Withdraw' }}</Text>
+					<Text v-else-if="amount > 0" size="16" color="black"> {{ fromChain.name === 'tezos' ? 'Deposit' : 'Withdraw' }}</Text>
 
 					<Text v-else size="16" color="black"> Enter amount to {{ fromChain.name === 'tezos' ? 'deposit' : 'withdraw' }} </Text>
 				</Flex>

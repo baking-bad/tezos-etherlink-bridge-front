@@ -16,6 +16,7 @@
 		"@taquito/utils": "^19.0.2",
 		"@web3modal/ethers": "^4.0.10",
 		"@web3modal/scaffold-utils": "^4.0.10",
+		"bignumber.js": "^9.1.2",
 		"ethers": "^6.11.1",
 		"focus-trap": "7.5.2",
 		"luxon": "^3.4.4",

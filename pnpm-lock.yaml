@@ -26,6 +26,9 @@ dependencies:
   '@web3modal/scaffold-utils':
     specifier: ^4.0.10
     version: 4.1.1(react@18.2.0)
+  bignumber.js:
+    specifier: ^9.1.2
+    version: 9.1.2
   ethers:
     specifier: ^6.11.1
     version: 6.11.1
@@ -1909,15 +1912,6 @@ packages:
     resolution: {integrity: sha512-GLGYAGmJgAnlNnjEehLFIaPKzyQIQky9UO4gzxNfEl7Mt3p9gHwY5idZzzLlNL+omZMtL8EeZRnsbDOKoYoyaQ==}
     peerDependencies:
       ethers: '>=6.0.0'
-    peerDependenciesMeta:
-      '@web3modal/siwe':
-        optional: true
-      react:
-        optional: true
-      react-dom:
-        optional: true
-      vue:
-        optional: true
     dependencies:
       '@coinbase/wallet-sdk': 3.9.1
       '@walletconnect/ethereum-provider': 2.11.1(react@18.2.0)
@@ -2004,9 +1998,6 @@ packages:
     resolution: {integrity: sha512-GBryCiyl+taz5DPq0expxzfMVcrpKjWvEBSAqT1tPUSthnzOWnVF77XlUAYgFZqzPsEu9lQ1dHCdqZx7WWMCXA==}
     peerDependencies:
       '@web3modal/wallet': 4.1.1
-    peerDependenciesMeta:
-      '@web3modal/siwe':
-        optional: true
     dependencies:
       '@web3modal/common': 4.1.1
       '@web3modal/core': 4.1.1(react@18.2.0)
