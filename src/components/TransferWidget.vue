@@ -265,13 +265,13 @@ watch(
 					</Flex>
 				</Flex>
 
-				<Flex v-else @click="testTransfer" align="center" justify="center" :class="[$style.button, (!(amount > 0) || isLoading) && $style.disabled]">
+				<Flex v-else @click="testTransfer" align="center" justify="center" :class="[$style.button, (!(bigIntAmount > 0n) || isLoading) && $style.disabled]">
 					<Flex v-if="isLoading" align="center" gap="6">
 						<Spinner size="14" />
 						<Text size="16" color="black">Waiting for transfer creation..</Text>
 					</Flex>
 
-					<Text v-else-if="amount > 0" size="16" color="black"> {{ fromChain.name === 'tezos' ? 'Deposit' : 'Withdraw' }}</Text>
+					<Text v-else-if="bigIntAmount > 0n" size="16" color="black"> {{ fromChain.name === 'tezos' ? 'Deposit' : 'Withdraw' }}</Text>
 
 					<Text v-else size="16" color="black"> Enter amount to {{ fromChain.name === 'tezos' ? 'deposit' : 'withdraw' }} </Text>
 				</Flex>
