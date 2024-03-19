@@ -62,5 +62,5 @@ export const prettyNumber = (target, decimalsCount = 12) => {
 		prettyIntegralPart = integralArray.join("");
 	}
 	if (!noDecimalsCut) prettyFractionalPart = fractionalPart?.slice(0, decimalsCount);
-	return prettyIntegralPart + ((fractionalPart !== undefined) ? "." + prettyFractionalPart : "")
+	return prettyIntegralPart + ((fractionalPart !== undefined && decimalsCount !== 0) ? "." + prettyFractionalPart : "")
 }

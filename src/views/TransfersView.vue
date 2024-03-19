@@ -9,14 +9,13 @@ import Spinner from "@/components/ui/Spinner.vue";
 
 /** Services */
 import TokenBridgeService from "@/services/tokenBridge"
+const { tokenBridge } = TokenBridgeService.instances
 
 /** Store */
 import { useTransfersStore } from "@/stores/transfers.js";
 const transfersStore = useTransfersStore()
 const { allTransfers } = storeToRefs(transfersStore)
 transfersStore.clearStore()
-
-const { tokenBridge } = TokenBridgeService.instances
 
 const transfersListEl = ref(null)
 const handleScroll = () => {
@@ -30,22 +29,19 @@ const isLoading = ref(false)
 const offset = ref(0)
 const limit = ref(20)
 
-const loadTransfers = () => {
+async function loadTransfers() {
 	if (isLoading.value) return
 
 	isLoading.value = true
 
-	Promise.all( [
+	const addresses = await Promise.all( [
 		tokenBridge.getTezosConnectedAddress(),
 		tokenBridge.getEtherlinkConnectedAddress()
-	]).then((res) => {
-		return tokenBridge.data.getAccountTokenTransfers(res, offset.value, limit.value)
-	}).then((res) => {
-		transfersStore.addTransfers(res, 'all')
-		offset.value += limit.value
-	}).finally(() => {
-		isLoading.value = false
-	})
+	])
+	const transfers = await tokenBridge.data.getAccountTokenTransfers(addresses, offset.value, limit.value)
+	transfersStore.addTransfers(transfers, 'all')
+	offset.value += limit.value
+	isLoading.value = false
 }
 
 loadTransfers()
