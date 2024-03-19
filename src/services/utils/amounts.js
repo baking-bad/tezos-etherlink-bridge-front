@@ -1,3 +1,5 @@
+import BigNumber from "bignumber.js"
+
 export const isEven = (n) => {
     return (n % 2 == 0)
 }
@@ -63,4 +65,11 @@ export const prettyNumber = (target, decimalsCount = 12) => {
 	}
 	if (!noDecimalsCut) prettyFractionalPart = fractionalPart?.slice(0, decimalsCount);
 	return prettyIntegralPart + ((fractionalPart !== undefined && decimalsCount !== 0) ? "." + prettyFractionalPart : "")
+}
+
+export function amountToString(bigIntAmount, decimals) {
+	return prettyNumber((
+			BigNumber(bigIntAmount.toString()) /
+			BigNumber(10 ** decimals)
+		).toString(), decimals)
 }
