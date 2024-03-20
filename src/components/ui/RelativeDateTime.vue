@@ -7,7 +7,7 @@ import { DateTime } from 'luxon'
 import Tooltip from "@/components/ui/Tooltip.vue";
 
 const props = defineProps({
-	time: String,
+	time: [String, Object],
 })
 
 const timeAgo = ref('')

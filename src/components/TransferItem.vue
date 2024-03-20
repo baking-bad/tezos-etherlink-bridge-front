@@ -20,6 +20,7 @@ import { getToken } from "@/services/cfg/tokens.js";
 /** Stores */
 import { useTransfersStore } from "@/stores/transfers.js"
 import { useTokensStore } from "@/stores/tokens.js"
+import Tooltip from "@/components/ui/Tooltip.vue"
 const tokensStore = useTokensStore()
 const { tokensObject } = storeToRefs(tokensStore)
 
@@ -123,7 +124,16 @@ const handleRemove = () => {
 	<Flex direction="column" gap="10" :class="$style.transfer">
 		<Flex align="center" justify="between" :class="$style.header">
 			<Flex align="center" gap="8">
-				<Text> {{ amountToString(operation.source.amount, token.decimals) }} </Text>
+				<Tooltip delay="300">
+					<Text>
+						{{ amountToString(operation.source.amount, token.decimals, true) }}
+					</Text>
+					<template #content>
+						<Text color="secondary">
+							{{ amountToString(operation.source.amount, token.decimals) }}
+						</Text>
+					</template>
+				</Tooltip>
 				<img width="20" height="20" :src="loadImage(token.icon)" :class="$style.img" alt=""/>
 				<Text size="16" color="primary"> {{ token.ticker }} </Text>
 			</Flex>

@@ -19,6 +19,8 @@ const {
 
 /** Components */
 import { Dropdown, DropdownItem } from "@/components/ui/Dropdown"
+import { amountToString } from "../services/utils/index.js"
+import Tooltip from "@/components/ui/Tooltip.vue"
 
 
 const props = defineProps({
@@ -94,8 +96,9 @@ const dropdownItems = computed(() => {
 
 							<Text size="11" color="tertiary"> {{ item.name }} </Text>
 						</Flex>
-
-						<Text size="13" color="primary"> {{ item.prettyBalance }} </Text>
+						<Text size="13" color="primary">
+							{{ amountToString(item.balance, item.decimals, true) }}
+						</Text>
 					</Flex>
 				</Flex>
 			</DropdownItem>

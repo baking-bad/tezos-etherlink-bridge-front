@@ -18,13 +18,14 @@ import { useTezos } from "@/composables/tezos.js"
 import { useEtherlink } from "@/composables/etherlink.js"
 
 /** Services */
-import { capitilize, prettyNumber, purgeNumber } from "@/services/utils"
+import { amountToString, capitilize, prettyNumber, purgeNumber } from "@/services/utils"
 import TokenBridgeService from "@/services/tokenBridge"
 const { tokenBridge } = TokenBridgeService.instances
 
 /** Stores */
 import { useTransfersStore } from "@/stores/transfers.js"
 import { useTokensStore } from "@/stores/tokens.js"
+import Tooltip from "@/components/ui/Tooltip.vue"
 const tokensStore = useTokensStore()
 const {
 	tezosTokens,
@@ -204,14 +205,22 @@ function setAmount(val) {
 
 							<Flex align="center" gap="4">
 								<Icon name="banknote" size="14" color="tertiary" />
-								<Text
-									size="12"
-									weight="semibold"
-									color="tertiary"
-									:class="[$style.cursor_pointer]"
-									@click="setAmount(fromToken.prettyBalance)">
-									{{ fromToken.prettyBalance }}
-								</Text>
+								<Tooltip delay="300">
+									<Text
+										size="12"
+										weight="semibold"
+										color="tertiary"
+										:class="[$style.cursor_pointer]"
+										@click="setAmount(amountToString(fromToken.balance, fromToken.decimals))"
+									>
+										{{ amountToString(fromToken.balance, fromToken.decimals, true) }}
+									</Text>
+									<template #content>
+										<Text size="10" color="tertiary">
+											{{ amountToString(fromToken.balance, fromToken.decimals) }}
+										</Text>
+									</template>
+								</Tooltip>
 							</Flex>
 						</Flex>
 					</Flex>
@@ -245,15 +254,22 @@ function setAmount(val) {
 
 							<Flex align="center" gap="4">
 								<Icon name="banknote" size="14" color="tertiary" />
-								<Text
-									size="12"
-									weight="semibold"
-									color="tertiary"
-									:class="[$style.cursor_pointer]"
-									@click="setAmount(toToken.prettyBalance)"
-								>
-									{{ toToken.prettyBalance }}
-								</Text>
+								<Tooltip delay="300">
+									<Text
+										size="12"
+										weight="semibold"
+										color="tertiary"
+										:class="[$style.cursor_pointer]"
+										@click="setAmount(amountToString(toToken.balance, toToken.decimals))"
+									>
+										{{ amountToString(toToken.balance, toToken.decimals, true) }}
+									</Text>
+									<template #content>
+										<Text size="10" color="tertiary">
+											{{ amountToString(toToken.balance, toToken.decimals) }}
+										</Text>
+									</template>
+								</Tooltip>
 							</Flex>
 						</Flex>
 					</Flex>
