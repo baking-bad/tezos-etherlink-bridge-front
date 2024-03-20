@@ -2,8 +2,10 @@
 /** Vendor */
 import { computed } from "vue"
 
-/** UI */
+/** Components */
 import Tooltip from "@/components/ui/Tooltip.vue"
+import ExplorerLink from "@/components/ExplorerLink.vue";
+import CopyButton from "@/components/ui/CopyButton.vue";
 
 /** Constants */
 import { ConnectionStatus } from "@/services/constants/wallets"
@@ -12,8 +14,8 @@ import { ConnectionStatus } from "@/services/constants/wallets"
 import { useTezos } from "@/composables/tezos.js"
 import { useEtherlink } from "@/composables/etherlink.js"
 
-const { address: tezosAddress, status: tezosStatus, connect: connectTezos } = useTezos()
-const { address: etherlinkAddress, status: etherlinkStatus, connect: connectEtherlink } = useEtherlink()
+const { address: tezosAddress, status: tezosStatus, connect: connectTezos, disconnect: disconnectTezos } = useTezos()
+const { address: etherlinkAddress, status: etherlinkStatus, connect: connectEtherlink, disconnect: disconnectEtherlink } = useEtherlink()
 
 const isReady = computed(() => tezosStatus.value === ConnectionStatus.CONNECTED && etherlinkStatus.value === ConnectionStatus.CONNECTED)
 
@@ -24,19 +26,19 @@ const handleConnectTezos = async () => {
 const handleConnectEtherlink = async () => {
 	connectEtherlink()
 }
+
+const handleDisconnectTezos = async () => {
+	disconnectTezos()
+}
+
+const handleDisconnectEtherlink = async () => {
+	disconnectEtherlink()
+}
+
 </script>
 
 <template>
 	<Flex direction="column" align="center" justify="center" gap="6" :class="$style.wrapper">
-		<Flex wide>
-			<RouterLink to="/">
-				<Flex align="center" gap="4" :class="$style.button">
-					<Icon name="back" size="14" color="secondary" />
-					<Text size="13" weight="semibold" color="secondary">Home</Text>
-				</Flex>
-			</RouterLink>
-		</Flex>
-
 		<Flex direction="column" align="center" gap="24">
 			<Flex align="center" gap="12">
 				<Tooltip :disabled="tezosStatus === ConnectionStatus.CONNECTED">
@@ -54,14 +56,14 @@ const handleConnectEtherlink = async () => {
 					<template #content>
 						<Flex direction="column" align="center" gap="6">
 							<Text weight="600">Tezos is not connected</Text>
-							<Text weight="600" color="secondary">Click on tasks below to resolve</Text>
+							<Text weight="600" color="secondary">Click on task below to resolve</Text>
 						</Flex>
 					</template>
 				</Tooltip>
 
 				<Flex align="center" gap="8" :class="isReady && $style.ready_icon">
-					<Icon name="left-connect" size="24" color="tertiary" />
-					<Icon name="right-connect" size="24" color="tertiary" />
+					<Icon name="left-connect" size="24" :color="tezosStatus === ConnectionStatus.CONNECTED ? 'green' : 'tertiary'" />
+					<Icon name="right-connect" size="24" :color="etherlinkStatus === ConnectionStatus.CONNECTED ? 'green' : 'tertiary'" />
 				</Flex>
 
 				<Tooltip :disabled="etherlinkStatus === ConnectionStatus.CONNECTED">
@@ -79,7 +81,7 @@ const handleConnectEtherlink = async () => {
 					<template #content>
 						<Flex direction="column" align="center" gap="6">
 							<Text weight="600">Etherlink is not connected</Text>
-							<Text weight="600" color="secondary">Click on tasks below to resolve</Text>
+							<Text weight="600" color="secondary">Click on task below to resolve</Text>
 						</Flex>
 					</template>
 				</Tooltip>
@@ -116,7 +118,7 @@ const handleConnectEtherlink = async () => {
 								<Text size="14" color="primary">Missing Tezos </Text>
 							</Flex>
 
-							<Text size="13" color="tertiary" :class="$style.description">Connect Beacon Wallet</Text>
+							<Text size="13" color="tertiary" :class="$style.description">Beacon Wallet</Text>
 						</Flex>
 
 						<Flex align="center" gap="4">
@@ -124,21 +126,22 @@ const handleConnectEtherlink = async () => {
 							<Text size="13" weight="semibold" color="primary">Connect</Text>
 						</Flex>
 					</Flex>
-					<Flex v-else justify="between" align="center" :class="[$style.task, $style.done]">
-						<Flex direction="column" gap="6">
-							<Flex align="center" gap="8">
-								<Icon name="check-circle" size="14" color="green" />
-								<Text size="14" color="primary">Tezos is ready </Text>
-							</Flex>
-
-							<Text size="13" color="tertiary" :class="$style.description">
-								{{ tezosAddress.slice(0, 4) }} ... {{ tezosAddress.slice(-4) }}
-							</Text>
+					<Flex v-else direction="column" :class="[$style.task, $style.done]" gap="6">
+						<Flex align="center" gap="8">
+							<Icon name="check-circle" size="14" color="green" />
+							<Text size="14" color="primary">Tezos is ready </Text>
 						</Flex>
 
-						<Flex align="center" gap="4">
-							<Icon name="check-circle" size="14" color="green" />
-							<Text size="13" weight="semibold" color="secondary">Ready</Text>
+						<Flex justify="between">
+							<Flex align="center" gap="6">
+								<ExplorerLink :hash="tezosAddress" network="tezos" type="address" short :class="[$style.description, $style.link]"/>
+								<CopyButton :text="tezosAddress" size="11" />
+							</Flex>
+
+							<Flex @click="handleDisconnectTezos" align="center" gap="6" :class="$style.disconnect">
+								<Text size="13">Disconnect</Text>
+								<Icon name="log-out" size="13" />
+							</Flex>
 						</Flex>
 					</Flex>
 				</transition>
@@ -155,10 +158,10 @@ const handleConnectEtherlink = async () => {
 						<Flex direction="column" gap="6">
 							<Flex align="center" gap="8">
 								<Icon name="info" size="14" color="yellow" />
-								<Text size="14" color="primary">Missing Tezos </Text>
+								<Text size="14" color="primary">Missing Etherlink </Text>
 							</Flex>
 
-							<Text size="13" color="tertiary" :class="$style.description">Connect Beacon Wallet</Text>
+							<Text size="13" color="tertiary" :class="$style.description">WalletConnect</Text>
 						</Flex>
 
 						<Flex align="center" gap="4">
@@ -166,21 +169,22 @@ const handleConnectEtherlink = async () => {
 							<Text size="13" weight="semibold" color="primary">Connect</Text>
 						</Flex>
 					</Flex>
-					<Flex v-else justify="between" align="center" :class="[$style.task, $style.done]">
-						<Flex direction="column" gap="6">
-							<Flex align="center" gap="8">
-								<Icon name="check-circle" size="14" color="green" />
-								<Text size="14" color="primary">Etherlink is ready </Text>
-							</Flex>
-
-							<Text size="13" color="tertiary" :class="$style.description">
-								{{ etherlinkAddress.slice(0, 4) }} ... {{ etherlinkAddress.slice(-4) }}
-							</Text>
+					<Flex v-else direction="column" :class="[$style.task, $style.done]" gap="6">
+						<Flex align="center" gap="8">
+							<Icon name="check-circle" size="14" color="green" />
+							<Text size="14" color="primary">Etherlink is ready </Text>
 						</Flex>
 
-						<Flex align="center" gap="4">
-							<Icon name="check-circle" size="14" color="green" />
-							<Text size="13" weight="semibold" color="secondary">Ready</Text>
+						<Flex justify="between">
+							<Flex align="center" gap="6">
+								<ExplorerLink :hash="etherlinkAddress" network="etherlink" type="address" short :class="[$style.description, $style.link]"/>
+								<CopyButton :text="etherlinkAddress" size="11" />
+							</Flex>
+
+							<Flex @click="handleDisconnectEtherlink" align="center" gap="6" :class="$style.disconnect">
+								<Text size="13">Disconnect</Text>
+								<Icon name="log-out" size="13" />
+							</Flex>
 						</Flex>
 					</Flex>
 				</transition>
@@ -208,7 +212,7 @@ const handleConnectEtherlink = async () => {
 	background: linear-gradient(rgba(0, 0, 0, 40%), rgba(0, 0, 0, 0%));
 	box-shadow: 0 0 0 2px var(--op-5);
 
-	padding: 8px 8px 20px 8px;
+	padding: 20px 8px 20px 8px;
 
 	margin: 32px 16px;
 }
@@ -278,7 +282,7 @@ const handleConnectEtherlink = async () => {
 	background: var(--op-5);
 	cursor: pointer;
 
-	padding: 10px 16px 10px 10px;
+	padding: 10px 10px 10px 10px;
 
 	transition: all 0.1s ease;
 
@@ -287,8 +291,24 @@ const handleConnectEtherlink = async () => {
 	}
 
 	&.done {
-		pointer-events: none;
+		cursor: auto;
 	}
+}
+
+.link {
+	color: var(--txt-tertiary);
+}
+
+.disconnect {
+	color: var(--txt-tertiary);
+	fill: var(--txt-tertiary);
+	cursor: pointer;
+}
+
+.disconnect:hover {
+	fill: var(--red);
+	color: var(--red);
+	opacity: 0.8;
 }
 
 .description {

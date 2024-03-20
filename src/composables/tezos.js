@@ -19,7 +19,7 @@ export const useTezos = () => {
 		const activeAccount = await TezosService.instances.beacon.client.getActiveAccount()
 		const addr = activeAccount?.address
 
-		if (address) {
+		if (addr) {
 			address.value = addr
 			status.value = ConnectionStatus.CONNECTED
 		}

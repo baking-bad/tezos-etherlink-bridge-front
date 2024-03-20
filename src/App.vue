@@ -3,12 +3,14 @@
 import { RouterView } from "vue-router"
 
 /** Components */
+import Notifications from "@/components/Notifications.vue";
 import TheHeader from "@/components/TheHeader.vue"
 import TheFooter from "@/components/TheFooter.vue"
 </script>
 
 <template>
 	<div id="tooltip" />
+	<div id="dropdown" />
 
 	<TheHeader />
 
@@ -19,6 +21,8 @@ import TheFooter from "@/components/TheFooter.vue"
 			</transition>
 		</RouterView>
 	</div>
+	
+	<Notifications />
 
 	<TheFooter />
 </template>

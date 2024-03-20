@@ -9,11 +9,11 @@ import { config } from "@/services/cfg"
 
 import { TezosWalletSigner } from "./walletSigner"
 
-const instances = reactive({
+const instances = {
 	beacon: null,
 	toolkit: null,
 	signer: null,
-})
+}
 
 const init = () => {
 	instances.beacon = new BeaconWallet({

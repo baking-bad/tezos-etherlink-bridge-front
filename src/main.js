@@ -8,6 +8,7 @@ import { createPinia } from "pinia"
 /** Services */
 import TezosWallet from "@/services/tezos"
 import EtherlinkWallet from "@/services/etherlink"
+import TokenBridgeService from "@/services/tokenBridge"
 
 /** Global Components */
 import Flex from "@/components/global/Flex.vue"
@@ -23,17 +24,19 @@ import router from "./router"
  */
 TezosWallet.init()
 EtherlinkWallet.init()
+TokenBridgeService.init()
+.then(() => {
+    /**
+     * Vue
+     */
+    const app = createApp(App)
 
-/**
- * Vue
- */
-const app = createApp(App)
+    app.use(createPinia())
+    app.use(router)
 
-app.use(createPinia())
-app.use(router)
+    app.component("Flex", Flex)
+    app.component("Icon", Icon)
+    app.component("Text", Text)
 
-app.component("Flex", Flex)
-app.component("Icon", Icon)
-app.component("Text", Text)
-
-app.mount("#app")
+    app.mount("#app")
+})

@@ -13,10 +13,12 @@ $grayscale: (
 :root {
 	/* Main */
 	--app-background: #171717;
+	--card-background: #141414;;
 	--tooltip-background: #202020;
 
 	/* Text */
 	--txt-primary: rgba(255, 255, 255, 95%);
+	--txt-body: rgba(255, 255, 255, 75%);
 	--txt-secondary: rgba(255, 255, 255, 60%);
 	--txt-tertiary: rgba(255, 255, 255, 30%);
 	--txt-support: rgba(255, 255, 255, 15%);
@@ -25,11 +27,13 @@ $grayscale: (
 
 	/* General */
 	--brand: #924dff;
-	--blue: #076acd;
+	// --blue: #076acd;
+	--blue: #4e839c;
 	--red: #eb5757;
 	--orange: #ff5a17;
 	--yellow: #f2c94c;
 	--green: #59ad8c;
+	--gray: #363739;
 
 	/* Grayscale */
 	@each $gray, $value in $grayscale {
@@ -144,11 +148,12 @@ body {
 
 .navigation-enter-active,
 .navigation-leave-active {
-	transition: all 0.1s ease;
+	transition: all 0.3s ease;
 }
 
 .navigation-enter-from,
 .navigation-leave-to {
 	opacity: 0;
 	transform: translateY(-10px);
+	// transform: translateX(30px);
 }

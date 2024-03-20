@@ -1,80 +1,110 @@
 <script setup>
 /** Vendor */
-import { ref, computed, onMounted } from "vue"
+import { ref, computed, onMounted, watch } from "vue"
+import { storeToRefs } from "pinia"
+import BigNumber from "bignumber.js"
+
+/** Constants */
+import { ConnectionStatus } from "@/services/constants/wallets"
+
+/** Components */
+import TokenSelector from "@/components/TokenSelector.vue"
+import TransfersList from "@/components/TransfersList.vue"
+import Spinner from "@/components/ui/Spinner.vue";
+
+
+/** Composables */
+import { useTezos } from "@/composables/tezos.js"
+import { useEtherlink } from "@/composables/etherlink.js"
 
 /** Services */
-import { comma, purgeNumber } from "@/services/utils/amounts.js"
+import { amountToString, capitilize, prettyNumber, purgeNumber } from "@/services/utils"
+import TokenBridgeService from "@/services/tokenBridge"
+const { tokenBridge } = TokenBridgeService.instances
+
+/** Stores */
+import { useTransfersStore } from "@/stores/transfers.js"
+import { useTokensStore } from "@/stores/tokens.js"
+import Tooltip from "@/components/ui/Tooltip.vue"
+const tokensStore = useTokensStore()
+const {
+	tezosTokens,
+	etherlinkTokens,
+} = storeToRefs(tokensStore)
+const { isPairedToken, isSameToken, getPairedToken } = tokensStore
+tokensStore.mergeBalances(tokenBridge)
+const transfersStore = useTransfersStore()
+const { recentTransfers } = storeToRefs(transfersStore)
+// tokenBridge.addEventListener('tokenTransferUpdated', transfersStore.updateTransfer)
 
 const reverseDirection = ref(false)
 const playRotateAnimation = ref(false)
 
-const FAKE_USD_PRICE = 3
+// const FAKE_USD_PRICE = 3
 const FAKE_TRANSFER_PRICE = 0.053
-const MAX_DIGITS = 4
-const FAKE_COMPUTED_TRANSFER_PRICE = computed(() => (!reverseDirection.value ? FAKE_TRANSFER_PRICE : 1 / FAKE_TRANSFER_PRICE))
+// const MAX_DIGITS = 4
+// const FAKE_COMPUTED_TRANSFER_PRICE = computed(() => (!reverseDirection.value ? FAKE_TRANSFER_PRICE : 1 / FAKE_TRANSFER_PRICE))
 
 const loadImage = (n) => new URL(`../assets/images/${n}.png`, import.meta.url).href
 
-const normalizeAmount = (target) => {
-	if (target === ".") return "0."
-
-	let dotCounter = 0
-	target.split("").forEach((char) => {
-		if (char === ".") dotCounter++
-	})
-	if (dotCounter > 1) return target.slice(0, target.length - 1)
-
-	if (target[target.length - 1] === ".") return target
-	if (!target.length) return ""
-	if (target.length === 1 && !/^(0|[1-9]\d*)(\.\d+)?$/.test(target)) return ""
-	if (parseFloat(purgeNumber(target)) >= 9_999_999_999_999) return "9,999,999,999,999"
+const normalizeAmount = (target, decimals) => {
+	return prettyNumber(purgeNumber(target), decimals);
 }
+
+const { status: tezosStatus } = useTezos()
+const { status: etherlinkStatus } = useEtherlink()
+const isWalletsConnected = computed(() => tezosStatus.value === ConnectionStatus.CONNECTED && etherlinkStatus.value === ConnectionStatus.CONNECTED)
 
 /** From Data */
 const fromChain = ref({
-	name: "Tezos",
+	name: "tezos",
 	logo: "tezos",
+	tokens: tezosTokens,
+	exchange: tokenBridge.deposit.bind(tokenBridge),
 })
 const fromInputEl = ref()
-const fromAmount = ref("")
-const fromInUSD = computed(() => parseFloat(purgeNumber(fromAmount.value)) * FAKE_USD_PRICE)
-const handleFromInput = (e) => {
-	if (!fromAmount.value.length) toAmount.value = ""
-
-	const normalizedAmount = normalizeAmount(fromAmount.value)
-	if (typeof normalizedAmount === "string") {
-		fromAmount.value = normalizedAmount
-		return
-	}
-
-	fromAmount.value = comma(purgeNumber(fromAmount.value), ",", MAX_DIGITS)
-
-	/** Calc "to" */
-	toAmount.value = comma(parseFloat(purgeNumber(fromAmount.value)) * FAKE_COMPUTED_TRANSFER_PRICE.value, ",", MAX_DIGITS)
-}
+const fromToken = ref()
 
 /** To Data */
 const toChain = ref({
-	name: "Etherlink",
+	name: "etherlink",
 	logo: "etherlink",
+	tokens: etherlinkTokens,
+	exchange: tokenBridge.startWithdraw.bind(tokenBridge)
 })
 const toInputEl = ref()
-const toAmount = ref("")
-const toInUSD = computed(() => parseFloat(purgeNumber(toAmount.value)) * FAKE_USD_PRICE)
-const handleToInput = (e) => {
-	if (!toAmount.value.length) fromAmount.value = ""
+const toToken = ref()
 
-	const normalizedAmount = normalizeAmount(toAmount.value)
-	if (typeof normalizedAmount === "string") {
-		toAmount.value = normalizedAmount
-		return
-	}
-
-	toAmount.value = comma(purgeNumber(toAmount.value), ",", MAX_DIGITS)
-
-	/** Calc "from" */
-	fromAmount.value = comma(parseFloat(purgeNumber(toAmount.value)) / FAKE_COMPUTED_TRANSFER_PRICE.value, ",", MAX_DIGITS)
+/** Common amounts */
+const amount = ref("")
+const bigIntAmount = ref(0n)
+function calculateBigInt(stringAmount, decimals) {
+	return  BigInt(
+		BigNumber(purgeNumber(stringAmount)) *
+		BigNumber(10 ** decimals)
+	)
 }
+// const USDAmount = ref("0")
+watch(
+	() => [amount.value, fromToken?.value?.decimals, toToken?.value?.decimals],
+	([newAmount = "", newFromDecimals = 12, newToDecimals = 12]) => {
+		const newDecimals = Math.min(newFromDecimals, newToDecimals)
+		if (!newAmount.length) {
+			amount.value = ""
+			bigIntAmount.value = 0n
+			// USDAmount.value = "0"
+		}
+		else {
+			amount.value = normalizeAmount(newAmount, newDecimals)
+			bigIntAmount.value = calculateBigInt(amount.value, newDecimals)
+			// USDAmount.value = prettyNumber(
+			// 	(
+			// 		BigNumber(bigIntAmount.value.toString()) *
+			// 		BigNumber(FAKE_USD_PRICE) /
+			// 		BigNumber(10 ** fromToken.value.decimals)
+			// 	).toString(), 2)
+		}
+	})
 
 const handleSwitch = () => {
 	/** Rotate Animation */
@@ -88,110 +118,218 @@ const handleSwitch = () => {
 	toChain.value = fromChain.value
 	fromChain.value = savedChain
 
-	if (!fromAmount.value.length) return
-
-	toAmount.value = fromAmount.value
-	fromAmount.value = comma(parseFloat(purgeNumber(toAmount.value)) * FAKE_COMPUTED_TRANSFER_PRICE.value, ",", MAX_DIGITS)
-
+	/** Reverse to/from token */
+	const savedToken = toToken.value
+	toToken.value = fromToken.value
+	fromToken.value = savedToken
 	reverseDirection.value = !reverseDirection.value
 }
 
 onMounted(() => {
 	fromInputEl.value.focus()
 })
+
+const isLoading = ref(false)
+
+async function testTransfer() {
+	isLoading.value = true
+
+	const _address = fromToken.value.address
+	const _token = {
+		type: fromToken.value.type,
+		...(_address && {address: _address})
+	}
+
+	fromChain.value.exchange(bigIntAmount.value, _token)
+    .then(transfer => {
+        if (transfer.tokenTransfer) {
+            transfersStore.addTransfers([transfer.tokenTransfer], 'recent')
+        }
+    })
+    .catch(e => {
+		if (e.title === 'Aborted') {
+			console.log(e.description);
+		} else {
+			console.error(e);
+		}
+        // To do: catch for walletConnect abortions and unsupporting native token witdrawing
+    })
+    .finally(() => {
+        isLoading.value = false
+    });
+}
+
+watch(
+	() => [fromToken.value, toToken.value],
+	([newFromToken, newToToken], [oldFromToken, oldToToken]) => {
+		if (!isPairedToken(newFromToken, newToToken)) {
+			if (!isSameToken(newFromToken, oldFromToken)) {
+				toToken.value = getPairedToken(newFromToken)
+			} else if (!isSameToken(newToToken, oldToToken)) {
+				fromToken.value = getPairedToken(newToToken)
+			}
+		}
+	}
+)
+
+function setAmount(val) {
+	amount.value = val
+}
 </script>
 
 <template>
-	<Flex direction="column" gap="20" :class="$style.wrapper">
-		<Flex direction="column" gap="4" :class="$style.inputs">
-			<Flex @click="fromInputEl.focus()" direction="column" gap="16" :class="$style.from">
-				<Flex align="center" justify="between" :class="$style.top">
-					<Text size="14" color="secondary">From</Text>
+	<Flex align="center" justify="center" direction="column" gap="40" :class="$style.wrapper">
+		<Flex direction="column" gap="20" :class="$style.operation_window">
+			<Flex direction="column" gap="4" :class="$style.inputs">
+				<Flex @click="fromInputEl.focus()" direction="column" gap="16" :class="$style.from">
+					<Flex align="center" justify="between" :class="$style.top">
+						<Text size="14" color="secondary">From</Text>
 
-					<Flex align="center" gap="6">
-						<img width="16" height="16" :src="loadImage(fromChain.logo)" :class="$style.logo" />
-						<Text size="13" weight="semibold" color="primary">{{ fromChain.name }}</Text>
+						<Flex align="center" gap="6">
+							<img width="16" height="16" :src="loadImage(fromChain.logo)" :class="$style.logo" alt="" />
+							<Text size="13" weight="semibold" color="primary">{{ capitilize(fromChain.name) }}</Text>
+						</Flex>
+					</Flex>
+
+					<Flex justify="between">
+						<Flex direction="column" gap="8">
+							<input ref="fromInputEl" v-model="amount" placeholder="0.00" :class="$style.input" />
+<!--							<Text size="14" color="tertiary">${{ USDAmount }}</Text>-->
+						</Flex>
+
+						<Flex direction="column" align="end" gap="8">
+							<TokenSelector
+								v-model="fromToken"
+								:chain="fromChain.name"
+							/>
+
+							<Flex align="center" gap="4">
+								<Icon name="banknote" size="14" color="tertiary" />
+								<Tooltip delay="300">
+									<Text
+										size="12"
+										weight="semibold"
+										color="tertiary"
+										:class="[$style.cursor_pointer]"
+										@click="setAmount(amountToString(fromToken.balance, fromToken.decimals))"
+									>
+										{{ amountToString(fromToken.balance, fromToken.decimals, true) }}
+									</Text>
+									<template #content>
+										<Text size="10" color="tertiary">
+											{{ amountToString(fromToken.balance, fromToken.decimals) }}
+										</Text>
+									</template>
+								</Tooltip>
+							</Flex>
+						</Flex>
 					</Flex>
 				</Flex>
 
-				<Flex justify="between">
-					<Flex direction="column" gap="8">
-						<input ref="fromInputEl" v-model="fromAmount" @input="handleFromInput" placeholder="0.00" :class="$style.input" />
-						<Text size="14" color="tertiary">${{ comma(fromInUSD) }}</Text>
+				<Flex @click="handleSwitch" :class="[$style.switcher, playRotateAnimation && $style.rotate]">
+					<Icon name="logo" size="24" color="primary" />
+				</Flex>
+
+				<Flex @click="toInputEl.focus()" direction="column" gap="16" :class="$style.to">
+					<Flex align="center" justify="between" :class="$style.top">
+						<Text size="14" color="secondary">To</Text>
+
+						<Flex align="center" gap="6">
+							<img width="16" height="16" :src="loadImage(toChain.logo)" :class="$style.logo" alt="" />
+							<Text size="13" weight="semibold" color="primary">{{ capitilize(toChain.name) }}</Text>
+						</Flex>
 					</Flex>
 
-					<Flex direction="column" align="end" gap="8">
-						<Flex align="center" gap="8" :class="$style.selector">
-							<img width="20" height="20" src="../assets/images/tezos.png" />
-							<Text size="16" color="primary">XTZ</Text>
-							<Icon name="chevron-right" size="14" color="tertiary" />
+					<Flex justify="between">
+						<Flex direction="column" gap="8">
+							<input ref="toInputEl" v-model="amount" placeholder="0.00" :class="$style.input" />
+<!--							<Text size="14" color="tertiary">${{ USDAmount }}</Text>-->
 						</Flex>
 
-						<Flex align="center" gap="4">
-							<Icon name="banknote" size="14" color="tertiary" />
-							<Text size="12" weight="semibold" color="tertiary">152,620</Text>
+						<Flex direction="column" align="end" gap="8">
+							<TokenSelector
+								v-model="toToken"
+								:chain="toChain.name"
+							/>
+
+							<Flex align="center" gap="4">
+								<Icon name="banknote" size="14" color="tertiary" />
+								<Tooltip delay="300">
+									<Text
+										size="12"
+										weight="semibold"
+										color="tertiary"
+										:class="[$style.cursor_pointer]"
+										@click="setAmount(amountToString(toToken.balance, toToken.decimals))"
+									>
+										{{ amountToString(toToken.balance, toToken.decimals, true) }}
+									</Text>
+									<template #content>
+										<Text size="10" color="tertiary">
+											{{ amountToString(toToken.balance, toToken.decimals) }}
+										</Text>
+									</template>
+								</Tooltip>
+							</Flex>
 						</Flex>
 					</Flex>
 				</Flex>
 			</Flex>
 
-			<Flex @click="handleSwitch" :class="[$style.switcher, playRotateAnimation && $style.rotate]">
-				<Icon name="logo" size="24" color="primary" />
+			<Flex direction="column" gap="12" :class="$style.metadata">
+				<Flex align="center" justify="between">
+					<Text size="13" color="tertiary">Estimated Time</Text>
+					<Text size="13" color="secondary">15 min</Text>
+				</Flex>
+				<Flex align="center" justify="between">
+					<Text size="13" color="tertiary">Estimated Gas Fee</Text>
+					<Text size="13" color="secondary">$2.62</Text>
+				</Flex>
 			</Flex>
 
-			<Flex @click="toInputEl.focus()" direction="column" gap="16" :class="$style.to">
-				<Flex align="center" justify="between" :class="$style.top">
-					<Text size="14" color="secondary">To</Text>
+			<Flex>
+				<RouterLink v-if="!isWalletsConnected" to="/config" :class="[$style.button, $style.connect_wallets]">
+					<Flex align="center" justify="center" :style="{height: '100%'}">
+						<Text size="16" color="black">Connect Wallets</Text>
+					</Flex>
+				</RouterLink>
 
+				<Flex v-else-if="fromChain.name === 'etherlink' && fromToken.type === 'native'" align="center" justify="center" :class="[$style.button, $style.disabled]">
 					<Flex align="center" gap="6">
-						<img width="16" height="16" :src="loadImage(toChain.logo)" :class="$style.logo" />
-						<Text size="13" weight="semibold" color="primary">{{ toChain.name }}</Text>
+						<Text size="16" color="black">Native token withdrawal is not yet supported</Text>
 					</Flex>
 				</Flex>
 
-				<Flex justify="between">
-					<Flex direction="column" gap="8">
-						<input ref="toInputEl" v-model="toAmount" @input="handleToInput" placeholder="0.00" :class="$style.input" />
-						<Text size="14" color="tertiary">${{ comma(toInUSD) }}</Text>
+				<Flex v-else @click="testTransfer" align="center" justify="center" :class="[$style.button, (!(bigIntAmount > 0n) || isLoading) && $style.disabled]">
+					<Flex v-if="isLoading" align="center" gap="6">
+						<Spinner size="14" />
+						<Text size="16" color="black">Waiting for transfer creation..</Text>
 					</Flex>
 
-					<Flex direction="column" align="end" gap="8">
-						<Flex align="center" gap="8" :class="$style.selector">
-							<img width="20" height="20" src="../assets/images/tezos.png" />
-							<Text size="16" color="primary">XTZ</Text>
-							<Icon name="chevron-right" size="14" color="tertiary" />
-						</Flex>
+					<Text v-else-if="bigIntAmount > 0n" size="16" color="black"> {{ fromChain.name === 'tezos' ? 'Deposit' : 'Withdraw' }}</Text>
 
-						<Flex align="center" gap="4">
-							<Icon name="banknote" size="14" color="tertiary" />
-							<Text size="12" weight="semibold" color="tertiary">152,620</Text>
-						</Flex>
-					</Flex>
+					<Text v-else size="16" color="black"> Enter amount to {{ fromChain.name === 'tezos' ? 'deposit' : 'withdraw' }} </Text>
 				</Flex>
 			</Flex>
 		</Flex>
-
-		<Flex direction="column" gap="12" :class="$style.metadata">
-			<Flex align="center" justify="between">
-				<Text size="13" color="tertiary">Estimated Time</Text>
-				<Text size="13" color="secondary">15 min</Text>
+		
+		<Flex v-if="recentTransfers.length > 0" direction="column" align="center" gap="4">
+			<Flex :class="$style.transfers_header" align="center" flex="start">
+				<Text size="16" color="tertiary">Recent transfers</Text>
 			</Flex>
-			<Flex align="center" justify="between">
-				<Text size="13" color="tertiary">Estimated Gas Fee</Text>
-				<Text size="13" color="secondary">$2.62</Text>
-			</Flex>
+			<div :class="$style.divider" />
 		</Flex>
 
-		<RouterLink to="/confirm">
-			<Flex align="center" justify="center" :class="$style.button">
-				<Text size="16" color="black">Continue</Text>
-			</Flex>
-		</RouterLink>
+		<TransfersList :transfers="recentTransfers" direction="row" />
 	</Flex>
 </template>
 
 <style module>
 .wrapper {
+	max-width: 100%;
+}
+
+.operation_window {
 	max-width: 400px;
 	width: 400px;
 
@@ -201,9 +339,8 @@ onMounted(() => {
 
 	padding: 8px 8px 20px 8px;
 
-	margin: 32px 16px;
+	margin: 32px 16px 8px 16px;
 }
-
 .inputs {
 	position: relative;
 }
@@ -271,7 +408,7 @@ onMounted(() => {
 	border-radius: 5px;
 }
 
-.selector {
+/* .selector {
 	background: #111111;
 	border-radius: 500px;
 	cursor: pointer;
@@ -291,13 +428,13 @@ onMounted(() => {
 	&:active {
 		box-shadow: 0 0 0 2px var(--op-5);
 	}
-}
+} */
 
 .input {
 	width: 100%;
 
 	font-size: 28px;
-	font-family: "ClashGrotesk";
+	font-family: "ClashGrotesk", "sans-serif";
 	color: var(--txt-primary);
 
 	height: 28px;
@@ -310,12 +447,58 @@ onMounted(() => {
 }
 
 .button {
+	width: 100%;
 	height: 32px;
 
 	border-radius: 8px;
 	background: var(--green);
+	opacity: 0.85;
 	cursor: pointer;
 
 	margin: 0 12px;
+
+	transition: transform 0.1s ease;
+}
+
+.button:hover {
+	box-shadow: 0 0 0 2px var(--op-5);
+	opacity: 1;
+}
+
+.button:active {
+	transform: scale(0.985);
+}
+
+.disabled {
+	opacity: 0.4;
+	cursor: auto;
+	pointer-events: none;
+}
+
+.disabled:hover {
+	opacity: 0.4;
+}
+
+.connect_wallets {
+	background: var(--yellow);
+}
+
+.transfers_header {
+	width: 500px;
+
+	padding-left: 10px;
+}
+
+.divider {
+	width: 520px;
+
+	border-radius: 5px;
+	border-bottom: 2px solid var(--op-5);
+
+	margin-bottom: -30px;
+}
+
+.cursor_pointer {
+	cursor: pointer;
 }
 </style>
