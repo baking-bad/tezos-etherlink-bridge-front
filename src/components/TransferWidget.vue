@@ -18,13 +18,14 @@ import { useTezos } from "@/composables/tezos.js"
 import { useEtherlink } from "@/composables/etherlink.js"
 
 /** Services */
-import { capitilize, prettyNumber, purgeNumber } from "@/services/utils"
+import { amountToString, capitilize, prettyNumber, purgeNumber } from "@/services/utils"
 import TokenBridgeService from "@/services/tokenBridge"
 const { tokenBridge } = TokenBridgeService.instances
 
 /** Stores */
 import { useTransfersStore } from "@/stores/transfers.js"
 import { useTokensStore } from "@/stores/tokens.js"
+import Tooltip from "@/components/ui/Tooltip.vue"
 const tokensStore = useTokensStore()
 const {
 	tezosTokens,
@@ -39,10 +40,10 @@ const { recentTransfers } = storeToRefs(transfersStore)
 const reverseDirection = ref(false)
 const playRotateAnimation = ref(false)
 
-const FAKE_USD_PRICE = 3
+// const FAKE_USD_PRICE = 3
 const FAKE_TRANSFER_PRICE = 0.053
-const MAX_DIGITS = 4
-const FAKE_COMPUTED_TRANSFER_PRICE = computed(() => (!reverseDirection.value ? FAKE_TRANSFER_PRICE : 1 / FAKE_TRANSFER_PRICE))
+// const MAX_DIGITS = 4
+// const FAKE_COMPUTED_TRANSFER_PRICE = computed(() => (!reverseDirection.value ? FAKE_TRANSFER_PRICE : 1 / FAKE_TRANSFER_PRICE))
 
 const loadImage = (n) => new URL(`../assets/images/${n}.png`, import.meta.url).href
 
@@ -83,7 +84,7 @@ function calculateBigInt(stringAmount, decimals) {
 		BigNumber(10 ** decimals)
 	)
 }
-const USDAmount = ref("0")
+// const USDAmount = ref("0")
 watch(
 	() => [amount.value, fromToken?.value?.decimals, toToken?.value?.decimals],
 	([newAmount = "", newFromDecimals = 12, newToDecimals = 12]) => {
@@ -91,17 +92,17 @@ watch(
 		if (!newAmount.length) {
 			amount.value = ""
 			bigIntAmount.value = 0n
-			USDAmount.value = "0"
+			// USDAmount.value = "0"
 		}
 		else {
 			amount.value = normalizeAmount(newAmount, newDecimals)
 			bigIntAmount.value = calculateBigInt(amount.value, newDecimals)
-			USDAmount.value = prettyNumber(
-				(
-					BigNumber(bigIntAmount.value.toString()) *
-					BigNumber(FAKE_USD_PRICE) /
-					BigNumber(10 ** fromToken.value.decimals)
-				).toString(), 2)
+			// USDAmount.value = prettyNumber(
+			// 	(
+			// 		BigNumber(bigIntAmount.value.toString()) *
+			// 		BigNumber(FAKE_USD_PRICE) /
+			// 		BigNumber(10 ** fromToken.value.decimals)
+			// 	).toString(), 2)
 		}
 	})
 
@@ -185,7 +186,7 @@ function setAmount(val) {
 						<Text size="14" color="secondary">From</Text>
 
 						<Flex align="center" gap="6">
-							<img width="16" height="16" :src="loadImage(fromChain.logo)" :class="$style.logo" />
+							<img width="16" height="16" :src="loadImage(fromChain.logo)" :class="$style.logo" alt="" />
 							<Text size="13" weight="semibold" color="primary">{{ capitilize(fromChain.name) }}</Text>
 						</Flex>
 					</Flex>
@@ -204,14 +205,22 @@ function setAmount(val) {
 
 							<Flex align="center" gap="4">
 								<Icon name="banknote" size="14" color="tertiary" />
-								<Text
-									size="12"
-									weight="semibold"
-									color="tertiary"
-									:class="[$style.cursor_pointer]"
-									@click="setAmount(fromToken.prettyBalance)">
-									{{ fromToken.prettyBalance }}
-								</Text>
+								<Tooltip delay="300">
+									<Text
+										size="12"
+										weight="semibold"
+										color="tertiary"
+										:class="[$style.cursor_pointer]"
+										@click="setAmount(amountToString(fromToken.balance, fromToken.decimals))"
+									>
+										{{ amountToString(fromToken.balance, fromToken.decimals, true) }}
+									</Text>
+									<template #content>
+										<Text size="10" color="tertiary">
+											{{ amountToString(fromToken.balance, fromToken.decimals) }}
+										</Text>
+									</template>
+								</Tooltip>
 							</Flex>
 						</Flex>
 					</Flex>
@@ -226,7 +235,7 @@ function setAmount(val) {
 						<Text size="14" color="secondary">To</Text>
 
 						<Flex align="center" gap="6">
-							<img width="16" height="16" :src="loadImage(toChain.logo)" :class="$style.logo" />
+							<img width="16" height="16" :src="loadImage(toChain.logo)" :class="$style.logo" alt="" />
 							<Text size="13" weight="semibold" color="primary">{{ capitilize(toChain.name) }}</Text>
 						</Flex>
 					</Flex>
@@ -245,31 +254,38 @@ function setAmount(val) {
 
 							<Flex align="center" gap="4">
 								<Icon name="banknote" size="14" color="tertiary" />
-								<Text
-									size="12"
-									weight="semibold"
-									color="tertiary"
-									:class="[$style.cursor_pointer]"
-									@click="setAmount(toToken.prettyBalance)"
-								>
-									{{ toToken.prettyBalance }}
-								</Text>
+								<Tooltip delay="300">
+									<Text
+										size="12"
+										weight="semibold"
+										color="tertiary"
+										:class="[$style.cursor_pointer]"
+										@click="setAmount(amountToString(toToken.balance, toToken.decimals))"
+									>
+										{{ amountToString(toToken.balance, toToken.decimals, true) }}
+									</Text>
+									<template #content>
+										<Text size="10" color="tertiary">
+											{{ amountToString(toToken.balance, toToken.decimals) }}
+										</Text>
+									</template>
+								</Tooltip>
 							</Flex>
 						</Flex>
 					</Flex>
 				</Flex>
 			</Flex>
 
-<!--			<Flex direction="column" gap="12" :class="$style.metadata">-->
-<!--				<Flex align="center" justify="between">-->
-<!--					<Text size="13" color="tertiary">Estimated Time</Text>-->
-<!--					<Text size="13" color="secondary">15 min</Text>-->
-<!--				</Flex>-->
-<!--				<Flex align="center" justify="between">-->
-<!--					<Text size="13" color="tertiary">Estimated Gas Fee</Text>-->
-<!--					<Text size="13" color="secondary">$2.62</Text>-->
-<!--				</Flex>-->
-<!--			</Flex>-->
+			<Flex direction="column" gap="12" :class="$style.metadata">
+				<Flex align="center" justify="between">
+					<Text size="13" color="tertiary">Estimated Time</Text>
+					<Text size="13" color="secondary">15 min</Text>
+				</Flex>
+				<Flex align="center" justify="between">
+					<Text size="13" color="tertiary">Estimated Gas Fee</Text>
+					<Text size="13" color="secondary">$2.62</Text>
+				</Flex>
+			</Flex>
 
 			<Flex>
 				<RouterLink v-if="!isWalletsConnected" to="/config" :class="[$style.button, $style.connect_wallets]">
@@ -295,6 +311,13 @@ function setAmount(val) {
 					<Text v-else size="16" color="black"> Enter amount to {{ fromChain.name === 'tezos' ? 'deposit' : 'withdraw' }} </Text>
 				</Flex>
 			</Flex>
+		</Flex>
+		
+		<Flex v-if="recentTransfers.length > 0" direction="column" align="center" gap="4">
+			<Flex :class="$style.transfers_header" align="center" flex="start">
+				<Text size="16" color="tertiary">Recent transfers</Text>
+			</Flex>
+			<div :class="$style.divider" />
 		</Flex>
 
 		<TransfersList :transfers="recentTransfers" direction="row" />
@@ -385,7 +408,7 @@ function setAmount(val) {
 	border-radius: 5px;
 }
 
-.selector {
+/* .selector {
 	background: #111111;
 	border-radius: 500px;
 	cursor: pointer;
@@ -405,13 +428,13 @@ function setAmount(val) {
 	&:active {
 		box-shadow: 0 0 0 2px var(--op-5);
 	}
-}
+} */
 
 .input {
 	width: 100%;
 
 	font-size: 28px;
-	font-family: "ClashGrotesk";
+	font-family: "ClashGrotesk", "sans-serif";
 	color: var(--txt-primary);
 
 	height: 28px;
@@ -458,6 +481,21 @@ function setAmount(val) {
 
 .connect_wallets {
 	background: var(--yellow);
+}
+
+.transfers_header {
+	width: 500px;
+
+	padding-left: 10px;
+}
+
+.divider {
+	width: 520px;
+
+	border-radius: 5px;
+	border-bottom: 2px solid var(--op-5);
+
+	margin-bottom: -30px;
 }
 
 .cursor_pointer {

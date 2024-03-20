@@ -1,7 +1,7 @@
 import BigNumber from "bignumber.js"
 
 export const isEven = (n) => {
-    return (n % 2 == 0)
+    return (n % 2 === 0)
 }
 
 export const comma = (target, symbol = ",", fixed = 2) => {
@@ -44,14 +44,16 @@ export const purgeNumber = (target) => {
 	return purgedString;
 }
 
-export const prettyNumber = (target, decimalsCount = 12) => {
+export const prettyNumber = (target, decimalsCount = 12, short = false) => {
 	// gets purged num string returns i
 	// returns number in format 10 122.123213213
+	if (decimalsCount === 0 && target === "0.") return '0';
 	const [integralPart, fractionalPart] = target.split(".")
 	const initialIntegralLength = integralPart.length;
 	const noSpaces = initialIntegralLength <= 3;
 	const noDecimalsCut = !fractionalPart || fractionalPart.length <= decimalsCount;
-	if (noSpaces && noDecimalsCut) return target;
+	const noShort = !short || fractionalPart?.length <= 3
+	if (noSpaces && noDecimalsCut && noShort) return target;
 	let prettyIntegralPart = integralPart;
 	let prettyFractionalPart = fractionalPart;
 	if (!noSpaces) {
@@ -64,12 +66,12 @@ export const prettyNumber = (target, decimalsCount = 12) => {
 		prettyIntegralPart = integralArray.join("");
 	}
 	if (!noDecimalsCut) prettyFractionalPart = fractionalPart?.slice(0, decimalsCount);
+	if (!noShort) prettyFractionalPart = prettyFractionalPart?.slice(0, 2) + "..."
 	return prettyIntegralPart + ((fractionalPart !== undefined && decimalsCount !== 0) ? "." + prettyFractionalPart : "")
 }
 
-export function amountToString(bigIntAmount, decimals) {
-	return prettyNumber((
-			BigNumber(bigIntAmount.toString()) /
-			BigNumber(10 ** decimals)
-		).toString(), decimals)
+export function amountToString(bigIntAmount, decimals, short = false) {
+	const bigNumAmount = BigNumber(bigIntAmount.toString()) / BigNumber(10 ** decimals)
+	if (short && bigNumAmount < BigNumber(0.01) && bigIntAmount !== 0n)return '<0.01'
+	return prettyNumber(bigNumAmount.toString(), decimals, short)
 }

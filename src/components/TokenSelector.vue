@@ -19,6 +19,7 @@ const {
 
 /** Components */
 import { Dropdown, DropdownItem } from "@/components/ui/Dropdown"
+import { amountToString } from "../services/utils/index.js"
 
 
 const props = defineProps({
@@ -71,7 +72,7 @@ const dropdownItems = computed(() => {
 	<Dropdown>
 		<template #trigger="{isOpen}">
 			<Flex align="center" gap="6" :class="$style.selector">
-				<img width="20" height="20" :src="loadImage(selectedToken.icon)" />
+				<img width="20" height="20" :src="loadImage(selectedToken.icon)" alt="" />
 				<Text size="16" color="primary"> {{ selectedToken.ticker }} </Text>
 				<Icon
 					name="chevron-right"
@@ -87,15 +88,16 @@ const dropdownItems = computed(() => {
 		<template #popup>
 			<DropdownItem v-for="item in dropdownItems" @click="selectedToken = item">
 				<Flex align="center" gap="6" wide>
-					<img width="20" height="20" :src="loadImage(item.icon)" :class="$style.img" />
+					<img width="20" height="20" :src="loadImage(item.icon)" :class="$style.img" alt="" />
 					<Flex align="center" justify="between" gap="12" wide>
 						<Flex direction="column" gap="2">
 							<Text size="13" color="primary"> {{ item.ticker }} </Text>
 
 							<Text size="11" color="tertiary"> {{ item.name }} </Text>
 						</Flex>
-
-						<Text size="13" color="primary"> {{ item.prettyBalance }} </Text>
+						<Text size="13" color="primary">
+							{{ amountToString(item.balance, item.decimals, true) }}
+						</Text>
 					</Flex>
 				</Flex>
 			</DropdownItem>

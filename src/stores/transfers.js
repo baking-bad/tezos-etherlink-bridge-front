@@ -7,9 +7,14 @@ import { v4 as uuidv4 } from "uuid"
 import { getSteps } from "@/services/utils";
 import TokenBridgeService from "@/services/tokenBridge"
 
+/** Stores */
+import { useNotificationsStore } from "@/stores/notifications.js";
+
 export const useTransfersStore = defineStore("transfers", () => {
 	const allTransfers = ref([])
 	const recentTransfers = ref([])
+
+	const notificationsStore = useNotificationsStore()
 
 	const tokenBridge = ref(TokenBridgeService.instances.tokenBridge)
 	tokenBridge.value.addEventListener('tokenTransferUpdated', updateTransfer)
@@ -30,9 +35,9 @@ export const useTransfersStore = defineStore("transfers", () => {
 	}
 
 	function updateTransfer(transfer) {
-		console.log('update', transfer);
+		// console.log('update', transfer);
 		let foundTransfers = searchTransfers(transfer)
-		console.log('found', foundTransfers);
+		// console.log('found', foundTransfers);
 		if (foundTransfers.length > 0) {
 			transfer.steps = getSteps(transfer)
 			foundTransfers.forEach(t => {
@@ -46,7 +51,7 @@ export const useTransfersStore = defineStore("transfers", () => {
 	}
 
 	function searchTransfers(transfer) {
-		console.log('start search', transfer);
+		// console.log('start search', transfer);
 		let res = [...recentTransfers.value, ...allTransfers.value]
 		
 		return res.filter(t => {
@@ -57,13 +62,27 @@ export const useTransfersStore = defineStore("transfers", () => {
 	function checkSubscribe(transfer) {
 		let lastStep = transfer.steps[transfer.steps?.length - 1]
 		if (!lastStep.passed && !transfer.subscribed) {
-			console.log('subscribe', transfer);
+			// console.log('subscribe', transfer);
 			tokenBridge.value.stream.subscribeToTokenTransfer(transfer)
 			transfer.subscribed = true
 		} else if (lastStep.passed && transfer.subscribed) {
-			console.log('unsubscribe', transfer);
+			// console.log('unsubscribe', transfer);
 			tokenBridge.value.stream.unsubscribeFromTokenTransfer(transfer)
 			transfer.subscribed = false
+			autoDestroy(transfer)
+		}
+	}
+
+	function autoDestroy(transfer) {
+		if (transfer.removable) {
+			transfer.autoDestroy = true
+			transfer.autoDestroyDelay = transfer.autoDestroyDelay ? transfer.autoDestroyDelay : 7000
+			setTimeout(
+				() => {
+					removeRecentTransfer(transfer)
+				},
+				transfer.autoDestroyDelay,
+			)
 		}
 	}
 

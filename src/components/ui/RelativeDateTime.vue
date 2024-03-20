@@ -1,13 +1,13 @@
 <script setup>
 /** Vendor */
-import { computed, onBeforeUnmount, onMounted, ref } from "vue"
+import { onBeforeUnmount, onMounted, ref } from "vue"
 import { DateTime } from 'luxon'
 
 /** Components */
 import Tooltip from "@/components/ui/Tooltip.vue";
 
 const props = defineProps({
-	time: String,
+	time: [String, Object],
 })
 
 const timeAgo = ref('')
