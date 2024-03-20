@@ -63,11 +63,11 @@ export const useTransfersStore = defineStore("transfers", () => {
 		let lastStep = transfer.steps[transfer.steps?.length - 1]
 		if (!lastStep.passed && !transfer.subscribed) {
 			// console.log('subscribe', transfer);
-			tokenBridge.value.stream.subscribeToTokenTransfer(transfer)
+			tokenBridge.value.stream.subscribeToOperationTokenTransfers(transfer)
 			transfer.subscribed = true
 		} else if (lastStep.passed && transfer.subscribed) {
 			// console.log('unsubscribe', transfer);
-			tokenBridge.value.stream.unsubscribeFromTokenTransfer(transfer)
+			tokenBridge.value.stream.unsubscribeFromOperationTokenTransfers(transfer)
 			transfer.subscribed = false
 			autoDestroy(transfer)
 		}

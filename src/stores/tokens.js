@@ -48,8 +48,8 @@ export const useTokensStore = defineStore("tokens", () => {
 
 	async function mergeBalances(tokenBridge) {
 		const addresses = await Promise.all( [
-			tokenBridge.getTezosConnectedAddress(),
-			tokenBridge.getEtherlinkConnectedAddress()
+			tokenBridge.getTezosSignerAddress(),
+			tokenBridge.getEtherlinkSignerAddress()
 		])
 		const balances = await Promise.all([
 			tokenBridge.data.getBalances(addresses[0]),

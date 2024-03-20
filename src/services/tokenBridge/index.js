@@ -1,6 +1,6 @@
 import {
 	TokenBridge, DefaultDataProvider,
-	defaultEtherlinkKernelAddress, defaultEtherlinkWithdrawPrecompileAddress
+	TaquitoWalletTezosBridgeBlockchainService, Web3EtherlinkBridgeBlockchainService
 } from '@baking-bad/tezos-etherlink-bridge-sdk'
 
 import { tokenPairs } from "@/services/cfg/tokens"
@@ -24,23 +24,17 @@ const instances = {
 
 const init = async () => {
 	instances.tokenBridge = new TokenBridge({
-		tezos: {
-			toolkit: tezos.instances.toolkit,
-			bridgeOptions: {
-				rollupAddress: 'sr1T4XVcVtBRzYy52edVTdgup9Kip4Wrmn97'
-			}
-		},
-		etherlink: {
-			toolkit: etherlink.instances.toolkit,
-			bridgeOptions: {
-				kernelAddress: defaultEtherlinkKernelAddress,
-				withdrawPrecompileAddress: defaultEtherlinkWithdrawPrecompileAddress
-			}
-		},
+		tezosBridgeBlockchainService: new TaquitoWalletTezosBridgeBlockchainService({
+			tezosToolkit: tezos.instances.toolkit,
+			smartRollupAddress: 'sr1T4XVcVtBRzYy52edVTdgup9Kip4Wrmn97'
+		}),
+		etherlinkBridgeBlockchainService: new Web3EtherlinkBridgeBlockchainService({
+			web3: etherlink.instances.toolkit
+		}),
 		bridgeDataProviders: {
-			tokens: defaultDataProvider,
+			transfers: defaultDataProvider,
 			balances: defaultDataProvider,
-			transfers: defaultDataProvider
+			tokens: defaultDataProvider,
 		}
 	})
 }

@@ -7,10 +7,10 @@ import { createWeb3Modal, defaultConfig } from "@web3modal/ethers/vue"
 /** Services */
 import { config } from "@/services/cfg"
 
-const instances = reactive({
+const instances = {
 	web3Modal: null,
 	toolkit: null,
-})
+}
 
 const init = () => {
 	instances.web3Modal = createWeb3Modal({

@@ -31,29 +31,12 @@ const isLoading = ref(false)
 const offset = ref(0)
 const limit = ref(20)
 
-const wallets = ref([])
-const fetchWallets = () => {
-	tokenBridge.getTezosConnectedAddress()
-	.then((res) => {
-		if (res) wallets.value.push(res)
-	}).catch(e => {})
-
-	tokenBridge.getEtherlinkConnectedAddress()
-	.then((res) => {
-		if (res) wallets.value.push(res)
-	}).catch(e => {})
-}
-
 const loadTransfers = () => {
 	if (isLoading.value) return
 
 	isLoading.value = true
 
-	if (wallets.value.length === 0) {
-		fetchWallets()
-	}
-
-	tokenBridge.data.getAccountTokenTransfers(wallets.value, offset.value, limit.value)
+	tokenBridge.data.getSignerTokenTransfers({ offset: offset.value, limit: limit.value })
 	.then((res) => {
 		transfersStore.addTransfers(res, 'all')
 		offset.value += limit.value
