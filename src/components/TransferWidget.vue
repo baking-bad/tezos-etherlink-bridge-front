@@ -39,10 +39,10 @@ const { recentTransfers } = storeToRefs(transfersStore)
 const reverseDirection = ref(false)
 const playRotateAnimation = ref(false)
 
-const FAKE_USD_PRICE = 3
+// const FAKE_USD_PRICE = 3
 const FAKE_TRANSFER_PRICE = 0.053
-const MAX_DIGITS = 4
-const FAKE_COMPUTED_TRANSFER_PRICE = computed(() => (!reverseDirection.value ? FAKE_TRANSFER_PRICE : 1 / FAKE_TRANSFER_PRICE))
+// const MAX_DIGITS = 4
+// const FAKE_COMPUTED_TRANSFER_PRICE = computed(() => (!reverseDirection.value ? FAKE_TRANSFER_PRICE : 1 / FAKE_TRANSFER_PRICE))
 
 const loadImage = (n) => new URL(`../assets/images/${n}.png`, import.meta.url).href
 
@@ -83,7 +83,7 @@ function calculateBigInt(stringAmount, decimals) {
 		BigNumber(10 ** decimals)
 	)
 }
-const USDAmount = ref("0")
+// const USDAmount = ref("0")
 watch(
 	() => [amount.value, fromToken?.value?.decimals, toToken?.value?.decimals],
 	([newAmount = "", newFromDecimals = 12, newToDecimals = 12]) => {
@@ -91,17 +91,17 @@ watch(
 		if (!newAmount.length) {
 			amount.value = ""
 			bigIntAmount.value = 0n
-			USDAmount.value = "0"
+			// USDAmount.value = "0"
 		}
 		else {
 			amount.value = normalizeAmount(newAmount, newDecimals)
 			bigIntAmount.value = calculateBigInt(amount.value, newDecimals)
-			USDAmount.value = prettyNumber(
-				(
-					BigNumber(bigIntAmount.value.toString()) *
-					BigNumber(FAKE_USD_PRICE) /
-					BigNumber(10 ** fromToken.value.decimals)
-				).toString(), 2)
+			// USDAmount.value = prettyNumber(
+			// 	(
+			// 		BigNumber(bigIntAmount.value.toString()) *
+			// 		BigNumber(FAKE_USD_PRICE) /
+			// 		BigNumber(10 ** fromToken.value.decimals)
+			// 	).toString(), 2)
 		}
 	})
 
@@ -185,7 +185,7 @@ function setAmount(val) {
 						<Text size="14" color="secondary">From</Text>
 
 						<Flex align="center" gap="6">
-							<img width="16" height="16" :src="loadImage(fromChain.logo)" :class="$style.logo" />
+							<img width="16" height="16" :src="loadImage(fromChain.logo)" :class="$style.logo" alt="" />
 							<Text size="13" weight="semibold" color="primary">{{ capitilize(fromChain.name) }}</Text>
 						</Flex>
 					</Flex>
@@ -226,7 +226,7 @@ function setAmount(val) {
 						<Text size="14" color="secondary">To</Text>
 
 						<Flex align="center" gap="6">
-							<img width="16" height="16" :src="loadImage(toChain.logo)" :class="$style.logo" />
+							<img width="16" height="16" :src="loadImage(toChain.logo)" :class="$style.logo" alt="" />
 							<Text size="13" weight="semibold" color="primary">{{ capitilize(toChain.name) }}</Text>
 						</Flex>
 					</Flex>
@@ -392,33 +392,33 @@ function setAmount(val) {
 	border-radius: 5px;
 }
 
-.selector {
-	background: #111111;
-	border-radius: 500px;
-	cursor: pointer;
-
-	padding: 6px;
-
-	transition: all 0.2s ease;
-
-	& img {
-		border-radius: 50%;
-	}
-
-	&:hover {
-		box-shadow: 0 0 0 1px var(--op-5);
-	}
-
-	&:active {
-		box-shadow: 0 0 0 2px var(--op-5);
-	}
-}
+//.selector {
+//	background: #111111;
+//	border-radius: 500px;
+//	cursor: pointer;
+//
+//	padding: 6px;
+//
+//	transition: all 0.2s ease;
+//
+//	& img {
+//		border-radius: 50%;
+//	}
+//
+//	&:hover {
+//		box-shadow: 0 0 0 1px var(--op-5);
+//	}
+//
+//	&:active {
+//		box-shadow: 0 0 0 2px var(--op-5);
+//	}
+//}
 
 .input {
 	width: 100%;
 
 	font-size: 28px;
-	font-family: "ClashGrotesk";
+	font-family: "ClashGrotesk", "sans-serif";
 	color: var(--txt-primary);
 
 	height: 28px;

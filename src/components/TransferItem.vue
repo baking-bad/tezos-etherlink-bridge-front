@@ -21,8 +21,7 @@ import { getToken } from "@/services/cfg/tokens.js";
 import { useTransfersStore } from "@/stores/transfers.js"
 import { useTokensStore } from "@/stores/tokens.js"
 const tokensStore = useTokensStore()
-const { plainTokens } = storeToRefs(tokensStore)
-const { getTokenKey } = tokensStore
+const { tokensObject } = storeToRefs(tokensStore)
 
 const { removeRecentTransfer, updateTransfer } = useTransfersStore()
 const { tokenBridge } = TokenBridgeService.instances
@@ -41,15 +40,6 @@ const props = defineProps({
 const isProcessingWithdraw = ref(false)
 
 const loadImage = (n) => new URL(`../assets/images/${n}.png`, import.meta.url).href
-
-// const token = computed(() => {
-// 	return plainTokens.value.find((pt) => {
-// 		return getTokenKey(
-// 			(props.transfer.tezosOperation?.token && { fakeAddress: 'tezosNative' }) ||
-// 			(props.transfer.etherlinkOperation?.token && { fakeAddress: 'etherlinkNative' })
-// 		) === getTokenKey(pt)
-// 	})
-// })
 
 const operation = computed(() => {
 	let op = {}
@@ -134,7 +124,7 @@ const handleRemove = () => {
 		<Flex align="center" justify="between" :class="$style.header">
 			<Flex align="center" gap="8">
 				<Text> {{ amountToString(operation.source.amount, token.decimals) }} </Text>
-				<img width="20" height="20" :src="loadImage(token.icon)" :class="$style.img"/>
+				<img width="20" height="20" :src="loadImage(token.icon)" :class="$style.img" alt=""/>
 				<Text size="16" color="primary"> {{ token.ticker }} </Text>
 			</Flex>
 
@@ -146,14 +136,14 @@ const handleRemove = () => {
 
 		<Flex align="center" justify="between" gap="12" :class="$style.progress">
 			<Flex align="center" gap="6">
-				<img width="20" height="20" :src="loadImage(operation.source.chain)" :class="$style.img"/>
+				<img width="20" height="20" :src="loadImage(operation.source.chain)" :class="$style.img" alt=""/>
 				<Text size="16" color="primary"> {{ capitilize(operation.source.chain) }} </Text>
 			</Flex>
 
 			<Stepper :steps="transfer.steps" />
 
 			<Flex align="center" gap="6">
-				<img width="20" height="20" :src="loadImage(operation.destination.chain)" :class="$style.img"/>
+				<img width="20" height="20" :src="loadImage(operation.destination.chain)" :class="$style.img" alt=""/>
 				<Text size="16" color="primary"> {{ capitilize(operation.destination.chain) }} </Text>
 			</Flex>
 		</Flex>

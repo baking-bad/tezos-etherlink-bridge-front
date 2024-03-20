@@ -1,7 +1,7 @@
 import BigNumber from "bignumber.js"
 
 export const isEven = (n) => {
-    return (n % 2 == 0)
+    return (n % 2 === 0)
 }
 
 export const comma = (target, symbol = ",", fixed = 2) => {
@@ -47,6 +47,7 @@ export const purgeNumber = (target) => {
 export const prettyNumber = (target, decimalsCount = 12) => {
 	// gets purged num string returns i
 	// returns number in format 10 122.123213213
+	if (decimalsCount === 0 && target === "0.") return '0';
 	const [integralPart, fractionalPart] = target.split(".")
 	const initialIntegralLength = integralPart.length;
 	const noSpaces = initialIntegralLength <= 3;

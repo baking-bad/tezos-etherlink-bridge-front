@@ -71,11 +71,8 @@ export const isSameToken = (tokenA, tokenB) => {
 
 export const getToken = (chain, address) => {
 	let pair = tokenPairs.find(p => {
-        if (!address) {
-            return p[chain].type === 'native';
-        } else {
-            return p[chain].address === address;
-        }
+        if (!address) return p[chain].type === 'native';
+        return p[chain].address === address;
     })
 
 	return pair[chain]
