@@ -1,6 +1,7 @@
 import {
 	TokenBridge, DefaultDataProvider,
-	TaquitoWalletTezosBridgeBlockchainService, Web3EtherlinkBridgeBlockchainService
+	TaquitoWalletTezosBridgeBlockchainService, Web3EtherlinkBridgeBlockchainService,
+	loggerProvider as sdkLoggerProvider
 } from '@baking-bad/tezos-etherlink-bridge-sdk'
 
 import { tokenPairs } from "@/services/cfg/tokens"
@@ -37,6 +38,8 @@ const init = async () => {
 			tokens: defaultDataProvider,
 		}
 	})
+
+	window.sdkLoggerProvider = sdkLoggerProvider
 }
 
 export default { init, instances }
