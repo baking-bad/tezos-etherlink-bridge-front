@@ -392,27 +392,27 @@ function setAmount(val) {
 	border-radius: 5px;
 }
 
-//.selector {
-//	background: #111111;
-//	border-radius: 500px;
-//	cursor: pointer;
-//
-//	padding: 6px;
-//
-//	transition: all 0.2s ease;
-//
-//	& img {
-//		border-radius: 50%;
-//	}
-//
-//	&:hover {
-//		box-shadow: 0 0 0 1px var(--op-5);
-//	}
-//
-//	&:active {
-//		box-shadow: 0 0 0 2px var(--op-5);
-//	}
-//}
+/* .selector {
+	background: #111111;
+	border-radius: 500px;
+	cursor: pointer;
+
+	padding: 6px;
+
+	transition: all 0.2s ease;
+
+	& img {
+		border-radius: 50%;
+	}
+
+	&:hover {
+		box-shadow: 0 0 0 1px var(--op-5);
+	}
+
+	&:active {
+		box-shadow: 0 0 0 2px var(--op-5);
+	}
+} */
 
 .input {
 	width: 100%;
