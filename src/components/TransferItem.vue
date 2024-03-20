@@ -113,8 +113,10 @@ const finishWithdraw = async () => {
 	}).catch(e => {
 		if (e.title === 'Aborted') {
 			console.log(e.description);
+			isProcessingWithdraw.value = false
 		} else {
 			console.error(e);
+			isProcessingWithdraw.value = false
 		}
         // To do: catch for walletConnect abortions
     }).finally(() => {
