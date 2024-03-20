@@ -64,11 +64,19 @@ export const tokenPairs = [
 export const getTokenKey = (token) => {
 	return token?.address || token?.fakeAddress || undefined
 }
+
 export const isSameToken = (tokenA, tokenB) => {
 	return getTokenKey(tokenA) === getTokenKey(tokenB)
 }
 
+export const getToken = (chain, address) => {
+	let pair = tokenPairs.find(p => {
+        if (!address) {
+            return p[chain].type === 'native';
+        } else {
+            return p[chain].address === address;
+        }
+    })
 
-
-
-
+	return pair[chain]
+}

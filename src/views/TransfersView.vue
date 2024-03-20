@@ -60,36 +60,8 @@ const loadTransfers = () => {
 	}).finally(() => {
 		isLoading.value = false
 	})
-
-	// setTimeout(() => {
-	// 	Promise.all( [
-	// 	tokenBridge.getTezosConnectedAddress(),
-	// 	tokenBridge.getEtherlinkConnectedAddress()
-	// 	]).then((res) => {
-	// 		return tokenBridge.data.getAccountTokenTransfers(res, offset.value, limit.value)
-	// 	}).then((res) => {
-	// 		transfersStore.addTransfers(res, 'all')
-	// 		offset.value += limit.value
-	// 	}).finally(() => {
-	// 		isLoading.value = false
-	// })
-
-	// }, 5000);
-
-	// Promise.all([
-	// 	tokenBridge.getTezosConnectedAddress(),
-	// 	tokenBridge.getEtherlinkConnectedAddress()
-	// 	]).then((res) => {
-	// 		return tokenBridge.data.getAccountTokenTransfers(res, offset.value, limit.value)
-	// 	}).then((res) => {
-	// 		transfersStore.addTransfers(res, 'all')
-	// 		offset.value += limit.value
-	// 	}).finally(() => {
-	// 		isLoading.value = false
-	// })
-
 }
-// await fetchWallets()
+
 loadTransfers()
 
 /** Filters */

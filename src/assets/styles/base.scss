@@ -33,6 +33,7 @@ $grayscale: (
 	--orange: #ff5a17;
 	--yellow: #f2c94c;
 	--green: #59ad8c;
+	--gray: #363739;
 
 	/* Grayscale */
 	@each $gray, $value in $grayscale {

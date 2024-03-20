@@ -4,6 +4,7 @@ import { computed, ref } from "vue"
 import { storeToRefs } from "pinia"
 
 /** Components */
+import CountdownBar from "@/components/ui/CountdownBar.vue";
 import ExplorerLink from "@/components/ExplorerLink.vue"
 import RelativeDateTime from "@/components/ui/RelativeDateTime.vue"
 import Stepper from "@/components/ui/Stepper.vue"
@@ -11,7 +12,10 @@ import Spinner from "@/components/ui/Spinner.vue"
 
 /** Services */
 import TokenBridgeService from "@/services/tokenBridge"
-import { capitilize, getStatus, parseTime } from "@/services/utils"
+import { amountToString, capitilize, getStatus, parseTime } from "@/services/utils"
+
+/** Config */
+import { getToken } from "@/services/cfg/tokens.js";
 
 /** Stores */
 import { useTransfersStore } from "@/stores/transfers.js"
@@ -38,14 +42,14 @@ const isProcessingWithdraw = ref(false)
 
 const loadImage = (n) => new URL(`../assets/images/${n}.png`, import.meta.url).href
 
-const token = computed(() => {
-	return plainTokens.value.find((pt) => {
-		return getTokenKey(
-			(props.transfer.tezosOperation?.token && { fakeAddress: 'tezosNative' }) ||
-			(props.transfer.etherlinkOperation?.token && { fakeAddress: 'etherlinkNative' })
-		) === getTokenKey(pt)
-	})
-})
+// const token = computed(() => {
+// 	return plainTokens.value.find((pt) => {
+// 		return getTokenKey(
+// 			(props.transfer.tezosOperation?.token && { fakeAddress: 'tezosNative' }) ||
+// 			(props.transfer.etherlinkOperation?.token && { fakeAddress: 'etherlinkNative' })
+// 		) === getTokenKey(pt)
+// 	})
+// })
 
 const operation = computed(() => {
 	let op = {}
@@ -53,14 +57,18 @@ const operation = computed(() => {
 	op.status = getStatus(props.transfer.status)
 
 	const tezosOperation = {
+		amount: props.transfer.tezosOperation?.amount,
 		chain: 'tezos',
 		opHash: props.transfer.tezosOperation?.hash,
+		token: props.transfer.tezosOperation?.token,
 		time: parseTime(props.transfer.tezosOperation?.timestamp),
 	}
 
 	const etherlinkOperation = {
+		amount: props.transfer.etherlinkOperation?.amount,
 		chain: 'etherlink',
 		opHash: props.transfer.etherlinkOperation?.hash,
+		token: props.transfer.etherlinkOperation?.token,
 		time: parseTime(props.transfer.etherlinkOperation?.timestamp),
 	}
 
@@ -77,6 +85,10 @@ const operation = computed(() => {
 	}
 
 	return op
+})
+
+const token = computed(() => {
+	return getToken(operation.value.source.chain, operation.value.source.token.address)
 })
 
 const statusStyle = computed(() => {
@@ -97,7 +109,6 @@ const finishWithdraw = async () => {
 
 	tokenBridge.finishWithdraw(props.transfer)
 	.then((res) => {
-		console.log('finish', res);
 		updateTransfer(res.tokenTransfer)
 	}).catch(e => {
 		if (e.title === 'Aborted') {
@@ -107,7 +118,6 @@ const finishWithdraw = async () => {
 		}
         // To do: catch for walletConnect abortions
     }).finally(() => {
-		console.log('finally');
 		// isProcessingWithdraw.value = false
 	})
 }
@@ -121,6 +131,7 @@ const handleRemove = () => {
 	<Flex direction="column" gap="10" :class="$style.transfer">
 		<Flex align="center" justify="between" :class="$style.header">
 			<Flex align="center" gap="8">
+				<Text> {{ amountToString(operation.source.amount, token.decimals) }} </Text>
 				<img width="20" height="20" :src="loadImage(token.icon)" :class="$style.img"/>
 				<Text size="16" color="primary"> {{ token.ticker }} </Text>
 			</Flex>
@@ -166,20 +177,18 @@ const handleRemove = () => {
 		</Flex>
 
 		<Flex justify="center">
-		<Flex v-if="transfer.status === 200" @click="finishWithdraw" align="center" justify="center" :class="[$style.button, isProcessingWithdraw && $style.disabled]" wide>
-			<Flex v-if="isProcessingWithdraw" gap="6">
-				<Spinner size="14" />
-				<Text size="16" color="black">Processing..</Text>
+			<Flex v-if="transfer.status === 200" @click="finishWithdraw" align="center" justify="center" :class="[$style.button, isProcessingWithdraw && $style.disabled]" wide>
+				<Flex v-if="isProcessingWithdraw" gap="6">
+					<Spinner size="14" />
+
+					<Text size="16" color="black">Processing..</Text>
+				</Flex>
+				
+				<Text v-else size="16" color="black">Finish withdraw</Text>
 			</Flex>
-			
-			<Text v-else size="16" color="black">Finish withdraw</Text>
-		</Flex>
 		</Flex>
 
-
-		<!-- <Flex>
-			<Text>{{ tokenWithAmount }} from {{ transfer.source }} to {{ transfer.receiver }}</Text>
-		</Flex> -->
+		<CountdownBar :start="transfer.autoDestroy" :destroyTime="transfer.autoDestroyDelay" title="Transfer complited" subtitle :class="$style.countdown" />
 	</Flex>
 </template>
 
@@ -192,7 +201,7 @@ const handleRemove = () => {
 	background: var(--card-background);
 	box-shadow: inset 0 0 0 2px var(--op-5);
 
-	padding: 16px 16px 12px 16px;
+	padding: 16px 16px 6px 16px;
 
 	margin: 16px;
 
@@ -255,5 +264,9 @@ const handleRemove = () => {
 	opacity: 0.4;
 	cursor: auto;
 	pointer-events: none;
+}
+
+.countdown {
+	margin-top: -8px;
 }
 </style>

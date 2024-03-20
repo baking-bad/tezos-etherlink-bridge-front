@@ -277,6 +277,13 @@ watch(
 				</Flex>
 			</Flex>
 		</Flex>
+		
+		<Flex v-if="recentTransfers.length > 0" direction="column" align="center" gap="4">
+			<Flex :class="$style.transfers_header" align="center" flex="start">
+				<Text size="16" color="tertiary">Recent transfers</Text>
+			</Flex>
+			<div :class="$style.divider" />
+		</Flex>
 
 		<TransfersList :transfers="recentTransfers" direction="row" />
 	</Flex>
@@ -439,5 +446,20 @@ watch(
 
 .connect_wallets {
 	background: var(--yellow);
+}
+
+.transfers_header {
+	width: 500px;
+
+	padding-left: 10px;
+}
+
+.divider {
+	width: 520px;
+
+	border-radius: 5px;
+	border-bottom: 2px solid var(--op-5);
+
+	margin-bottom: -30px;
 }
 </style>
