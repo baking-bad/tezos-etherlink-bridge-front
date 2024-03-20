@@ -24,6 +24,11 @@ const router = createRouter({
 			name: "Config",
 			component: ConnectView,
 		},
+		{
+			path: '/:catchAll(.*)*',
+			name: "NotFound",
+			redirect: { name: "Bridge" }
+		}
 	],
 })
 
