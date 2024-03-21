@@ -34,6 +34,7 @@ export const useTokensStore = defineStore("tokens", () => {
 		tokensObject.value[getTokenKey(tezos)] = tezos
 		tokensObject.value[getTokenKey(etherlink)] = etherlink
 	})
+
 	const tezosNativeToken = computed(() => tokensObject.value.tezosNative)
 	const etherlinkNativeToken = computed(() => tokensObject.value.etherlinkNative)
 
@@ -50,28 +51,20 @@ export const useTokensStore = defineStore("tokens", () => {
 	}
 
 	async function mergeBalances(tokenBridge) {
+		let balances = []
+		function flattenBalances(chainBalances, fakeNativeAddress) {
+			if (!chainBalances?.tokenBalances?.length) return;
+			chainBalances.tokenBalances.forEach((tb) => {
+				if (tb.token.type === 'native') {
+					tb.token.fakeAddress = fakeNativeAddress
+				}
+				balances.push(tb)
+			})
+		}
 		const { tezosSignerBalances, etherlinkSignerBalances } = await tokenBridge.data.getSignerBalances()
 
-		let balances = []
-		if (tezosSignerBalances) {
-			tezosSignerBalances.tokenBalances.forEach((tb) => {
-				if (tb.token.type === 'native') {
-					tb.token.fakeAddress = 'tezosNative'
-				}
-
-				balances.push(tb)
-			})
-		}
-
-		if (etherlinkSignerBalances) {
-			etherlinkSignerBalances.tokenBalances.forEach((tb) => {
-				if (tb.token.type === 'native') {
-					tb.token.fakeAddress = 'etherlinkNative'
-				}
-
-				balances.push(tb)
-			})
-		}
+		flattenBalances(tezosSignerBalances, 'tezosNative')
+		flattenBalances(etherlinkSignerBalances, 'etherlinkNative')
 
 		balances.forEach((b) => {
 			tokensObject.value[getTokenKey(b.token)].balance = b.balance

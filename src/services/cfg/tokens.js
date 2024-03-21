@@ -65,6 +65,8 @@ export const getTokenKey = (token) => {
 	return token?.address || token?.fakeAddress || undefined
 }
 
+// TODO: add id for fa2 tokens, maybe get rid of fakeAddress and make it address
+
 export const isSameToken = (tokenA, tokenB) => {
 	return getTokenKey(tokenA) === getTokenKey(tokenB)
 }
