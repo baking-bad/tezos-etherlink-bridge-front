@@ -137,6 +137,7 @@ async function testTransfer() {
 	const _address = fromToken.value.address
 	const _token = {
 		type: fromToken.value.type,
+		tokenId: fromToken.value.tokenId,
 		...(_address && {address: _address})
 	}
 

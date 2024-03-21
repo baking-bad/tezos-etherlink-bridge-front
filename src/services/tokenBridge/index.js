@@ -7,7 +7,6 @@ import {
 import { tokenPairs } from "@/services/cfg/tokens"
 import etherlink from "@/services/etherlink"
 import tezos from "@/services/tezos"
-import { reactive } from "vue"
 
 const defaultDataProvider = new DefaultDataProvider({
 	dipDup: {

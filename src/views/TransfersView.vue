@@ -120,6 +120,7 @@ onBeforeUnmount(() => {
 				</template>
 			</Dropdown>
 		</Flex>
+
 		<Flex v-if="isLoading" :class="$style.overlay">
 			<Flex align="center" gap="10" :class="$style.spinner">
 				<Spinner size="20" />
@@ -127,9 +128,15 @@ onBeforeUnmount(() => {
 				<!-- To do (?): for looong loading -->
 			</Flex>
 		</Flex>
+
 		<TransfersList
+			v-if="allTransfers.length > 0"
 			:transfers="allTransfers"
 		/>
+
+		<Flex v-else-if="!isLoading" :class="$style.empty">
+			<Text size="16" color="secondary">No transfers found . . .</Text>
+		</Flex>
 
 	</Flex>
 </template>
@@ -162,5 +169,9 @@ onBeforeUnmount(() => {
   height: 100%;
   background-color: rgba(0, 0, 0, 0.1);
   z-index: 999;
+}
+
+.empty {
+	padding-top: 50px;
 }
 </style>
