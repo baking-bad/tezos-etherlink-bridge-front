@@ -53,8 +53,7 @@ export const useTokensStore = defineStore("tokens", () => {
 	async function mergeBalances(tokenBridge) {
 		let balances = []
 		function flattenBalances(chainBalances, fakeNativeAddress) {
-			if (!chainBalances?.tokenBalances?.length) return;
-			chainBalances.tokenBalances.forEach((tb) => {
+			chainBalances?.tokenBalances?.forEach((tb) => {
 				if (tb.token.type === 'native') {
 					tb.token.fakeAddress = fakeNativeAddress
 				}
