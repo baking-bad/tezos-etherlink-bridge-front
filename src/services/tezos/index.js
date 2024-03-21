@@ -1,5 +1,4 @@
 /** Vendor */
-import { reactive } from "vue"
 import { BeaconWallet } from "@taquito/beacon-wallet"
 import { TezosToolkit } from "@taquito/taquito"
 import { NetworkType, ColorMode } from "@airgap/beacon-types"

@@ -31,29 +31,12 @@ const isLoading = ref(false)
 const offset = ref(0)
 const limit = ref(20)
 
-const wallets = ref([])
-const fetchWallets = () => {
-	tokenBridge.getTezosConnectedAddress()
-	.then((res) => {
-		if (res) wallets.value.push(res)
-	}).catch(e => {})
-
-	tokenBridge.getEtherlinkConnectedAddress()
-	.then((res) => {
-		if (res) wallets.value.push(res)
-	}).catch(e => {})
-}
-
 const loadTransfers = () => {
 	if (isLoading.value) return
 
 	isLoading.value = true
 
-	if (wallets.value.length === 0) {
-		fetchWallets()
-	}
-
-	tokenBridge.data.getAccountTokenTransfers(wallets.value, offset.value, limit.value)
+	tokenBridge.data.getSignerTokenTransfers({ offset: offset.value, limit: limit.value })
 	.then((res) => {
 		transfersStore.addTransfers(res, 'all')
 		offset.value += limit.value
@@ -137,6 +120,7 @@ onBeforeUnmount(() => {
 				</template>
 			</Dropdown>
 		</Flex>
+
 		<Flex v-if="isLoading" :class="$style.overlay">
 			<Flex align="center" gap="10" :class="$style.spinner">
 				<Spinner size="20" />
@@ -144,9 +128,15 @@ onBeforeUnmount(() => {
 				<!-- To do (?): for looong loading -->
 			</Flex>
 		</Flex>
+
 		<TransfersList
+			v-if="allTransfers.length > 0"
 			:transfers="allTransfers"
 		/>
+
+		<Flex v-else-if="!isLoading" :class="$style.empty">
+			<Text size="16" color="secondary">No transfers found . . .</Text>
+		</Flex>
 
 	</Flex>
 </template>
@@ -179,5 +169,9 @@ onBeforeUnmount(() => {
   height: 100%;
   background-color: rgba(0, 0, 0, 0.1);
   z-index: 999;
+}
+
+.empty {
+	padding-top: 50px;
 }
 </style>

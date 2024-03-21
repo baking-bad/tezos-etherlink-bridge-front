@@ -47,18 +47,30 @@ export const useTokensStore = defineStore("tokens", () => {
 	}
 
 	async function mergeBalances(tokenBridge) {
-		const addresses = await Promise.all( [
-			tokenBridge.getTezosConnectedAddress(),
-			tokenBridge.getEtherlinkConnectedAddress()
-		])
-		const balances = await Promise.all([
-			tokenBridge.data.getBalances(addresses[0]),
-			tokenBridge.data.getBalances(addresses[1])
-		])
-		balances[0].tokenBalances[0].token.fakeAddress = 'tezosNative'
-		balances[1].tokenBalances[0].token.fakeAddress = 'etherlinkNative';
-		// breaks without ;
-		[...balances[0].tokenBalances, ...balances[1].tokenBalances].forEach((b) => {
+		const { tezosSignerBalances, etherlinkSignerBalances } = await tokenBridge.data.getSignerBalances()
+
+		let balances = []
+		if (tezosSignerBalances) {
+			tezosSignerBalances.tokenBalances.forEach((tb) => {
+				if (tb.token.type === 'native') {
+					tb.token.fakeAddress = 'tezosNative'
+				}
+
+				balances.push(tb)
+			})
+		}
+
+		if (etherlinkSignerBalances) {
+			etherlinkSignerBalances.tokenBalances.forEach((tb) => {
+				if (tb.token.type === 'native') {
+					tb.token.fakeAddress = 'etherlinkNative'
+				}
+
+				balances.push(tb)
+			})
+		}
+
+		balances.forEach((b) => {
 			tokensObject.value[getTokenKey(b.token)].balance = b.balance
 		})
 	}
