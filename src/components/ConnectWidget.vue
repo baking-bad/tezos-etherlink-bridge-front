@@ -89,9 +89,9 @@ const handleDisconnectEtherlink = async () => {
 
 			<Flex direction="column" align="center" gap="8">
 				<Flex align="center" gap="6">
-					<img width="20" height="20" src="@/assets/images/etherlink.png" />
-					<Text size="20" color="primary">Etherlink</Text>
+					<!-- <img width="20" height="20" src="@/assets/images/etherlink.png" /> -->
 					<Icon name="logo" size="20" color="primary" />
+					<Text size="20" color="primary">Etherlink</Text>
 					<Text size="20" color="primary">Bridge</Text>
 					<Text size="20" color="secondary">uses</Text>
 				</Flex>
