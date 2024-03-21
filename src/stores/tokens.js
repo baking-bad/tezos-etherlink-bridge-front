@@ -1,8 +1,11 @@
 import { defineStore } from "pinia"
 import { tokenPairs, getTokenKey, isSameToken } from "@/services/cfg/tokens.js"
-import { computed, ref } from "vue"
+import { computed, ref, watch } from "vue"
 import { prettyNumber } from "@/services/utils/index.js"
 import BigNumber from "bignumber.js"
+import { useWeb3ModalProvider } from "@web3modal/ethers/vue"
+import etherlink from "@/services/etherlink"
+import TokenBridge from "@/services/tokenBridge"
 
 export const useTokensStore = defineStore("tokens", () => {
 	function modifyPair({tezos, etherlink}) {
@@ -74,6 +77,16 @@ export const useTokensStore = defineStore("tokens", () => {
 			tokensObject.value[getTokenKey(b.token)].balance = b.balance
 		})
 	}
+
+	const { walletProvider } = useWeb3ModalProvider()
+	watch(
+		() => walletProvider.value,
+		async (newVal) => {
+			etherlink.instances.toolkit.setProvider(newVal)
+			const { tokenBridge } = TokenBridge.instances
+			await mergeBalances(tokenBridge)
+		},
+	)
 	return  {
 		tokenPairs,
 		modifiedTokenPairs,

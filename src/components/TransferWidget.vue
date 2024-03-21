@@ -32,7 +32,6 @@ const {
 	etherlinkTokens,
 } = storeToRefs(tokensStore)
 const { isPairedToken, isSameToken, getPairedToken } = tokensStore
-tokensStore.mergeBalances(tokenBridge)
 const transfersStore = useTransfersStore()
 const { recentTransfers } = storeToRefs(transfersStore)
 // tokenBridge.addEventListener('tokenTransferUpdated', transfersStore.updateTransfer)
