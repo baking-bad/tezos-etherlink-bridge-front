@@ -10,9 +10,9 @@ import { ConnectionStatus } from "@/services/constants/wallets"
 import { useTezos } from "@/composables/tezos.js"
 import { useEtherlink } from "@/composables/etherlink.js"
 
-const { status: tezosStatus } = useTezos()
-const { status: etherlinkStatus } = useEtherlink()
-const isConnected = computed(() => tezosStatus.value === ConnectionStatus.CONNECTED && etherlinkStatus.value === ConnectionStatus.CONNECTED)
+// const { status: tezosStatus } = useTezos()
+// const { status: etherlinkStatus } = useEtherlink()
+// const isConnected = computed(() => tezosStatus.value === ConnectionStatus.CONNECTED && etherlinkStatus.value === ConnectionStatus.CONNECTED)
 
 const route = useRoute()
 

@@ -6,6 +6,7 @@ import { RouterView } from "vue-router"
 import Notifications from "@/components/Notifications.vue";
 import TheHeader from "@/components/TheHeader.vue"
 import TheFooter from "@/components/TheFooter.vue"
+import WalletsStoreDemo from "@/components/WalletsStoreDemo.vue"
 </script>
 
 <template>
@@ -21,6 +22,8 @@ import TheFooter from "@/components/TheFooter.vue"
 			</transition>
 		</RouterView>
 	</div>
+
+	<WalletsStoreDemo />
 	
 	<Notifications />
 

@@ -14,26 +14,26 @@ import { ConnectionStatus } from "@/services/constants/wallets"
 import { useTezos } from "@/composables/tezos.js"
 import { useEtherlink } from "@/composables/etherlink.js"
 
-const { address: tezosAddress, status: tezosStatus, connect: connectTezos, disconnect: disconnectTezos } = useTezos()
-const { address: etherlinkAddress, status: etherlinkStatus, connect: connectEtherlink, disconnect: disconnectEtherlink } = useEtherlink()
+// const { address: tezosAddress, status: tezosStatus, connect: connectTezos, disconnect: disconnectTezos } = useTezos()
+// const { address: etherlinkAddress, status: etherlinkStatus, connect: connectEtherlink, disconnect: disconnectEtherlink } = useEtherlink()
 
-const isReady = computed(() => tezosStatus.value === ConnectionStatus.CONNECTED && etherlinkStatus.value === ConnectionStatus.CONNECTED)
+// const isReady = computed(() => tezosStatus.value === ConnectionStatus.CONNECTED && etherlinkStatus.value === ConnectionStatus.CONNECTED)
 
-const handleConnectTezos = async () => {
-	connectTezos()
-}
-
-const handleConnectEtherlink = async () => {
-	connectEtherlink()
-}
-
-const handleDisconnectTezos = async () => {
-	disconnectTezos()
-}
-
-const handleDisconnectEtherlink = async () => {
-	disconnectEtherlink()
-}
+// const handleConnectTezos = async () => {
+// 	connectTezos()
+// }
+//
+// const handleConnectEtherlink = async () => {
+// 	connectEtherlink()
+// }
+//
+// const handleDisconnectTezos = async () => {
+// 	disconnectTezos()
+// }
+//
+// const handleDisconnectEtherlink = async () => {
+// 	disconnectEtherlink()
+// }
 
 </script>
 
