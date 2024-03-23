@@ -37,7 +37,7 @@ const props = defineProps({
 		default: false,
 	}
 })
-console.log(props.transfer);
+
 const isProcessingWithdraw = ref(false)
 
 const loadImage = (n) => new URL(`../assets/images/${n}.png`, import.meta.url).href
@@ -75,7 +75,7 @@ const operation = computed(() => {
 		address: props.transfer.receiver,
 		...recieverOperation,
 	}
-	console.log('op', op);
+
 	return op
 })
 
@@ -179,7 +179,7 @@ const handleRemove = () => {
 			<RelativeDateTime v-if="operation.destination.time" :time="operation.destination.time" />
 			<Flex v-else-if="operation.estimatedExecuteTime" align="center" gap="3">
 				<Text size="14" color="secondary">Finish withdrawal</Text>
-				
+
 				<RelativeDateTime :time="operation.estimatedExecuteTime" />
 			</Flex>
 		</Flex>
