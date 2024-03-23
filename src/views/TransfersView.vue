@@ -48,7 +48,7 @@ const loadTransfers = () => {
 
 /** Filters */
 const selectedState = ref('All states')
-const transferStates = ref(getStates())
+const transferStates = ref(getStates().filter((s) => s !== 'Pending'))
 transferStates.value.unshift(selectedState.value)
 
 const selectedKind = ref('All transfers')
