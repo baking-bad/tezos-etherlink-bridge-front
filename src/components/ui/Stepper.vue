@@ -38,7 +38,7 @@ onMounted(() => {
 			<Tooltip v-if="i === 0">
 				<Flex
 					align="center"
-					:class="[$style.status, $style.passed]"
+					:class="[$style.status, s.passed && $style.passed, isFailed && $style.failed]"
 					:style="{
 						width: `${statusDotSize}px`,
 						height: `${statusDotSize}px`,

@@ -1,4 +1,4 @@
-import { config, statusMapping } from "@/services/cfg";
+import { config, statusMapping } from "@/services/cfg"
 
 export const getLinkToExplorer = (hash, network, type) => {
 	if (!hash) return ''
@@ -13,7 +13,7 @@ export const getStatus = (num) => {
 	return statusMapping[num]
 }
 
-export const getStatuses = () => {
+export const getStates = () => {
 	return Object.values(statusMapping)
 }
 

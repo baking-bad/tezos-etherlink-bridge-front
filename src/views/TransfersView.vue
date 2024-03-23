@@ -2,6 +2,7 @@
 /** Vendor */
 import { computed, onBeforeUnmount, onMounted, ref } from "vue"
 import { storeToRefs } from "pinia"
+import { BridgeTokenTransferStatus, BridgeTokenTransferKind } from '@baking-bad/tezos-etherlink-bridge-sdk';
 
 /** Components */
 import { Dropdown, DropdownItem } from "@/components/ui/Dropdown"
@@ -10,57 +11,74 @@ import Spinner from "@/components/ui/Spinner.vue"
 
 /** Services */
 import TokenBridgeService from "@/services/tokenBridge"
-const { tokenBridge } = TokenBridgeService.instances
-import { capitilize, getStatuses } from "@/services/utils"
-
+import { capitilize, getStates } from "@/services/utils"
 
 /** Store */
 import { useTransfersStore } from "@/stores/transfers.js"
 const transfersStore = useTransfersStore()
 const { allTransfers } = storeToRefs(transfersStore)
 
-const transfersListEl = ref(null)
-const handleScroll = () => {
-	if (transfersListEl.value.wrapper.scrollHeight - transfersListEl.value.wrapper.scrollTop - 600 <= transfersListEl.value.wrapper.clientHeight) {
-		loadTransfers()
-	}
-}
+const { tokenBridge } = TokenBridgeService.instances
 
 const isLoading = ref(false)
+const loadMore = ref(true)
 
 const offset = ref(0)
 const limit = ref(20)
 
 const loadTransfers = () => {
-	if (isLoading.value) return
-
 	isLoading.value = true
 
-	tokenBridge.data.getSignerTokenTransfers({ offset: offset.value, limit: limit.value })
+	tokenBridge.data.getSignerTokenTransfers({
+		filter: {
+			status: !isNaN(BridgeTokenTransferStatus[selectedState.value]) ? [BridgeTokenTransferStatus[selectedState.value]] : null,
+			kind: !isNaN(BridgeTokenTransferKind[selectedKind.value]) ? [BridgeTokenTransferKind[selectedKind.value]] : null,
+		},
+		offset: offset.value,
+		limit: limit.value,
+	})
 	.then((res) => {
-		transfersStore.addTransfers(res, 'all')
+		loadMore.value = res.length === limit.value
 		offset.value += limit.value
+		transfersStore.addTransfers(res, 'all')
 	}).finally(() => {
 		isLoading.value = false
 	})
 }
 
-loadTransfers()
-
 /** Filters */
-const selectedState = ref('all states')
-const transferStates = ref(getStatuses())
+const selectedState = ref('All states')
+const transferStates = ref(getStates())
 transferStates.value.unshift(selectedState.value)
-const handleStatusSelect = (status) => {
-	selectedState.value = status
-}
 
-const selectedKind = ref('all transfers')
-const transferKinds = ['all transfers', 'deposits', 'withdrawals']
+const selectedKind = ref('All transfers')
+const transferKinds = ['All transfers', 'Deposit', 'Withdrawal']
+
+const filtersChanged = () => {
+	transfersStore.clearStore()
+	loadMore.value = true
+	offset.value = 0
+	loadTransfers()
+}
 
 const handleKindSelect = (kind) => {
 	selectedKind.value = kind
+	filtersChanged()
 }
+
+const handleStatusSelect = (status) => {
+	selectedState.value = status
+	filtersChanged()
+}
+
+const transfersListEl = ref(null)
+const handleScroll = () => {
+	if (transfersListEl.value.wrapper.scrollHeight - transfersListEl.value.wrapper.scrollTop -300 <= transfersListEl.value.wrapper.clientHeight && loadMore.value && !isLoading.value) {
+		loadTransfers()
+	}
+}
+
+loadTransfers()
 
 onMounted(() => {
 	transfersListEl.value.wrapper.addEventListener('scroll', handleScroll)
@@ -78,7 +96,7 @@ onBeforeUnmount(() => {
 			<Dropdown>
 				<template #trigger="{isOpen}">
 					<Flex align="center" gap="6" :class="$style.selector">
-						<Text size="16" color="secondary"> {{ capitilize(selectedKind) }} </Text>
+						<Text size="16" color="secondary"> {{ selectedKind }} </Text>
 						<Icon
 							name="chevron-right"
 							size="14"
@@ -92,7 +110,7 @@ onBeforeUnmount(() => {
 				</template>
 				<template #popup>
 					<DropdownItem v-for="kind in transferKinds.filter(k => k !== selectedKind)" @click="handleKindSelect(kind)">
-						<Text size="13" color="secondary"> {{ capitilize(kind) }} </Text>
+						<Text size="13" color="secondary"> {{ kind }} </Text>
 					</DropdownItem>
 				</template>
 			</Dropdown>
@@ -101,7 +119,7 @@ onBeforeUnmount(() => {
 			<Dropdown>
 				<template #trigger="{isOpen}">
 					<Flex align="center" gap="6" :class="$style.selector">
-						<Text size="16" color="secondary"> {{ capitilize(selectedState) }} </Text>
+						<Text size="16" color="secondary"> {{ selectedState }} </Text>
 						<Icon
 							name="chevron-right"
 							size="14"
@@ -115,7 +133,7 @@ onBeforeUnmount(() => {
 				</template>
 				<template #popup>
 					<DropdownItem v-for="status in transferStates.filter(s => s !== selectedState)" @click="handleStatusSelect(status)">
-						<Text size="13" color="secondary"> {{ capitilize(status) }} </Text>
+						<Text size="13" color="secondary"> {{ status }} </Text>
 					</DropdownItem>
 				</template>
 			</Dropdown>

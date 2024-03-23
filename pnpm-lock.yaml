@@ -9,8 +9,8 @@ dependencies:
     specifier: ^4.1.2
     version: 4.1.2
   '@baking-bad/tezos-etherlink-bridge-sdk':
-    specifier: ^0.2.1
-    version: 0.2.1(@taquito/taquito@19.1.0)(web3@4.6.0)(ws@8.16.0)
+    specifier: ^0.2.2
+    version: 0.2.2(@taquito/taquito@19.1.0)(web3@4.6.0)(ws@8.16.0)
   '@taquito/beacon-wallet':
     specifier: 19.1.0
     version: 19.1.0
@@ -213,8 +213,8 @@ packages:
       '@babel/helper-validator-identifier': 7.22.20
       to-fast-properties: 2.0.0
 
-  /@baking-bad/tezos-etherlink-bridge-sdk@0.2.1(@taquito/taquito@19.1.0)(web3@4.6.0)(ws@8.16.0):
-    resolution: {integrity: sha512-2PprIrZ316Y/P0WBl7M8lXnrLxPO7fZZPJupE+j+GOVx4MvSZDbhzPgCJJEf3Fy1PfQfaEtbup2k9rtkVaQquQ==}
+  /@baking-bad/tezos-etherlink-bridge-sdk@0.2.2(@taquito/taquito@19.1.0)(web3@4.6.0)(ws@8.16.0):
+    resolution: {integrity: sha512-F0mQ9+kBnXY1F0p/6TUU6+dvpgM839aVEqDyYhc/I09Gt/17KLK+936lBZSLRI9e6TkTzFk0tc9qU/7B8aBQRg==}
     engines: {node: '>=20'}
     peerDependencies:
       '@taquito/taquito': '>=19.0.0'
