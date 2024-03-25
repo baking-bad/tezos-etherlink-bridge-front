@@ -2,9 +2,11 @@ import { defineStore } from "pinia"
 import TezService from '@/services/tezos'
 import EthService from '@/services/etherlink'
 import { watch, ref, computed, onMounted } from "vue"
-import { useDisconnect, useWeb3Modal, useWeb3ModalAccount } from "@web3modal/ethers/vue"
+import { useDisconnect, useWeb3Modal, useWeb3ModalAccount, useWeb3ModalProvider } from "@web3modal/ethers/vue"
 import { ConnectionStatus } from "@/services/constants/wallets.js"
 import TezosService from "@/services/tezos/index.js"
+import etherlink from "@/services/etherlink/index.js"
+import TokenBridge from "@/services/tokenBridge/index.js"
 
 export const useWalletsStore =  defineStore("wallets", () => {
 	const { address: ethAddress, isConnected: ethIsConnected } = useWeb3ModalAccount()
@@ -29,6 +31,7 @@ export const useWalletsStore =  defineStore("wallets", () => {
 
 	const tezAddress = ref()
 
+	//FIXME: remake to initTezos
 	onMounted(async () => {
 		if (tezAddress.value) return
 
@@ -42,23 +45,25 @@ export const useWalletsStore =  defineStore("wallets", () => {
 		}
 	})
 
-	// watch(
-	// 	() => address.value,
-	// 	() => {
-	// 		if (!address.value) return
-	//
-	// 		/** Listen for account changes */
-	// 		TezosService.instances.beacon.client.subscribeToEvent("ACTIVE_ACCOUNT_SET", async ({ address: addr }) => {
-	// 			if (addr) {
-	// 				address.value = addr
-	// 				status.value = ConnectionStatus.CONNECTED
-	// 			} else {
-	// 				address.value = null
-	// 				status.value = ConnectionStatus.NOT_CONNECTED
-	// 			}
-	// 		})
-	// 	},
-	// )
+	const tezSubscribed = ref(false)
+
+	watch(
+		() => tezAddress.value,
+		(newVal) => {
+			if (!newVal || !!tezSubscribed.value) return
+			/** Listen for account changes */
+			TezosService.instances.beacon.client.subscribeToEvent("ACTIVE_ACCOUNT_SET", async ({ address }) => {
+				if (address) {
+					tezAddress.value = address
+					tezStatus.value = ConnectionStatus.CONNECTED
+				} else {
+					tezAddress.value = null
+					tezStatus.value = ConnectionStatus.NOT_CONNECTED
+				}
+			})
+			tezSubscribed.value = true
+		},
+	)
 
 	const tezConnect = async () => {
 		try {
@@ -83,11 +88,18 @@ export const useWalletsStore =  defineStore("wallets", () => {
 	const allConnected = computed(() => {
 		return tezStatus.value === ConnectionStatus.CONNECTED && ethStatus.value === ConnectionStatus.CONNECTED
 	})
-	const wallet = ref(null);
+	const { walletProvider } = useWeb3ModalProvider()
 	watch(
-		() => [TezService.instances, EthService.instances],
-		([newTezInstances, newEthInstances]) => {
-			console.log(newTezInstances, newEthInstances)
+		() => walletProvider.value,
+		async (newVal) => {
+			etherlink.instances.toolkit.setProvider(newVal)
+		},
+	)
+
+	watch(
+		() => [tezAddress.value, ethAddress.value],
+		([newTezAddress, newEthAddress]) => {
+			console.log('get balances for addresses', [newTezAddress, newEthAddress])
 		}
 	)
 	return {
