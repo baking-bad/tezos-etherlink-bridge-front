@@ -1,12 +1,10 @@
 import { defineStore } from "pinia"
-import TezService from '@/services/tezos'
+// import TezService from '@/services/tezos'
 import EthService from '@/services/etherlink'
 import { watch, ref, computed, onMounted } from "vue"
 import { useDisconnect, useWeb3Modal, useWeb3ModalAccount, useWeb3ModalProvider } from "@web3modal/ethers/vue"
 import { ConnectionStatus } from "@/services/constants/wallets.js"
 import TezosService from "@/services/tezos/index.js"
-import etherlink from "@/services/etherlink/index.js"
-import TokenBridge from "@/services/tokenBridge/index.js"
 
 export const useWalletsStore =  defineStore("wallets", () => {
 	const { address: ethAddress, isConnected: ethIsConnected } = useWeb3ModalAccount()
@@ -92,7 +90,7 @@ export const useWalletsStore =  defineStore("wallets", () => {
 	watch(
 		() => walletProvider.value,
 		async (newVal) => {
-			etherlink.instances.toolkit.setProvider(newVal)
+			EthService.instances.toolkit.setProvider(newVal)
 		},
 	)
 
