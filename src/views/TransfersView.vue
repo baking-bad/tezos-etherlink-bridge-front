@@ -29,18 +29,21 @@ const limit = ref(20)
 
 const loadTransfers = async () => {
 	isLoading.value = true
-
-	const res = await tokenBridge.data.getSignerTokenTransfers({
-		filter: {
-			status: !isNaN(BridgeTokenTransferStatus[selectedState.value]) ? [BridgeTokenTransferStatus[selectedState.value]] : null,
-			kind: !isNaN(BridgeTokenTransferKind[selectedKind.value]) ? [BridgeTokenTransferKind[selectedKind.value]] : null,
-		},
-		offset: offset.value,
-		limit: limit.value,
-	})
-	loadMore.value = res.length === limit.value
-	offset.value += limit.value
-	transfersStore.addTransfers(res, 'all')
+	try {
+		const res = await tokenBridge.data.getSignerTokenTransfers({
+			filter: {
+				status: !isNaN(BridgeTokenTransferStatus[selectedState.value]) ? [BridgeTokenTransferStatus[selectedState.value]] : null,
+				kind: !isNaN(BridgeTokenTransferKind[selectedKind.value]) ? [BridgeTokenTransferKind[selectedKind.value]] : null,
+			},
+			offset: offset.value,
+			limit: limit.value,
+		})
+		loadMore.value = res.length === limit.value
+		offset.value += limit.value
+		transfersStore.addTransfers(res, 'all')
+	} catch(error) {
+		console.log(error)
+	}
 	isLoading.value = false
 }
 
