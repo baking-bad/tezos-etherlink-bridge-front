@@ -177,7 +177,7 @@ const handleRemove = () => {
 			<RelativeDateTime v-if="operation.source.time" :time="operation.source.time" />
 
 			<RelativeDateTime v-if="operation.destination.time" :time="operation.destination.time" />
-			<Flex v-else-if="operation.estimatedExecuteTime" align="center" gap="3">
+			<Flex v-else-if="operation.estimatedExecuteTime && transfer.status === 100" align="center" gap="3">
 				<Text size="14" color="secondary">Finish withdrawal</Text>
 
 				<RelativeDateTime :time="operation.estimatedExecuteTime" />
