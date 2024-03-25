@@ -5,8 +5,6 @@
 				<Icon name="logo" size="12" color="tertiary" />
 				<Text size="13" color="tertiary"> Etherlink Bridge <Text color="support">by</Text> Baking Bad </Text>
 			</Flex>
-
-			<Text size="13" color="red">Some information here</Text>
 		</Flex>
 	</Flex>
 </template>

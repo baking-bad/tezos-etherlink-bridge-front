@@ -1,27 +1,25 @@
 /** Vendor */
-import { computed, ref, watch } from "vue"
+import { ref } from "vue"
 import { defineStore } from "pinia"
-import { v4 as uuidv4 } from "uuid"
 
 /** Services */
 import { getSteps } from "@/services/utils";
 import TokenBridgeService from "@/services/tokenBridge"
 
 /** Stores */
-import { useNotificationsStore } from "@/stores/notifications.js";
+// import { useNotificationsStore } from "@/stores/notifications.js";
 
 export const useTransfersStore = defineStore("transfers", () => {
 	const allTransfers = ref([])
 	const recentTransfers = ref([])
 
-	const notificationsStore = useNotificationsStore()
+	// const notificationsStore = useNotificationsStore()
 
 	const tokenBridge = ref(TokenBridgeService.instances.tokenBridge)
 	tokenBridge.value.addEventListener('tokenTransferUpdated', updateTransfer)
 
 	function addTransfers(newTransfers, store) {
 		newTransfers.forEach(t => {
-			t.id = uuidv4()
 			t.steps = getSteps(t)
 			t.removable = store === 'recent'
 			checkSubscribe(t)
@@ -51,10 +49,15 @@ export const useTransfersStore = defineStore("transfers", () => {
 	}
 
 	function searchTransfers(transfer) {
-		// console.log('start search', transfer);
+		// console.log('looking for', transfer);
 		let res = [...recentTransfers.value, ...allTransfers.value]
 		
 		return res.filter(t => {
+			// console.log('at', transfer);
+			if (t.id) {
+				return t.id === transfer.id
+			}
+	
 			return t.tezosOperation ? t.tezosOperation.hash === transfer.tezosOperation.hash : t.etherlinkOperation.hash === transfer.etherlinkOperation.hash
 		})
 	}

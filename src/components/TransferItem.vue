@@ -46,6 +46,7 @@ const operation = computed(() => {
 	let op = {}
 	op.kind = props.transfer.kind
 	op.status = getStatus(props.transfer.status)
+	op.estimatedExecuteTime = props.transfer.rollupData?.estimatedOutboxMessageExecutionTimestamp
 
 	const tezosOperation = {
 		amount: props.transfer.tezosOperation?.amount,
@@ -176,6 +177,11 @@ const handleRemove = () => {
 			<RelativeDateTime v-if="operation.source.time" :time="operation.source.time" />
 
 			<RelativeDateTime v-if="operation.destination.time" :time="operation.destination.time" />
+			<Flex v-else-if="operation.estimatedExecuteTime && transfer.status === 100" align="center" gap="3">
+				<Text size="14" color="secondary">Finish withdrawal</Text>
+
+				<RelativeDateTime :time="operation.estimatedExecuteTime" />
+			</Flex>
 		</Flex>
 
 		<Flex justify="center">

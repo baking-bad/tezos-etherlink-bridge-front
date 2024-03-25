@@ -276,17 +276,6 @@ function setAmount(val) {
 				</Flex>
 			</Flex>
 
-			<Flex direction="column" gap="12" :class="$style.metadata">
-				<Flex align="center" justify="between">
-					<Text size="13" color="tertiary">Estimated Time</Text>
-					<Text size="13" color="secondary">15 min</Text>
-				</Flex>
-				<Flex align="center" justify="between">
-					<Text size="13" color="tertiary">Estimated Gas Fee</Text>
-					<Text size="13" color="secondary">$2.62</Text>
-				</Flex>
-			</Flex>
-
 			<Flex>
 				<RouterLink v-if="!isWalletsConnected" to="/config" :class="[$style.button, $style.connect_wallets]">
 					<Flex align="center" justify="center" :style="{height: '100%'}">
