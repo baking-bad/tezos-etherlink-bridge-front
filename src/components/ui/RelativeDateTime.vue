@@ -14,11 +14,6 @@ const timeAgo = ref('')
 
 const updateTimeAgo = () => {
 	timeAgo.value = DateTime.fromISO(props.time).toRelative({ locale: 'en', style: 'long' })
-	// if (DateTime.fromISO(props.time).toRelative({ locale: 'en', style: 'long' })) {
-	// 	timeAgo.value = DateTime.fromISO(props.time).toRelative({ locale: 'en', style: 'long' })
-	// } else {
-	// 	timeAgo.value = DateTime.fromMillis(+props.time).toRelative({ locale: 'en', style: 'long' })
-	// }
 
 	let minutesAgo = DateTime.now().diff(DateTime.fromISO(props.time), 'minutes').minutes
 	if (minutesAgo < 1 && currentInterval.value === 0) {
