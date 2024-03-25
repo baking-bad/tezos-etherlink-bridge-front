@@ -1,10 +1,8 @@
 import { defineStore } from "pinia"
 import { tokenPairs, getTokenKey, isSameToken } from "@/services/cfg/tokens.js"
-import { computed, ref, watch } from "vue"
+import { computed, ref } from "vue"
 import { prettyNumber } from "@/services/utils/index.js"
 import BigNumber from "bignumber.js"
-import { useWeb3ModalProvider } from "@web3modal/ethers/vue"
-import etherlink from "@/services/etherlink"
 import TokenBridge from "@/services/tokenBridge"
 
 export const useTokensStore = defineStore("tokens", () => {
@@ -50,7 +48,7 @@ export const useTokensStore = defineStore("tokens", () => {
 		return tokensObject.value[tokensObject.value[getTokenKey(compareWith)].pairKey]
 	}
 
-	async function mergeBalances(tokenBridge) {
+	async function mergeBalances() {
 		let balances = []
 		function flattenBalances(chainBalances, fakeNativeAddress) {
 			chainBalances?.tokenBalances?.forEach((tb) => {
@@ -60,6 +58,7 @@ export const useTokensStore = defineStore("tokens", () => {
 				balances.push(tb)
 			})
 		}
+		const { tokenBridge } = TokenBridge.instances
 		const { tezosSignerBalances, etherlinkSignerBalances } = await tokenBridge.data.getSignerBalances()
 
 		flattenBalances(tezosSignerBalances, 'tezosNative')
@@ -70,15 +69,6 @@ export const useTokensStore = defineStore("tokens", () => {
 		})
 	}
 
-	const { walletProvider } = useWeb3ModalProvider()
-	watch(
-		() => walletProvider.value,
-		async (newVal) => {
-			etherlink.instances.toolkit.setProvider(newVal)
-			const { tokenBridge } = TokenBridge.instances
-			await mergeBalances(tokenBridge)
-		},
-	)
 	return  {
 		tokenPairs,
 		modifiedTokenPairs,

@@ -1,6 +1,6 @@
 <script setup>
 /** Vendor */
-import { computed, onBeforeUnmount, onMounted, ref } from "vue"
+import { onBeforeUnmount, onMounted, ref, watch } from "vue"
 import { storeToRefs } from "pinia"
 import { BridgeTokenTransferStatus, BridgeTokenTransferKind } from '@baking-bad/tezos-etherlink-bridge-sdk';
 
@@ -11,10 +11,11 @@ import Spinner from "@/components/ui/Spinner.vue"
 
 /** Services */
 import TokenBridgeService from "@/services/tokenBridge"
-import { capitilize, getStates } from "@/services/utils"
+import { getStates } from "@/services/utils"
 
 /** Store */
 import { useTransfersStore } from "@/stores/transfers.js"
+import { useWalletsStore } from "@/stores/wallets.js"
 const transfersStore = useTransfersStore()
 const { allTransfers } = storeToRefs(transfersStore)
 
@@ -26,10 +27,10 @@ const loadMore = ref(true)
 const offset = ref(0)
 const limit = ref(20)
 
-const loadTransfers = () => {
+const loadTransfers = async () => {
 	isLoading.value = true
 
-	tokenBridge.data.getSignerTokenTransfers({
+	const res = await tokenBridge.data.getSignerTokenTransfers({
 		filter: {
 			status: !isNaN(BridgeTokenTransferStatus[selectedState.value]) ? [BridgeTokenTransferStatus[selectedState.value]] : null,
 			kind: !isNaN(BridgeTokenTransferKind[selectedKind.value]) ? [BridgeTokenTransferKind[selectedKind.value]] : null,
@@ -37,13 +38,10 @@ const loadTransfers = () => {
 		offset: offset.value,
 		limit: limit.value,
 	})
-	.then((res) => {
-		loadMore.value = res.length === limit.value
-		offset.value += limit.value
-		transfersStore.addTransfers(res, 'all')
-	}).finally(() => {
-		isLoading.value = false
-	})
+	loadMore.value = res.length === limit.value
+	offset.value += limit.value
+	transfersStore.addTransfers(res, 'all')
+	isLoading.value = false
 }
 
 /** Filters */
@@ -78,7 +76,16 @@ const handleScroll = () => {
 	}
 }
 
-loadTransfers()
+const { tezAddress, ethAddress, walletProviderUpdated } = storeToRefs(useWalletsStore())
+
+watch(
+	() => [tezAddress.value, ethAddress.value, walletProviderUpdated.value],
+	() => {
+		offset.value = 0
+		loadTransfers()
+	},
+	{ immediate: true }
+)
 
 onMounted(() => {
 	transfersListEl.value.wrapper.addEventListener('scroll', handleScroll)

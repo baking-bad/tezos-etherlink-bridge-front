@@ -6,7 +6,9 @@ import { RouterView } from "vue-router"
 import Notifications from "@/components/Notifications.vue";
 import TheHeader from "@/components/TheHeader.vue"
 import TheFooter from "@/components/TheFooter.vue"
-import WalletsStoreDemo from "@/components/WalletsStoreDemo.vue"
+import { useWalletsStore } from "@/stores/wallets.js"
+const { tezCheckConnection } = useWalletsStore()
+tezCheckConnection();
 </script>
 
 <template>
@@ -22,8 +24,6 @@ import WalletsStoreDemo from "@/components/WalletsStoreDemo.vue"
 			</transition>
 		</RouterView>
 	</div>
-
-	<WalletsStoreDemo />
 	
 	<Notifications />
 

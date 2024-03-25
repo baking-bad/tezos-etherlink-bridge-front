@@ -1,6 +1,5 @@
 <script setup>
 /** Vendor */
-import { computed } from "vue"
 
 /** Components */
 import Tooltip from "@/components/ui/Tooltip.vue"
@@ -8,32 +7,25 @@ import ExplorerLink from "@/components/ExplorerLink.vue";
 import CopyButton from "@/components/ui/CopyButton.vue";
 
 /** Constants */
-import { ConnectionStatus } from "@/services/constants/wallets"
 
 /** Composables */
-import { useTezos } from "@/composables/tezos.js"
-import { useEtherlink } from "@/composables/etherlink.js"
+import { storeToRefs } from "pinia"
+import { useWalletsStore } from "@/stores/wallets.js"
 
-// const { address: tezosAddress, status: tezosStatus, connect: connectTezos, disconnect: disconnectTezos } = useTezos()
-// const { address: etherlinkAddress, status: etherlinkStatus, connect: connectEtherlink, disconnect: disconnectEtherlink } = useEtherlink()
-
-// const isReady = computed(() => tezosStatus.value === ConnectionStatus.CONNECTED && etherlinkStatus.value === ConnectionStatus.CONNECTED)
-
-// const handleConnectTezos = async () => {
-// 	connectTezos()
-// }
-//
-// const handleConnectEtherlink = async () => {
-// 	connectEtherlink()
-// }
-//
-// const handleDisconnectTezos = async () => {
-// 	disconnectTezos()
-// }
-//
-// const handleDisconnectEtherlink = async () => {
-// 	disconnectEtherlink()
-// }
+const walletsStore = useWalletsStore()
+const {
+	ethConnected,
+	tezConnected,
+	allConnected,
+	tezAddress,
+	ethAddress,
+} = storeToRefs(walletsStore)
+const {
+	tezConnect,
+	tezDisconnect,
+	ethConnect,
+	ethDisconnect
+} = walletsStore
 
 </script>
 
@@ -41,15 +33,15 @@ import { useEtherlink } from "@/composables/etherlink.js"
 	<Flex direction="column" align="center" justify="center" gap="6" :class="$style.wrapper">
 		<Flex direction="column" align="center" gap="24">
 			<Flex align="center" gap="12">
-				<Tooltip :disabled="tezosStatus === ConnectionStatus.CONNECTED">
+				<Tooltip :disabled="tezConnected">
 					<Flex
 						align="center"
 						justify="center"
-						:class="[$style.wallet, tezosStatus === ConnectionStatus.CONNECTED && $style.connected]"
+						:class="[$style.wallet, tezConnected && $style.connected]"
 					>
 						<img width="32" height="32" src="@/assets/images/tezos.png" />
 
-						<Icon v-if="tezosStatus === ConnectionStatus.CONNECTED" name="check-circle" size="20" color="green" />
+						<Icon v-if="tezConnected" name="check-circle" size="20" color="green" />
 						<Icon v-else name="zap-circle" size="20" color="yellow" />
 					</Flex>
 
@@ -61,20 +53,20 @@ import { useEtherlink } from "@/composables/etherlink.js"
 					</template>
 				</Tooltip>
 
-				<Flex align="center" gap="8" :class="isReady && $style.ready_icon">
-					<Icon name="left-connect" size="24" :color="tezosStatus === ConnectionStatus.CONNECTED ? 'green' : 'tertiary'" />
-					<Icon name="right-connect" size="24" :color="etherlinkStatus === ConnectionStatus.CONNECTED ? 'green' : 'tertiary'" />
+				<Flex align="center" gap="8" :class="allConnected && $style.ready_icon">
+					<Icon name="left-connect" size="24" :color="tezConnected ? 'green' : 'tertiary'" />
+					<Icon name="right-connect" size="24" :color="ethConnected ? 'green' : 'tertiary'" />
 				</Flex>
 
-				<Tooltip :disabled="etherlinkStatus === ConnectionStatus.CONNECTED">
+				<Tooltip :disabled="ethConnected">
 					<Flex
 						align="center"
 						justify="center"
-						:class="[$style.wallet, etherlinkStatus === ConnectionStatus.CONNECTED && $style.connected]"
+						:class="[$style.wallet, ethConnected && $style.connected]"
 					>
 						<img width="32" height="32" src="@/assets/images/etherlink.png" />
 
-						<Icon v-if="etherlinkStatus === ConnectionStatus.CONNECTED" name="check-circle" size="20" color="green" />
+						<Icon v-if="ethConnected" name="check-circle" size="20" color="green" />
 						<Icon v-else name="zap-circle" size="20" color="yellow" />
 					</Flex>
 
@@ -106,8 +98,8 @@ import { useEtherlink } from "@/composables/etherlink.js"
 				<!-- Tezos Tasks -->
 				<transition name="navigation" mode="out-in">
 					<Flex
-						v-if="tezosStatus === ConnectionStatus.NOT_CONNECTED"
-						@click="handleConnectTezos"
+						v-if="!tezConnected"
+						@click="tezConnect"
 						justify="between"
 						align="center"
 						:class="[$style.task]"
@@ -134,11 +126,11 @@ import { useEtherlink } from "@/composables/etherlink.js"
 
 						<Flex justify="between">
 							<Flex align="center" gap="6">
-								<ExplorerLink :hash="tezosAddress" network="tezos" type="address" short :class="[$style.description, $style.link]"/>
-								<CopyButton :text="tezosAddress" size="11" />
+								<ExplorerLink :hash="tezAddress" network="tezos" type="address" short :class="[$style.description, $style.link]"/>
+								<CopyButton :text="tezAddress" size="11" />
 							</Flex>
 
-							<Flex @click="handleDisconnectTezos" align="center" gap="6" :class="$style.disconnect">
+							<Flex @click="tezDisconnect" align="center" gap="6" :class="$style.disconnect">
 								<Text size="13">Disconnect</Text>
 								<Icon name="log-out" size="13" />
 							</Flex>
@@ -149,8 +141,8 @@ import { useEtherlink } from "@/composables/etherlink.js"
 				<!-- Etherlink Tasks -->
 				<transition name="navigation" mode="out-in">
 					<Flex
-						v-if="etherlinkStatus === ConnectionStatus.NOT_CONNECTED"
-						@click="handleConnectEtherlink"
+						v-if="!ethConnected"
+						@click="ethConnect"
 						justify="between"
 						align="center"
 						:class="[$style.task]"
@@ -177,11 +169,11 @@ import { useEtherlink } from "@/composables/etherlink.js"
 
 						<Flex justify="between">
 							<Flex align="center" gap="6">
-								<ExplorerLink :hash="etherlinkAddress" network="etherlink" type="address" short :class="[$style.description, $style.link]"/>
-								<CopyButton :text="etherlinkAddress" size="11" />
+								<ExplorerLink :hash="ethAddress" network="etherlink" type="address" short :class="[$style.description, $style.link]"/>
+								<CopyButton :text="ethAddress" size="11" />
 							</Flex>
 
-							<Flex @click="handleDisconnectEtherlink" align="center" gap="6" :class="$style.disconnect">
+							<Flex @click="ethDisconnect" align="center" gap="6" :class="$style.disconnect">
 								<Text size="13">Disconnect</Text>
 								<Icon name="log-out" size="13" />
 							</Flex>
@@ -191,7 +183,7 @@ import { useEtherlink } from "@/composables/etherlink.js"
 			</Flex>
 
 			<Transition name="fade" mode="out-in">
-				<Flex v-if="!isReady" direction="column" align="center" gap="6">
+				<Flex v-if="!allConnected" direction="column" align="center" gap="6">
 					<Text size="13" color="support"> Resolve the above tasks to complete the connection </Text>
 					<Text size="13" color="support"> You will be redirected when you are finished </Text>
 				</Flex>
