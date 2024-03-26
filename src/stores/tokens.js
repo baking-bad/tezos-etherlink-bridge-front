@@ -64,6 +64,7 @@ export const useTokensStore = defineStore("tokens", () => {
 		flattenBalances(tezosSignerBalances, 'tezosNative')
 		flattenBalances(etherlinkSignerBalances, 'etherlinkNative')
 
+
 		balances.forEach((b) => {
 			tokensObject.value[getTokenKey(b.token)].balance = b.balance
 		})
