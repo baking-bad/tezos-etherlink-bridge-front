@@ -7,6 +7,7 @@ import { getSteps } from "@/services/utils";
 import TokenBridgeService from "@/services/tokenBridge"
 
 /** Stores */
+import { useTokensStore } from "@/stores/tokens.js"
 // import { useNotificationsStore } from "@/stores/notifications.js";
 
 export const useTransfersStore = defineStore("transfers", () => {
@@ -14,6 +15,7 @@ export const useTransfersStore = defineStore("transfers", () => {
 	const recentTransfers = ref([])
 
 	// const notificationsStore = useNotificationsStore()
+	const tokensStore = useTokensStore()
 
 	const tokenBridge = ref(TokenBridgeService.instances.tokenBridge)
 	tokenBridge.value.addEventListener('tokenTransferUpdated', updateTransfer)
@@ -34,6 +36,9 @@ export const useTransfersStore = defineStore("transfers", () => {
 
 	function updateTransfer(transfer) {
 		// console.log('update', transfer);
+		if (transfer.status === 100 || transfer.status === 300) {
+			tokensStore.mergeBalances()
+		}
 		let foundTransfers = searchTransfers(transfer)
 		// console.log('found', foundTransfers);
 		if (foundTransfers.length > 0) {

@@ -9,8 +9,8 @@ dependencies:
     specifier: ^4.1.2
     version: 4.1.2
   '@baking-bad/tezos-etherlink-bridge-sdk':
-    specifier: ^0.2.2
-    version: 0.2.2(@taquito/taquito@19.1.0)(web3@4.6.0)(ws@8.16.0)
+    specifier: ^0.2.3
+    version: 0.2.3(@taquito/taquito@19.1.0)(web3@4.6.0)(ws@8.16.0)
   '@taquito/beacon-wallet':
     specifier: 19.1.0
     version: 19.1.0
@@ -213,8 +213,8 @@ packages:
       '@babel/helper-validator-identifier': 7.22.20
       to-fast-properties: 2.0.0
 
-  /@baking-bad/tezos-etherlink-bridge-sdk@0.2.2(@taquito/taquito@19.1.0)(web3@4.6.0)(ws@8.16.0):
-    resolution: {integrity: sha512-F0mQ9+kBnXY1F0p/6TUU6+dvpgM839aVEqDyYhc/I09Gt/17KLK+936lBZSLRI9e6TkTzFk0tc9qU/7B8aBQRg==}
+  /@baking-bad/tezos-etherlink-bridge-sdk@0.2.3(@taquito/taquito@19.1.0)(web3@4.6.0)(ws@8.16.0):
+    resolution: {integrity: sha512-yjbwsJCoQpIUXvCZ/Ikw4dy3D4YvNRtmAiAXPQcm5DMZPgageFelQ0aNRCyzy/P2ekG7yVGjwZF949J3GYLUgw==}
     engines: {node: '>=20'}
     peerDependencies:
       '@taquito/taquito': '>=19.0.0'
@@ -231,8 +231,8 @@ packages:
       '@taquito/taquito': 19.1.0
       '@taquito/utils': 19.1.0
       web3: 4.6.0(typescript@5.4.2)
-      web3-utils: 4.2.1
-      web3-validator: 2.0.4
+      web3-utils: 4.2.2
+      web3-validator: 2.0.5
       ws: 8.16.0
     dev: false
 
@@ -4648,8 +4648,30 @@ packages:
       web3-validator: 2.0.4
     dev: false
 
+  /web3-utils@4.2.2:
+    resolution: {integrity: sha512-z+4owWcnoB4EH8yWIL1FBeyqe+sXwaGxUDtVTNPTMf2oB5C+paCToZUdCV5Bi+M543zZEzlzNTabOD+OWNc7NA==}
+    engines: {node: '>=14', npm: '>=6.12.0'}
+    dependencies:
+      ethereum-cryptography: 2.1.3
+      eventemitter3: 5.0.1
+      web3-errors: 1.1.4
+      web3-types: 1.5.0
+      web3-validator: 2.0.5
+    dev: false
+
   /web3-validator@2.0.4:
     resolution: {integrity: sha512-qRxVePwdW+SByOmTpDZFWHIUAa7PswvxNszrOua6BoGqAhERo5oJZBN+EbWtK/+O+ApNxt5FR3nCPmiZldiOQA==}
+    engines: {node: '>=14', npm: '>=6.12.0'}
+    dependencies:
+      ethereum-cryptography: 2.1.3
+      util: 0.12.5
+      web3-errors: 1.1.4
+      web3-types: 1.5.0
+      zod: 3.22.4
+    dev: false
+
+  /web3-validator@2.0.5:
+    resolution: {integrity: sha512-2gLOSW8XqEN5pw5jVUm20EB7A8SbQiekpAtiI0JBmCIV0a2rp97v8FgWY5E3UEqnw5WFfEqvcDVW92EyynDTyQ==}
     engines: {node: '>=14', npm: '>=6.12.0'}
     dependencies:
       ethereum-cryptography: 2.1.3
