@@ -1,18 +1,15 @@
 <script setup>
 /** Vendor */
-import { ref, reactive, watch, computed, onMounted } from "vue"
+import { ref, reactive, watch, onMounted } from "vue"
 import { useRoute } from "vue-router"
 
 /** Constants */
-import { ConnectionStatus } from "@/services/constants/wallets"
 
 /** Composables */
-import { useTezos } from "@/composables/tezos.js"
-import { useEtherlink } from "@/composables/etherlink.js"
+import { storeToRefs } from "pinia"
+import { useWalletsStore } from "@/stores/wallets.js"
 
-const { status: tezosStatus } = useTezos()
-const { status: etherlinkStatus } = useEtherlink()
-const isConnected = computed(() => tezosStatus.value === ConnectionStatus.CONNECTED && etherlinkStatus.value === ConnectionStatus.CONNECTED)
+const { allConnected } = storeToRefs(useWalletsStore())
 
 const route = useRoute()
 
@@ -52,7 +49,7 @@ const updateHighlightStyle = () => {
 	})
 }
 
-const handleSelectTab = (target) => {
+const handleSelectTab = () => {
 	updateHighlightStyle()
 }
 
@@ -104,8 +101,8 @@ watch(
 		</div>
 
 		<RouterLink to="/config">
-			<Flex align="center" :class="[$style.button, isConnected && $style.connected]">
-				<Text size="14" color="black">{{ isConnected ? "Connected" : "Connect" }} </Text>
+			<Flex align="center" :class="[$style.button, allConnected && $style.connected]">
+				<Text size="14" color="black">{{ allConnected ? "Connected" : "Connect" }} </Text>
 			</Flex>
 		</RouterLink>
 	</Flex>

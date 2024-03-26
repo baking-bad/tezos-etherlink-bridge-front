@@ -44,10 +44,13 @@ export const purgeNumber = (target) => {
 	return purgedString;
 }
 
-export const prettyNumber = (target, decimalsCount = 12, short = false) => {
+export const prettyNumber = (_target, decimalsCount = 12, short = false) => {
 	// gets purged num string returns i
 	// returns number in format 10 122.123213213
-	if (decimalsCount === 0 && target === "0.") return '0';
+	let target = _target
+	if (decimalsCount === 0 && _target.length) {
+		target = _target.replaceAll(".", "");
+	}
 	const [integralPart, fractionalPart] = target.split(".")
 	const initialIntegralLength = integralPart.length;
 	const noSpaces = initialIntegralLength <= 3;
