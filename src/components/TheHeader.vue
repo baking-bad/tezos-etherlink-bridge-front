@@ -2,13 +2,10 @@
 /** Vendor */
 import { ref, reactive, watch, onMounted } from "vue"
 import { useRoute } from "vue-router"
-
-/** Constants */
-
-/** Composables */
 import { storeToRefs } from "pinia"
-import { useWalletsStore } from "@/stores/wallets.js"
 
+/** Stores */
+import { useWalletsStore } from "@/stores/wallets.js"
 const { allConnected } = storeToRefs(useWalletsStore())
 
 const route = useRoute()

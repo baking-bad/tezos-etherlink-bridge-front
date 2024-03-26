@@ -9,6 +9,7 @@ import ExplorerLink from "@/components/ExplorerLink.vue"
 import RelativeDateTime from "@/components/ui/RelativeDateTime.vue"
 import Stepper from "@/components/ui/Stepper.vue"
 import Spinner from "@/components/ui/Spinner.vue"
+import Tooltip from "@/components/ui/Tooltip.vue"
 
 /** Services */
 import TokenBridgeService from "@/services/tokenBridge"
@@ -18,14 +19,14 @@ import { amountToString, capitilize, getStatus, parseTime } from "@/services/uti
 import { getToken } from "@/services/cfg/tokens.js";
 
 /** Stores */
-import { useTransfersStore } from "@/stores/transfers.js"
 import { useTokensStore } from "@/stores/tokens.js"
-import Tooltip from "@/components/ui/Tooltip.vue"
+import { useTransfersStore } from "@/stores/transfers.js"
+import { useWalletsStore } from "@/stores/wallets.js"
 const tokensStore = useTokensStore()
-const { tokensObject } = storeToRefs(tokensStore)
-
+const { tezosTokens } = storeToRefs(tokensStore)
 const { removeRecentTransfer, updateTransfer } = useTransfersStore()
 const { tokenBridge } = TokenBridgeService.instances
+const { tezConnected } = storeToRefs(useWalletsStore())
 
 const props = defineProps({
 	transfer: {
@@ -39,6 +40,7 @@ const props = defineProps({
 })
 
 const isProcessingWithdraw = ref(false)
+const tezosNativebalance = computed(() => +(tezosTokens.value.find((t) => t.ticker === 'XTZ').prettyBalance))
 
 const loadImage = (n) => new URL(`../assets/images/${n}.png`, import.meta.url).href
 
@@ -184,8 +186,14 @@ const handleRemove = () => {
 			</Flex>
 		</Flex>
 
-		<Flex justify="center">
-			<Flex v-if="transfer.status === 200" @click="finishWithdraw" align="center" justify="center" :class="[$style.button, isProcessingWithdraw && $style.disabled]" wide>
+		<Flex v-if="transfer.status === 200" justify="center">
+			<Flex v-if="!tezConnected" align="center" justify="center" :class="[$style.button, $style.disabled]" wide>
+				<Text size="16" color="black">Connect your Tezos wallet to finalize the withdrawal</Text>
+			</Flex>
+			<Flex v-else-if="tezosNativebalance === 0" align="center" justify="center" :class="[$style.button, $style.disabled]" wide>
+				<Text size="16" color="black">Not enough XTZ to finalize the withdrawal</Text>
+			</Flex>
+			<Flex v-else @click="finishWithdraw" align="center" justify="center" :class="[$style.button, isProcessingWithdraw && $style.disabled]" wide>
 				<Flex v-if="isProcessingWithdraw" gap="6">
 					<Spinner size="14" />
 
@@ -209,7 +217,7 @@ const handleRemove = () => {
 	background: var(--card-background);
 	box-shadow: inset 0 0 0 2px var(--op-5);
 
-	padding: 16px 16px 6px 16px;
+	padding: 16px 16px 12px 16px;
 
 	margin: 16px;
 
