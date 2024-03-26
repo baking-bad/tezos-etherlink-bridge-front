@@ -59,10 +59,14 @@ export const useTokensStore = defineStore("tokens", () => {
 			})
 		}
 		const { tokenBridge } = TokenBridge.instances
+		console.log("Call getSignerBalances()");
 		const { tezosSignerBalances, etherlinkSignerBalances } = await tokenBridge.data.getSignerBalances()
+		console.log("tezosSignerBalances", tezosSignerBalances);
+		console.log("etherlinkSignerBalances", etherlinkSignerBalances);
 
 		flattenBalances(tezosSignerBalances, 'tezosNative')
 		flattenBalances(etherlinkSignerBalances, 'etherlinkNative')
+
 
 		balances.forEach((b) => {
 			tokensObject.value[getTokenKey(b.token)].balance = b.balance

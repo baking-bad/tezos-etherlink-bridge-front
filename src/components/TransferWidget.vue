@@ -141,6 +141,7 @@ async function testTransfer() {
     .then(transfer => {
         if (transfer.tokenTransfer) {
             transfersStore.addTransfers([transfer.tokenTransfer], 'recent')
+			tokensStore.mergeBalances()
         }
     })
     .catch(e => {
