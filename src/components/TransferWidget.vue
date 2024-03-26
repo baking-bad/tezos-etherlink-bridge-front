@@ -338,7 +338,7 @@ function setAmount(val) {
 .to {
 	height: 118px;
 
-	background: #222222;
+	background: #1B1B1B;
 	border-radius: 8px;
 
 	padding: 12px;
@@ -353,7 +353,7 @@ function setAmount(val) {
 
 	background: #121212;
 	border-radius: 50%;
-	box-shadow: 0 0 0 6px #222222;
+	box-shadow: 0 0 0 6px #1B1B1B;
 	cursor: pointer;
 
 	padding: 8px;

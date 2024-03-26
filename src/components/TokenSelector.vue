@@ -89,7 +89,7 @@ const dropdownItems = computed(() => {
 			<DropdownItem v-for="item in dropdownItems" @click="selectedToken = item">
 				<Flex align="center" gap="6" wide>
 					<img width="20" height="20" :src="loadImage(item.icon)" :class="$style.img" alt="" />
-					<Flex align="center" justify="between" gap="12" wide>
+					<Flex align="center" justify="between" gap="24" wide>
 						<Flex direction="column" gap="2">
 							<Text size="13" color="primary"> {{ item.ticker }} </Text>
 
