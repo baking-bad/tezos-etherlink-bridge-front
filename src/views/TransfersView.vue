@@ -30,25 +30,18 @@ const limit = ref(20)
 const loadTransfers = async () => {
 	isLoading.value = true
 	try {
-		console.log({
-			filter: {
-				status: BridgeTokenTransferStatus[filters.value.state] ?? null,
-				kind: BridgeTokenTransferKind[filters.value.kind] ?? null,
-			},
-			offset: offset.value,
-			limit: limit.value,
-		})
+		const statusCode = BridgeTokenTransferStatus[filters.value.state]
+		const kindCode = BridgeTokenTransferKind[filters.value.kind]
 		const res = await tokenBridge.data.getSignerTokenTransfers({
 			filter: {
-				status: BridgeTokenTransferStatus[filters.value.state] ?? null,
-				kind: BridgeTokenTransferKind[filters.value.kind] ?? null,
+				status: statusCode ? [statusCode] : null,
+				kind: kindCode ? [kindCode] : null,
 			},
 			offset: offset.value,
 			limit: limit.value,
 		})
 		loadMore.value = res.length === limit.value
 		offset.value += limit.value
-		// return(res);
 		transfersStore.addTransfers(res, 'all')
 	} catch(error) {
 		console.log(error)
@@ -71,7 +64,7 @@ const resetTransfers = () => {
 }
 
 const transfersListEl = ref(null)
-const handleScroll = () => {
+const handleScroll = async () => {
 	if (transfersListEl.value.wrapper.scrollHeight - transfersListEl.value.wrapper.scrollTop -300 <= transfersListEl.value.wrapper.clientHeight && loadMore.value && !isLoading.value) {
 		loadTransfers()
 	}
@@ -81,7 +74,6 @@ const handleScroll = () => {
 watch(
 	() => [tezAddress.value, ethAddress.value, walletProviderUpdated.value],
 	(newVal) => {
-		console.log(newVal);
 		resetTransfers();
 		loadTransfers()
 	},
