@@ -34,8 +34,8 @@ const loadTransfers = async (reset) => {
 		const kindCode = BridgeTokenTransferKind[filters.value.kind]
 		const res = await tokenBridge.data.getSignerTokenTransfers({
 			filter: {
-				status: statusCode ? [statusCode] : null,
-				kind: kindCode ? [kindCode] : null,
+				status: statusCode !== undefined ? [statusCode] : null,
+				kind: kindCode !== undefined ? [kindCode] : null,
 			},
 			offset: offset.value,
 			limit: limit.value,
