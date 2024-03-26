@@ -27,7 +27,7 @@ const loadMore = ref(true)
 const offset = ref(0)
 const limit = ref(20)
 
-const loadTransfers = async () => {
+const loadTransfers = async (reset) => {
 	isLoading.value = true
 	try {
 		const statusCode = BridgeTokenTransferStatus[filters.value.state]
@@ -42,6 +42,7 @@ const loadTransfers = async () => {
 		})
 		loadMore.value = res.length === limit.value
 		offset.value += limit.value
+		if (reset) transfersStore.clearStore()
 		transfersStore.addTransfers(res, 'all')
 	} catch(error) {
 		console.log(error)
@@ -73,9 +74,9 @@ const handleScroll = async () => {
 
 watch(
 	() => [tezAddress.value, ethAddress.value, walletProviderUpdated.value],
-	(newVal) => {
+	() => {
 		resetTransfers();
-		loadTransfers()
+		loadTransfers(true)
 	},
 	{ immediate: true }
 )
@@ -84,7 +85,7 @@ watch(
 	() => filters.value,
 	() => {
 		resetTransfers();
-		loadTransfers();
+		loadTransfers(true);
 	},
 )
 
