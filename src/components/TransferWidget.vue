@@ -9,6 +9,7 @@ import { ConnectionStatus } from "@/services/constants/wallets"
 
 /** Components */
 import TokenSelector from "@/components/TokenSelector.vue"
+import Tooltip from "@/components/ui/Tooltip.vue"
 import TransfersList from "@/components/TransfersList.vue"
 import Spinner from "@/components/ui/Spinner.vue";
 
@@ -25,7 +26,6 @@ const { tokenBridge } = TokenBridgeService.instances
 /** Stores */
 import { useTransfersStore } from "@/stores/transfers.js"
 import { useTokensStore } from "@/stores/tokens.js"
-import Tooltip from "@/components/ui/Tooltip.vue"
 const tokensStore = useTokensStore()
 const {
 	tezosTokens,
@@ -34,9 +34,7 @@ const {
 const { isPairedToken, isSameToken, getPairedToken } = tokensStore
 const transfersStore = useTransfersStore()
 const { recentTransfers } = storeToRefs(transfersStore)
-// tokenBridge.addEventListener('tokenTransferUpdated', transfersStore.updateTransfer)
 
-const reverseDirection = ref(false)
 const playRotateAnimation = ref(false)
 
 // const FAKE_USD_PRICE = 3
@@ -121,7 +119,6 @@ const handleSwitch = () => {
 	const savedToken = toToken.value
 	toToken.value = fromToken.value
 	fromToken.value = savedToken
-	reverseDirection.value = !reverseDirection.value
 }
 
 onMounted(() => {
@@ -192,10 +189,7 @@ function setAmount(val) {
 					</Flex>
 
 					<Flex justify="between">
-						<Flex direction="column" gap="8">
-							<input ref="fromInputEl" v-model="amount" placeholder="0.00" :class="$style.input" />
-<!--							<Text size="14" color="tertiary">${{ USDAmount }}</Text>-->
-						</Flex>
+						<input ref="fromInputEl" v-model="amount" placeholder="0.00" :class="$style.input" />
 
 						<Flex direction="column" align="end" gap="8">
 							<TokenSelector
@@ -216,7 +210,7 @@ function setAmount(val) {
 										{{ amountToString(fromToken.balance, fromToken.decimals, true) }}
 									</Text>
 									<template #content>
-										<Text size="10" color="tertiary">
+										<Text size="12" color="secondary">
 											{{ amountToString(fromToken.balance, fromToken.decimals) }}
 										</Text>
 									</template>
@@ -241,10 +235,7 @@ function setAmount(val) {
 					</Flex>
 
 					<Flex justify="between">
-						<Flex direction="column" gap="8">
-							<input ref="toInputEl" v-model="amount" placeholder="0.00" :class="$style.input" />
-<!--							<Text size="14" color="tertiary">${{ USDAmount }}</Text>-->
-						</Flex>
+						<input ref="toInputEl" v-model="amount" placeholder="0.00" :class="$style.input" />
 
 						<Flex direction="column" align="end" gap="8">
 							<TokenSelector
@@ -265,7 +256,7 @@ function setAmount(val) {
 										{{ amountToString(toToken.balance, toToken.decimals, true) }}
 									</Text>
 									<template #content>
-										<Text size="10" color="tertiary">
+										<Text size="12" color="secondary">
 											{{ amountToString(toToken.balance, toToken.decimals) }}
 										</Text>
 									</template>
@@ -286,6 +277,12 @@ function setAmount(val) {
 				<Flex v-else-if="fromChain.name === 'etherlink' && fromToken.type === 'native'" align="center" justify="center" :class="[$style.button, $style.disabled]">
 					<Flex align="center" gap="6">
 						<Text size="16" color="black">Native token withdrawal is not yet supported</Text>
+					</Flex>
+				</Flex>
+
+				<Flex v-else-if="+fromToken.prettyBalance === 0" align="center" justify="center" :class="[$style.button, $style.disabled]">
+					<Flex align="center" gap="6">
+						<Text size="16" color="black">Not enough {{ fromToken.ticker }} for {{ fromChain.name === 'tezos' ? 'deposit' : 'withdraw' }} </Text>
 					</Flex>
 				</Flex>
 
@@ -338,7 +335,7 @@ function setAmount(val) {
 .to {
 	height: 118px;
 
-	background: #1B1B1B;
+	background: #1a1919;
 	border-radius: 8px;
 
 	padding: 12px;
@@ -353,7 +350,7 @@ function setAmount(val) {
 
 	background: #121212;
 	border-radius: 50%;
-	box-shadow: 0 0 0 6px #1B1B1B;
+	box-shadow: 0 0 0 6px #1a1919;
 	cursor: pointer;
 
 	padding: 8px;
@@ -361,11 +358,11 @@ function setAmount(val) {
 	transition: all 0.2s ease;
 
 	&:hover {
-		box-shadow: 0 0 0 6px #303030;
+		box-shadow: 0 0 0 6px #222222;
 	}
 
 	&:active {
-		box-shadow: 0 0 0 6px #3f3f3f;
+		box-shadow: 0 0 0 6px #2d2d2d;
 	}
 
 	&.rotate {
@@ -396,28 +393,6 @@ function setAmount(val) {
 	height: 16px;
 	border-radius: 5px;
 }
-
-/* .selector {
-	background: #111111;
-	border-radius: 500px;
-	cursor: pointer;
-
-	padding: 6px;
-
-	transition: all 0.2s ease;
-
-	& img {
-		border-radius: 50%;
-	}
-
-	&:hover {
-		box-shadow: 0 0 0 1px var(--op-5);
-	}
-
-	&:active {
-		box-shadow: 0 0 0 2px var(--op-5);
-	}
-} */
 
 .input {
 	width: 100%;

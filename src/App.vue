@@ -32,6 +32,8 @@ tezCheckConnection();
 
 <style module>
 .main {
-	height: calc(100vh - 70px - 48px);
+	min-height: calc(100vh - 50px - 48px);
+
+	flex: 1;
 }
 </style>

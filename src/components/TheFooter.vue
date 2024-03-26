@@ -21,11 +21,9 @@
 
 <style module>
 .wrapper {
-	min-height: 70px;
+	height: 50px;
 
 	border-top: 2px solid var(--op-5);
-
-	padding: 0 16px;
 }
 
 .link {
