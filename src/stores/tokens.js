@@ -1,12 +1,13 @@
-import { defineStore } from "pinia"
+import { defineStore, storeToRefs } from "pinia"
 import { tokenPairs, getTokenKey, isSameToken } from "@/services/cfg/tokens.js"
 import { computed, ref } from "vue"
 import { prettyNumber } from "@/services/utils/index.js"
 import BigNumber from "bignumber.js"
 import TokenBridge from "@/services/tokenBridge"
+import { useWalletsStore } from "@/stores/wallets.js"
 
 export const useTokensStore = defineStore("tokens", () => {
-	function modifyPair({tezos, etherlink}) {
+	function modifyPair({ tezos, etherlink }) {
 		return {
 			tezos: {
 				...tezos,
@@ -49,24 +50,30 @@ export const useTokensStore = defineStore("tokens", () => {
 	}
 
 	async function mergeBalances() {
-		let balances = []
+		let balances = {}
+		Object.keys(tokensObject.value).forEach((key) => balances[key] = 0n)
 		function flattenBalances(chainBalances, fakeNativeAddress) {
 			chainBalances?.tokenBalances?.forEach((tb) => {
 				if (tb.token.type === 'native') {
 					tb.token.fakeAddress = fakeNativeAddress
 				}
-				balances.push(tb)
+				balances[getTokenKey(tb.token)] = tb.balance
 			})
 		}
 		const { tokenBridge } = TokenBridge.instances
-		const { tezosSignerBalances, etherlinkSignerBalances } = await tokenBridge.data.getSignerBalances()
+		const { tezAddress, ethAddress } = storeToRefs(useWalletsStore())
+		// const tezBalances = tezAddress.value ? await tokenBridge.data.getBalances(tezAddress.value) : undefined;
+		// const ethBalances = ethAddress.value ? await tokenBridge.data.getBalances(ethAddress.value) : undefined;
+		const [tezBalances, ethBalances] = await Promise.all([
+			tezAddress.value && tokenBridge.data.getBalances(tezAddress.value),
+			ethAddress.value && tokenBridge.data.getBalances(ethAddress.value),
+		])
 
-		flattenBalances(tezosSignerBalances, 'tezosNative')
-		flattenBalances(etherlinkSignerBalances, 'etherlinkNative')
+		flattenBalances(tezBalances, 'tezosNative')
+		flattenBalances(ethBalances, 'etherlinkNative')
 
-
-		balances.forEach((b) => {
-			tokensObject.value[getTokenKey(b.token)].balance = b.balance
+		Object.keys(balances).forEach((key) => {
+			tokensObject.value[key].balance = balances[key]
 		})
 	}
 

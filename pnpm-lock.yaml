@@ -9,8 +9,8 @@ dependencies:
     specifier: ^4.1.2
     version: 4.1.2
   '@baking-bad/tezos-etherlink-bridge-sdk':
-    specifier: ^0.2.3
-    version: 0.2.3(@taquito/taquito@19.1.0)(web3@4.6.0)(ws@8.16.0)
+    specifier: ^0.2.4
+    version: 0.2.4(@taquito/taquito@19.1.0)(web3@4.6.0)(ws@8.16.0)
   '@taquito/beacon-wallet':
     specifier: 19.1.0
     version: 19.1.0
@@ -213,8 +213,8 @@ packages:
       '@babel/helper-validator-identifier': 7.22.20
       to-fast-properties: 2.0.0
 
-  /@baking-bad/tezos-etherlink-bridge-sdk@0.2.3(@taquito/taquito@19.1.0)(web3@4.6.0)(ws@8.16.0):
-    resolution: {integrity: sha512-yjbwsJCoQpIUXvCZ/Ikw4dy3D4YvNRtmAiAXPQcm5DMZPgageFelQ0aNRCyzy/P2ekG7yVGjwZF949J3GYLUgw==}
+  /@baking-bad/tezos-etherlink-bridge-sdk@0.2.4(@taquito/taquito@19.1.0)(web3@4.6.0)(ws@8.16.0):
+    resolution: {integrity: sha512-/pRhO97cuX72jbg+/fTthbbubqJZlZMA2dO9MBKYDOUdscNZcNz2Y+Y6M+YyPPzzfTmSxIFv4MXEbLv5ITkDgg==}
     engines: {node: '>=20'}
     peerDependencies:
       '@taquito/taquito': '>=19.0.0'
@@ -1914,15 +1914,6 @@ packages:
     resolution: {integrity: sha512-GLGYAGmJgAnlNnjEehLFIaPKzyQIQky9UO4gzxNfEl7Mt3p9gHwY5idZzzLlNL+omZMtL8EeZRnsbDOKoYoyaQ==}
     peerDependencies:
       ethers: '>=6.0.0'
-    peerDependenciesMeta:
-      '@web3modal/siwe':
-        optional: true
-      react:
-        optional: true
-      react-dom:
-        optional: true
-      vue:
-        optional: true
     dependencies:
       '@coinbase/wallet-sdk': 3.9.1
       '@walletconnect/ethereum-provider': 2.11.1(react@18.2.0)
@@ -2010,9 +2001,6 @@ packages:
     resolution: {integrity: sha512-GBryCiyl+taz5DPq0expxzfMVcrpKjWvEBSAqT1tPUSthnzOWnVF77XlUAYgFZqzPsEu9lQ1dHCdqZx7WWMCXA==}
     peerDependencies:
       '@web3modal/wallet': 4.1.1
-    peerDependenciesMeta:
-      '@web3modal/siwe':
-        optional: true
     dependencies:
       '@web3modal/common': 4.1.1
       '@web3modal/core': 4.1.1(react@18.2.0)
