@@ -68,7 +68,6 @@ export const useTokensStore = defineStore("tokens", () => {
 			tezAddress.value && tokenBridge.data.getBalances(tezAddress.value),
 			ethAddress.value && tokenBridge.data.getBalances(ethAddress.value),
 		])
-		console.log(tezBalances, ethBalances)
 
 		flattenBalances(tezBalances, 'tezosNative')
 		flattenBalances(ethBalances, 'etherlinkNative')
