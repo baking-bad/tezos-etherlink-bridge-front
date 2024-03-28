@@ -62,8 +62,13 @@ export const useTokensStore = defineStore("tokens", () => {
 		}
 		const { tokenBridge } = TokenBridge.instances
 		const { tezAddress, ethAddress } = storeToRefs(useWalletsStore())
-		const tezBalances = tezAddress.value ? await tokenBridge.data.getBalances(tezAddress.value) : undefined;
-		const ethBalances = ethAddress.value ? await tokenBridge.data.getBalances(ethAddress.value) : undefined;
+		// const tezBalances = tezAddress.value ? await tokenBridge.data.getBalances(tezAddress.value) : undefined;
+		// const ethBalances = ethAddress.value ? await tokenBridge.data.getBalances(ethAddress.value) : undefined;
+		const [tezBalances, ethBalances] = await Promise.all([
+			tezAddress.value && tokenBridge.data.getBalances(tezAddress.value),
+			ethAddress.value && tokenBridge.data.getBalances(ethAddress.value),
+		])
+		console.log(tezBalances, ethBalances)
 
 		flattenBalances(tezBalances, 'tezosNative')
 		flattenBalances(ethBalances, 'etherlinkNative')
