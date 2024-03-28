@@ -99,7 +99,7 @@ export const useWalletsStore =  defineStore("wallets", () => {
 	)
 
 	watch(
-		() => [tezAddress.value, ethAddress.value],
+		() => ({ tezAddres: tezAddress.value, ethAddress: ethAddress.value }),
 		() => {
 			const tokens = useTokensStore()
 			tokens.mergeBalances();

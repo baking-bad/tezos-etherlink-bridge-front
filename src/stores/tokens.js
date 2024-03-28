@@ -1,9 +1,10 @@
-import { defineStore } from "pinia"
+import { defineStore, storeToRefs } from "pinia"
 import { tokenPairs, getTokenKey, isSameToken } from "@/services/cfg/tokens.js"
 import { computed, ref } from "vue"
 import { prettyNumber } from "@/services/utils/index.js"
 import BigNumber from "bignumber.js"
 import TokenBridge from "@/services/tokenBridge"
+import { useWalletsStore } from "@/stores/wallets.js"
 
 export const useTokensStore = defineStore("tokens", () => {
 	function modifyPair({ tezos, etherlink }) {
@@ -60,10 +61,12 @@ export const useTokensStore = defineStore("tokens", () => {
 			})
 		}
 		const { tokenBridge } = TokenBridge.instances
-		const { tezosSignerBalances, etherlinkSignerBalances } = await tokenBridge.data.getSignerBalances()
+		const { tezAddress, ethAddress } = storeToRefs(useWalletsStore())
+		const tezBalances = tezAddress.value ? await tokenBridge.data.getBalances(tezAddress.value) : undefined;
+		const ethBalances = ethAddress.value ? await tokenBridge.data.getBalances(ethAddress.value) : undefined;
 
-		flattenBalances(tezosSignerBalances, 'tezosNative')
-		flattenBalances(etherlinkSignerBalances, 'etherlinkNative')
+		flattenBalances(tezBalances, 'tezosNative')
+		flattenBalances(ethBalances, 'etherlinkNative')
 
 		Object.keys(balances).forEach((key) => {
 			tokensObject.value[key].balance = balances[key]
