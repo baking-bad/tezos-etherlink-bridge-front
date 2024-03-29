@@ -32,7 +32,6 @@ export const useWalletsStore =  defineStore("wallets", () => {
 			if (!newVal || !!tezSubscribed.value) return
 			/** Listen for account changes */
 			TezService.instances.beacon.client.subscribeToEvent('ACTIVE_ACCOUNT_SET', ({ address }) => {
-				console.log("active account set event triggered")
 				if (address) {
 					tezAddress.value = address
 					tezStatus.value = ConnectionStatus.CONNECTED
