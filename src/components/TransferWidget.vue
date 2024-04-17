@@ -19,7 +19,7 @@ import { useTezos } from "@/composables/tezos.js"
 import { useEtherlink } from "@/composables/etherlink.js"
 
 /** Services */
-import { amountToString, capitilize, prettyNumber, purgeNumber } from "@/services/utils"
+import { amountToString, capitalize, prettyNumber, purgeNumber } from "@/services/utils"
 import TokenBridgeService from "@/services/tokenBridge"
 const { tokenBridge } = TokenBridgeService.instances
 
@@ -184,7 +184,7 @@ function setAmount(val) {
 
 						<Flex align="center" gap="6">
 							<img width="16" height="16" :src="loadImage(fromChain.logo)" :class="$style.logo" alt="" />
-							<Text size="13" weight="semibold" color="primary">{{ capitilize(fromChain.name) }}</Text>
+							<Text size="13" weight="semibold" color="primary">{{ capitalize(fromChain.name) }}</Text>
 						</Flex>
 					</Flex>
 
@@ -230,7 +230,7 @@ function setAmount(val) {
 
 						<Flex align="center" gap="6">
 							<img width="16" height="16" :src="loadImage(toChain.logo)" :class="$style.logo" alt="" />
-							<Text size="13" weight="semibold" color="primary">{{ capitilize(toChain.name) }}</Text>
+							<Text size="13" weight="semibold" color="primary">{{ capitalize(toChain.name) }}</Text>
 						</Flex>
 					</Flex>
 
