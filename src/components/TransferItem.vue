@@ -13,7 +13,7 @@ import Tooltip from "@/components/ui/Tooltip.vue"
 
 /** Services */
 import TokenBridgeService from "@/services/tokenBridge"
-import { amountToString, capitilize, getStatus, parseTime } from "@/services/utils"
+import { amountToString, capitalize, getStatus, parseTime } from "@/services/utils"
 
 /** Config */
 import { getToken } from "@/services/cfg/tokens.js";
@@ -150,14 +150,14 @@ const handleRemove = () => {
 		<Flex align="center" justify="between" gap="12" :class="$style.progress">
 			<Flex align="center" gap="6">
 				<img width="20" height="20" :src="loadImage(operation.source.chain)" :class="$style.img" alt=""/>
-				<Text size="16" color="primary"> {{ capitilize(operation.source.chain) }} </Text>
+				<Text size="16" color="primary"> {{ capitalize(operation.source.chain) }} </Text>
 			</Flex>
 
 			<Stepper :steps="transfer.steps" />
 
 			<Flex align="center" gap="6">
 				<img width="20" height="20" :src="loadImage(operation.destination.chain)" :class="$style.img" alt=""/>
-				<Text size="16" color="primary"> {{ capitilize(operation.destination.chain) }} </Text>
+				<Text size="16" color="primary"> {{ capitalize(operation.destination.chain) }} </Text>
 			</Flex>
 		</Flex>
 
