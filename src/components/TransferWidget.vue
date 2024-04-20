@@ -37,11 +37,6 @@ const { recentTransfers } = storeToRefs(transfersStore)
 
 const playRotateAnimation = ref(false)
 
-// const FAKE_USD_PRICE = 3
-const FAKE_TRANSFER_PRICE = 0.053
-// const MAX_DIGITS = 4
-// const FAKE_COMPUTED_TRANSFER_PRICE = computed(() => (!reverseDirection.value ? FAKE_TRANSFER_PRICE : 1 / FAKE_TRANSFER_PRICE))
-
 const loadImage = (n) => new URL(`../assets/images/${n}.png`, import.meta.url).href
 
 const normalizeAmount = (target, decimals) => {
@@ -81,7 +76,7 @@ function calculateBigInt(stringAmount, decimals) {
 		BigNumber(10 ** decimals)
 	)
 }
-// const USDAmount = ref("0")
+
 watch(
 	() => [amount.value, fromToken?.value?.decimals, toToken?.value?.decimals],
 	([newAmount = "", newFromDecimals = 12, newToDecimals = 12]) => {
@@ -89,17 +84,10 @@ watch(
 		if (!newAmount.length) {
 			amount.value = ""
 			bigIntAmount.value = 0n
-			// USDAmount.value = "0"
 		}
 		else {
 			amount.value = normalizeAmount(newAmount, newDecimals)
 			bigIntAmount.value = calculateBigInt(amount.value, newDecimals)
-			// USDAmount.value = prettyNumber(
-			// 	(
-			// 		BigNumber(bigIntAmount.value.toString()) *
-			// 		BigNumber(FAKE_USD_PRICE) /
-			// 		BigNumber(10 ** fromToken.value.decimals)
-			// 	).toString(), 2)
 		}
 	})
 
@@ -280,7 +268,7 @@ function setAmount(val) {
 					</Flex>
 				</Flex>
 
-				<Flex v-else-if="+fromToken.prettyBalance === 0" align="center" justify="center" :class="[$style.button, $style.disabled]">
+				<Flex v-else-if="+fromToken.prettyBalance === 0 || +amount > +fromToken.prettyBalance" align="center" justify="center" :class="[$style.button, $style.disabled]">
 					<Flex align="center" gap="6">
 						<Text size="16" color="black">Not enough {{ fromToken.ticker }} for {{ fromChain.name === 'tezos' ? 'deposit' : 'withdraw' }} </Text>
 					</Flex>
