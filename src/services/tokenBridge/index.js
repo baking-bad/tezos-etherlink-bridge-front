@@ -13,7 +13,7 @@ const defaultDataProvider = new DefaultDataProvider({
 		baseUrl: 'https://etherlink-bridge-indexer.dipdup.net',
 		webSocketApiBaseUrl: 'wss://etherlink-bridge-indexer.dipdup.net'
 	},
-	tzKTApiBaseUrl: 'https://api.oxfordnet.tzkt.io',
+	tzKTApiBaseUrl: 'https://api.parisnet.tzkt.io',
 	etherlinkRpcUrl: 'https://etherlink.dipdup.net',
 	tokenPairs
 })
@@ -26,10 +26,12 @@ const init = async () => {
 	instances.tokenBridge = new TokenBridge({
 		tezosBridgeBlockchainService: new TaquitoWalletTezosBridgeBlockchainService({
 			tezosToolkit: tezos.instances.toolkit,
-			smartRollupAddress: 'sr1T4XVcVtBRzYy52edVTdgup9Kip4Wrmn97'
+			smartRollupAddress: 'sr1GBHEgzZmpWH4URqshZEZFCxBpqzi6ahvL'
 		}),
 		etherlinkBridgeBlockchainService: new Web3EtherlinkBridgeBlockchainService({
-			web3: etherlink.instances.toolkit
+			web3: etherlink.instances.toolkit,
+            withdrawNativeTokenPrecompileAddress: '0xff00000000000000000000000000000000000001',
+            withdrawNonNativeTokenPrecompileAddress: '0xff00000000000000000000000000000000000002'
 		}),
 		bridgeDataProviders: {
 			transfers: defaultDataProvider,
@@ -42,4 +44,3 @@ const init = async () => {
 }
 
 export default { init, instances }
-

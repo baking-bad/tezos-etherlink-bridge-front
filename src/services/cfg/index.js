@@ -1,5 +1,5 @@
 const appUrl = window.location.origin
-const tezosNetworkName = "oxfordnet"
+const tezosNetworkName = "parisnet"
 
 export const config = {
 	isTestnet: true,
@@ -10,8 +10,8 @@ export const config = {
 		url: appUrl,
 	},
 	bridge: {
-		smartRollupAddress: "sr1T4XVcVtBRzYy52edVTdgup9Kip4Wrmn97",
-		smartRollupNodeBaseUrl: "https://etherlink-rollup-oxford.dipdup.net",
+		smartRollupAddress: "sr1GBHEgzZmpWH4URqshZEZFCxBpqzi6ahvL",
+		smartRollupNodeBaseUrl: "https://etherlink-rollup-paris.dipdup.net",
 	},
 	tezos: {
 		network: {
