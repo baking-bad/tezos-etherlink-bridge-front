@@ -268,7 +268,7 @@ function setAmount(val) {
 					</Flex>
 				</Flex>
 
-				<Flex v-else-if="+fromToken.prettyBalance === 0 || +amount > +fromToken.prettyBalance" align="center" justify="center" :class="[$style.button, $style.disabled]">
+				<Flex v-else-if="+fromToken.prettyBalance === 0 || parseFloat(amount.replaceAll('\xa0', '')) > +fromToken.prettyBalance" align="center" justify="center" :class="[$style.button, $style.disabled]">
 					<Flex align="center" gap="6">
 						<Text size="16" color="black">Not enough {{ fromToken.ticker }} for {{ fromChain.name === 'tezos' ? 'deposit' : 'withdraw' }} </Text>
 					</Flex>
