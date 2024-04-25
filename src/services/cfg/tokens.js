@@ -79,6 +79,27 @@ export const tokenPairs = [
 			icon: "usdt",
 		},
 	},
+	{
+		tezos: {
+			type: "fa2",
+			name: "fxhash, token: 42",
+			ticker: "FXHASH_42",
+			address: "KT195Eb8T524v5VJ99ZzH2wpnPfQ2wJfMi6h",
+			tokenId: "42",
+			decimals: 0,
+			icon: "fxhash",
+			ticketerContractAddress: "KT1VybveLaWhpQHKph28WcGwSy1ud22KSEan",
+			ticketHelperContractAddress: "KT1DNtHLr9T9zksZjZvQwgtx5XJwrW9wzETB",
+		},
+		etherlink: {
+			type: "erc20",
+			name: "fxhash, token: 42",
+			ticker: "FXHASH_42",
+			address: "0xcB5d40c6B1bdf5Cd51b3801351b0A68D101a561b",
+			decimals: 0,
+			icon: "fxhash",
+		},
+	},
 ]
 
 export const getTokenKey = (token) => {
