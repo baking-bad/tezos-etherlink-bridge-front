@@ -74,7 +74,7 @@ export const prettyNumber = (_target, decimalsCount = 12, short = false) => {
 }
 
 export function amountToString(bigIntAmount, decimals, short = false) {
-	const bigNumAmount = BigNumber(bigIntAmount.toString()) / BigNumber(10 ** decimals)
-	if (short && bigNumAmount < BigNumber(0.01) && bigIntAmount !== 0n)return '<0.01'
+	const bigNumAmount = BigNumber(bigIntAmount.toString()).shiftedBy(-decimals);
+	if (short && bigNumAmount.isLessThan(BigNumber(0.01)) && bigIntAmount !== 0n) return '<0.01'
 	return prettyNumber(bigNumAmount.toString(), decimals, short)
 }
