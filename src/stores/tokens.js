@@ -13,17 +13,11 @@ export const useTokensStore = defineStore("tokens", () => {
 				...tezos,
 				balance: BigInt(0),
 				pairKey: getTokenKey(etherlink),
-				get prettyBalance() {
-					return prettyNumber((BigNumber(this.balance.toString()) / BigNumber(10 ** this.decimals)).toString(), this.decimals)
-				}
 			},
 			etherlink: {
 				...etherlink,
 				balance: BigInt(0),
 				pairKey: getTokenKey(tezos),
-				get prettyBalance() {
-					return prettyNumber((BigNumber(this.balance.toString()) / BigNumber(10 ** this.decimals)).toString(), this.decimals)
-				}
 			}
 		}
 	}

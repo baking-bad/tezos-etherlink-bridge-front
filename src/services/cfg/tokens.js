@@ -97,5 +97,12 @@ export const getToken = (chain, address) => {
         return p[chain].address === address;
     })
 
-	return pair[chain]
+	return pair?.[chain] ?? {
+		type: "unknown",
+			name: "unknown",
+			ticker: "UNKN",
+			fakeAddress: "unknowntoken",
+			decimals: 0,
+			icon: "xtz",
+	}
 }

@@ -71,10 +71,7 @@ const toToken = ref()
 const amount = ref("")
 const bigIntAmount = ref(0n)
 function calculateBigInt(stringAmount, decimals) {
-	return  BigInt(
-		BigNumber(purgeNumber(stringAmount)) *
-		BigNumber(10 ** decimals)
-	)
+	return  BigInt(BigNumber(purgeNumber(stringAmount)).shiftedBy(decimals).toString())
 }
 
 watch(
@@ -268,7 +265,7 @@ function setAmount(val) {
 					</Flex>
 				</Flex>
 
-				<Flex v-else-if="+fromToken.prettyBalance === 0 || parseFloat(amount.replaceAll('\xa0', '')) > +fromToken.prettyBalance" align="center" justify="center" :class="[$style.button, $style.disabled]">
+				<Flex v-else-if="fromToken.balance === 0n || bigIntAmount > fromToken.balance" align="center" justify="center" :class="[$style.button, $style.disabled]">
 					<Flex align="center" gap="6">
 						<Text size="16" color="black">Not enough {{ fromToken.ticker }} for {{ fromChain.name === 'tezos' ? 'deposit' : 'withdraw' }} </Text>
 					</Flex>

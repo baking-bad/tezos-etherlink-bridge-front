@@ -40,7 +40,7 @@ const props = defineProps({
 })
 
 const isProcessingWithdraw = ref(false)
-const tezosNativebalance = computed(() => +(tezosTokens.value.find((t) => t.ticker === 'XTZ').prettyBalance))
+const tezosNativeBalance = computed(() => tezosTokens.value.find((t) => t.ticker === 'XTZ').balance)
 
 const loadImage = (n) => new URL(`../assets/images/${n}.png`, import.meta.url).href
 
@@ -190,7 +190,7 @@ const handleRemove = () => {
 			<Flex v-if="!tezConnected" align="center" justify="center" :class="[$style.button, $style.disabled]" wide>
 				<Text size="16" color="black">Connect your Tezos wallet to finalize the withdrawal</Text>
 			</Flex>
-			<Flex v-else-if="tezosNativebalance === 0" align="center" justify="center" :class="[$style.button, $style.disabled]" wide>
+			<Flex v-else-if="tezosNativeBalance === 0n" align="center" justify="center" :class="[$style.button, $style.disabled]" wide>
 				<Text size="16" color="black">Not enough XTZ to finalize the withdrawal</Text>
 			</Flex>
 			<Flex v-else @click="finishWithdraw" align="center" justify="center" :class="[$style.button, isProcessingWithdraw && $style.disabled]" wide>
