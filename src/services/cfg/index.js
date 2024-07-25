@@ -1,5 +1,7 @@
+import { capitalize } from "@/services/utils"
+
 const appUrl = window.location.origin
-const tezosNetworkName = "oxfordnet"
+const tezosNetworkName = import.meta.env.VITE_TEZOS_NETWORK_NAME
 
 export const config = {
 	isTestnet: true,
@@ -10,13 +12,12 @@ export const config = {
 		url: appUrl,
 	},
 	bridge: {
-		smartRollupAddress: "sr1T4XVcVtBRzYy52edVTdgup9Kip4Wrmn97",
-		smartRollupNodeBaseUrl: "https://etherlink-rollup-oxford.dipdup.net",
+		smartRollupAddress: import.meta.env.VITE_SMART_ROLLUP_ADDRESS,
 	},
 	tezos: {
 		network: {
 			name: tezosNetworkName,
-			displayName: tezosNetworkName[0].toLocaleUpperCase() + tezosNetworkName.slice(1),
+			displayName: capitalize(tezosNetworkName),
 			rpcUrl: `https://rpc.tzkt.io/${tezosNetworkName}`,
 			blockExplorerUrl: `https://${tezosNetworkName ? tezosNetworkName + '.' : ''}tzkt.io`
 		},
@@ -31,14 +32,14 @@ export const config = {
 				symbol: "XTZ",
 				decimals: 18,
 			},
-			rpcUrl: "https://etherlink.dipdup.net",
-			blockExplorerUrl: "https://blockscout.dipdup.net",
+			rpcUrl: import.meta.env.VITE_ETHERLINK_RPC,
+			blockExplorerUrl: import.meta.env.VITE_ETHERLINK_EXPLORER,
 		},
 	},
 	providers: {
 		dipDup: {
-			baseUrl: "https://etherlink-bridge-indexer.dipdup.net",
-			webSocketApiBaseUrl: "wss://etherlink-bridge-indexer.dipdup.net",
+			baseUrl: import.meta.env.VITE_SDK_URL,
+			webSocketApiBaseUrl: import.meta.env.VITE_SDK_WSS,
 		},
 		tzKT: {
 			baseUrl: `https://api.${tezosNetworkName}.tzkt.io`,

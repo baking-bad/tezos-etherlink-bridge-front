@@ -10,12 +10,12 @@ import tezos from "@/services/tezos"
 
 const defaultDataProvider = new DefaultDataProvider({
 	dipDup: {
-		baseUrl: 'https://etherlink-bridge-indexer.dipdup.net',
-		webSocketApiBaseUrl: 'wss://etherlink-bridge-indexer.dipdup.net'
+		baseUrl: import.meta.env.VITE_SDK_URL,
+		webSocketApiBaseUrl: import.meta.env.VITE_SDK_WSS,
 	},
-	tzKTApiBaseUrl: 'https://api.oxfordnet.tzkt.io',
-	etherlinkRpcUrl: 'https://etherlink.dipdup.net',
-	tokenPairs
+	tzKTApiBaseUrl: `https://api.${import.meta.env.VITE_TEZOS_NETWORK_NAME}.tzkt.io`,
+	etherlinkRpcUrl: import.meta.env.VITE_ETHERLINK_RPC,
+	tokenPairs,
 })
 
 const instances = {
@@ -26,11 +26,13 @@ const init = async () => {
 	instances.tokenBridge = new TokenBridge({
 		tezosBridgeBlockchainService: new TaquitoWalletTezosBridgeBlockchainService({
 			tezosToolkit: tezos.instances.toolkit,
-			smartRollupAddress: 'sr1T4XVcVtBRzYy52edVTdgup9Kip4Wrmn97'
+			smartRollupAddress: import.meta.env.VITE_SMART_ROLLUP_ADDRESS,
 		}),
 		etherlinkBridgeBlockchainService: new Web3EtherlinkBridgeBlockchainService({
-			web3: etherlink.instances.toolkit
-		}),
+			web3: etherlink.instances.toolkit,
+			withdrawNativeTokenPrecompileAddress: '0xff00000000000000000000000000000000000001',
+            withdrawNonNativeTokenPrecompileAddress: '0xff00000000000000000000000000000000000002',
+		}),	
 		bridgeDataProviders: {
 			transfers: defaultDataProvider,
 			balances: defaultDataProvider,
