@@ -30,8 +30,6 @@ const init = async () => {
 		}),
 		etherlinkBridgeBlockchainService: new Web3EtherlinkBridgeBlockchainService({
 			web3: etherlink.instances.toolkit,
-            withdrawNativeTokenPrecompileAddress: '0xff00000000000000000000000000000000000001',
-            withdrawNonNativeTokenPrecompileAddress: '0xff00000000000000000000000000000000000002'
 		}),
 		bridgeDataProviders: {
 			transfers: defaultDataProvider,

@@ -12,8 +12,8 @@ importers:
         specifier: ^4.1.2
         version: 4.1.2
       '@baking-bad/tezos-etherlink-bridge-sdk':
-        specifier: ^0.2.5
-        version: 0.2.5(@taquito/taquito@19.1.0)(web3@4.6.0(typescript@5.4.2)(zod@3.22.4))(ws@8.16.0)
+        specifier: 0.3.0
+        version: 0.3.0(@taquito/taquito@19.1.0)(web3@4.6.0(typescript@5.4.2)(zod@3.22.4))(ws@8.16.0)
       '@taquito/beacon-wallet':
         specifier: 19.1.0
         version: 19.1.0
@@ -119,8 +119,8 @@ packages:
     resolution: {integrity: sha512-+j7a5c253RfKh8iABBhywc8NSfP5LURe7Uh4qpsh6jc+aLJguvmIUBdjSdEMQv2bENrCR5MfRdjGo7vzS/ob7w==}
     engines: {node: '>=6.9.0'}
 
-  '@baking-bad/tezos-etherlink-bridge-sdk@0.2.5':
-    resolution: {integrity: sha512-6Yw9GYPgM46t7YiLBrZkS9RZden6yJwPmy5gtlW297GOEdbsRNvU6weHFg2a9h1RKYBmjvpR8ZGfEaidgC0Rtg==}
+  '@baking-bad/tezos-etherlink-bridge-sdk@0.3.0':
+    resolution: {integrity: sha512-AtpTb+KL4ujuaGcoC5TeW/NCDzB890GY6FgOQrCw3Z+BB1QdY5RvAKJD3Bv6UPtMMu+Ux/ixF3w4A4ggie8e0g==}
     engines: {node: '>=20'}
     peerDependencies:
       '@taquito/taquito': '>=19.0.0'
@@ -2505,7 +2505,7 @@ snapshots:
       '@babel/helper-validator-identifier': 7.22.20
       to-fast-properties: 2.0.0
 
-  '@baking-bad/tezos-etherlink-bridge-sdk@0.2.5(@taquito/taquito@19.1.0)(web3@4.6.0(typescript@5.4.2)(zod@3.22.4))(ws@8.16.0)':
+  '@baking-bad/tezos-etherlink-bridge-sdk@0.3.0(@taquito/taquito@19.1.0)(web3@4.6.0(typescript@5.4.2)(zod@3.22.4))(ws@8.16.0)':
     dependencies:
       '@taquito/utils': 19.1.0
       web3-utils: 4.2.2
