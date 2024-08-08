@@ -259,12 +259,6 @@ function setAmount(val) {
 					</Flex>
 				</RouterLink>
 
-				<Flex v-else-if="fromChain.name === 'etherlink' && fromToken.type === 'native'" align="center" justify="center" :class="[$style.button, $style.disabled]">
-					<Flex align="center" gap="6">
-						<Text size="16" color="black">Native token withdrawal is not yet supported</Text>
-					</Flex>
-				</Flex>
-
 				<Flex v-else-if="fromToken.balance === 0n || bigIntAmount > fromToken.balance" align="center" justify="center" :class="[$style.button, $style.disabled]">
 					<Flex align="center" gap="6">
 						<Text size="16" color="black">Not enough {{ fromToken.ticker }} for {{ fromChain.name === 'tezos' ? 'deposit' : 'withdraw' }} </Text>
