@@ -78,3 +78,11 @@ export function amountToString(bigIntAmount, decimals, short = false) {
 	if (short && bigNumAmount.isLessThan(BigNumber(0.01)) && bigIntAmount !== 0n) return '<0.01'
 	return prettyNumber(bigNumAmount.toString(), decimals, short)
 }
+
+export const truncateDecimalPart = (amount, decimal = 6) => {
+	if (!amount) return 0
+
+	const numberString = amount.toFixed(decimal).replace(/\.?0+$/, "")
+
+	return parseFloat(numberString)
+}

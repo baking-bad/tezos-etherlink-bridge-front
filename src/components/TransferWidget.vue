@@ -19,7 +19,7 @@ import { useTezos } from "@/composables/tezos.js"
 import { useEtherlink } from "@/composables/etherlink.js"
 
 /** Services */
-import { amountToString, capitalize, prettyNumber, purgeNumber } from "@/services/utils"
+import { amountToString, capitalize, prettyNumber, purgeNumber, truncateDecimalPart } from "@/services/utils"
 import TokenBridgeService from "@/services/tokenBridge"
 const { tokenBridge } = TokenBridgeService.instances
 
@@ -69,6 +69,7 @@ const toToken = ref()
 
 /** Common amounts */
 const amount = ref("")
+const amountTo = ref("")
 const bigIntAmount = ref(0n)
 function calculateBigInt(stringAmount, decimals) {
 	return  BigInt(BigNumber(purgeNumber(stringAmount)).shiftedBy(decimals).toString())
@@ -76,15 +77,16 @@ function calculateBigInt(stringAmount, decimals) {
 
 watch(
 	() => [amount.value, fromToken?.value?.decimals, toToken?.value?.decimals],
-	([newAmount = "", newFromDecimals = 12, newToDecimals = 12]) => {
-		const newDecimals = Math.min(newFromDecimals, newToDecimals)
+	([newAmount = "", decimalsFrom = 12, decimalsTo = 12]) => {
 		if (!newAmount.length) {
 			amount.value = ""
 			bigIntAmount.value = 0n
+			amountTo.value = ""
 		}
 		else {
-			amount.value = normalizeAmount(newAmount, newDecimals)
-			bigIntAmount.value = calculateBigInt(amount.value, newDecimals)
+			amount.value = normalizeAmount(newAmount, decimalsFrom)
+			bigIntAmount.value = calculateBigInt(amount.value, decimalsFrom)
+			amountTo.value = truncateDecimalPart(parseFloat(amount.value), decimalsTo)
 		}
 	})
 
@@ -220,7 +222,7 @@ function setAmount(val) {
 					</Flex>
 
 					<Flex justify="between">
-						<input ref="toInputEl" v-model="amount" placeholder="0.00" :class="$style.input" />
+						<input ref="toInputEl" v-model="amountTo" placeholder="0.00" :class="$style.input" />
 
 						<Flex direction="column" align="end" gap="8">
 							<TokenSelector
