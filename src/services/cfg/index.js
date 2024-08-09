@@ -12,7 +12,8 @@ export const config = {
 		url: appUrl,
 	},
 	bridge: {
-		smartRollupAddress: import.meta.env.VITE_SMART_ROLLUP_ADDRESS,
+		smartRollupAddress: "sr1GBHEgzZmpWH4URqshZEZFCxBpqzi6ahvL",
+		smartRollupNodeBaseUrl: "https://etherlink-rollup-paris.dipdup.net",
 	},
 	tezos: {
 		network: {
