@@ -86,8 +86,6 @@ watch(
 		else {
 			amount.value = normalizeAmount(newAmount, decimals)
 			bigIntAmount.value = calculateBigInt(amount.value, decimalsFrom)
-			console.log('amount.value', amount.value);
-			console.log('bigIntAmount.value', bigIntAmount.value);
 		}
 	}
 )
