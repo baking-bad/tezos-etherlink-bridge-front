@@ -98,7 +98,7 @@ const statusStyle = computed(() => {
 	return {color: `var(--blue)`}
 })
 
-const finishWithdraw = async () => {
+const finishWithdrawal = async () => {
 	isProcessingWithdraw.value = true
 
 	tokenBridge.finishWithdraw(props.transfer)
@@ -193,14 +193,14 @@ const handleRemove = () => {
 			<Flex v-else-if="tezosNativeBalance === 0n" align="center" justify="center" :class="[$style.button, $style.disabled]" wide>
 				<Text size="16" color="black">Not enough XTZ to finalize the withdrawal</Text>
 			</Flex>
-			<Flex v-else @click="finishWithdraw" align="center" justify="center" :class="[$style.button, isProcessingWithdraw && $style.disabled]" wide>
+			<Flex v-else @click="finishWithdrawal" align="center" justify="center" :class="[$style.button, isProcessingWithdraw && $style.disabled]" wide>
 				<Flex v-if="isProcessingWithdraw" gap="6">
 					<Spinner size="14" />
 
 					<Text size="16" color="black">Processing..</Text>
 				</Flex>
 				
-				<Text v-else size="16" color="black">Finish withdraw</Text>
+				<Text v-else size="16" color="black">Finish withdrawal</Text>
 			</Flex>
 		</Flex>
 

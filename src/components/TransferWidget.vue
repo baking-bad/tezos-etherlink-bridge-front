@@ -69,26 +69,28 @@ const toToken = ref()
 
 /** Common amounts */
 const amount = ref("")
-const amountTo = ref("")
 const bigIntAmount = ref(0n)
 function calculateBigInt(stringAmount, decimals) {
-	return  BigInt(BigNumber(purgeNumber(stringAmount)).shiftedBy(decimals).toString())
+	return BigInt(BigNumber(purgeNumber(stringAmount)).shiftedBy(decimals).toFixed(0))
 }
 
 watch(
 	() => [amount.value, fromToken?.value?.decimals, toToken?.value?.decimals],
 	([newAmount = "", decimalsFrom = 12, decimalsTo = 12]) => {
+		let decimals = Math.min(decimalsFrom, decimalsTo)
+
 		if (!newAmount.length) {
 			amount.value = ""
 			bigIntAmount.value = 0n
-			amountTo.value = ""
 		}
 		else {
-			amount.value = normalizeAmount(newAmount, decimalsFrom)
+			amount.value = normalizeAmount(newAmount, decimals)
 			bigIntAmount.value = calculateBigInt(amount.value, decimalsFrom)
-			amountTo.value = truncateDecimalPart(parseFloat(amount.value), decimalsTo)
+			console.log('amount.value', amount.value);
+			console.log('bigIntAmount.value', bigIntAmount.value);
 		}
-	})
+	}
+)
 
 const handleSwitch = () => {
 	/** Rotate Animation */
@@ -114,7 +116,7 @@ onMounted(() => {
 
 const isLoading = ref(false)
 
-async function testTransfer() {
+async function sendTransfer() {
 	isLoading.value = true
 
 	const _address = fromToken.value.address
@@ -222,7 +224,7 @@ function setAmount(val) {
 					</Flex>
 
 					<Flex justify="between">
-						<input ref="toInputEl" v-model="amountTo" placeholder="0.00" :class="$style.input" />
+						<input ref="toInputEl" v-model="amount" placeholder="0.00" :class="$style.input" />
 
 						<Flex direction="column" align="end" gap="8">
 							<TokenSelector
@@ -267,7 +269,7 @@ function setAmount(val) {
 					</Flex>
 				</Flex>
 
-				<Flex v-else @click="testTransfer" align="center" justify="center" :class="[$style.button, (!(bigIntAmount > 0n) || isLoading) && $style.disabled]">
+				<Flex v-else @click="sendTransfer" align="center" justify="center" :class="[$style.button, (!(bigIntAmount > 0n) || isLoading) && $style.disabled]">
 					<Flex v-if="isLoading" align="center" gap="6">
 						<Spinner size="14" />
 						<Text size="16" color="black">Waiting for transfer creation..</Text>
