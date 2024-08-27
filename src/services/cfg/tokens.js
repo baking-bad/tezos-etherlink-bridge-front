@@ -79,6 +79,26 @@ export const tokenPairs = [
 			icon: "usdt",
 		},
 	},
+	{
+		tezos: {
+			type: "fa2",
+			name: "YOU",
+			ticker: "YOU",
+			address: "KT1VyYTej9iHeAfpCKBEdpqiKaHAk4hUN7h8",
+			decimals: 8,
+			icon: "you",
+			ticketerContractAddress: "KT1AAi4DCQiTUv5MYoXtdiFwUrPH3t3Yhkjo",
+			ticketHelperContractAddress: "KT1FcXb4oFBWtUVbEa96Do4DfQZXn6878yu1",
+		},
+		etherlink: {
+			type: "erc20",
+			name: "YOU",
+			ticker: "YOU",
+			address: "0x87dcBf128677ba36E79D47dAf4eb4e51610e0150",
+			decimals: 8,
+			icon: "you",
+		},
+	}
 ]
 
 export const getTokenKey = (token) => {
@@ -93,16 +113,16 @@ export const isSameToken = (tokenA, tokenB) => {
 
 export const getToken = (chain, address) => {
 	let pair = tokenPairs.find(p => {
-        if (!address) return p[chain].type === 'native';
-        return p[chain].address === address;
-    })
+		if (!address) return p[chain].type === 'native';
+		return p[chain].address === address;
+	})
 
 	return pair?.[chain] ?? {
 		type: "unknown",
-			name: "unknown",
-			ticker: "UNKN",
-			fakeAddress: "unknowntoken",
-			decimals: 0,
-			icon: "xtz",
+		name: "unknown",
+		ticker: "UNKN",
+		fakeAddress: "unknowntoken",
+		decimals: 0,
+		icon: "xtz",
 	}
 }
