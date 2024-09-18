@@ -35,6 +35,8 @@ const { isPairedToken, isSameToken, getPairedToken } = tokensStore
 const transfersStore = useTransfersStore()
 const { recentTransfers } = storeToRefs(transfersStore)
 
+const tezosNetworkName = import.meta.env.VITE_TEZOS_NETWORK_NAME
+
 const playRotateAnimation = ref(false)
 
 const loadImage = (n) => new URL(`../assets/images/${n}.png`, import.meta.url).href
@@ -159,10 +161,23 @@ watch(
 function setAmount(val) {
 	amount.value = val
 }
+
+const warningDisplayed = ref(true)
 </script>
 
 <template>
 	<Flex align="center" justify="center" direction="column" gap="40" :class="$style.wrapper">
+		<Flex v-if="tezosNetworkName !== 'mainnet' && warningDisplayed" align="start" gap="8" :class="$style.alert">
+			<Icon name="info" size="22" :class="$style.alert_icon" />
+
+			<Flex direction="column" gap="8" :class="$style.alert_message">
+				<Text size="15" weight="semibold">Attention!</Text>
+
+				<Text size="15" weight="500">You are on the <Text size="15" weight="semibold"> {{ capitalize(tezosNetworkName) }} </Text> test network.</Text>
+			</Flex>
+
+			<Icon @click="warningDisplayed = false" name="close" size="18" color="secondary" :class="$style.alert_close_icon" />
+		</Flex>
 		<Flex direction="column" gap="20" :class="$style.operation_window">
 			<Flex direction="column" gap="4" :class="$style.inputs">
 				<Flex @click="fromInputEl.focus()" direction="column" gap="16" :class="$style.from">
@@ -294,6 +309,61 @@ function setAmount(val) {
 <style module>
 .wrapper {
 	max-width: 100%;
+}
+
+.alert {
+	max-width: 100%;
+	width: 400px;
+
+	border-radius: 12px;
+
+	background-color: #f2c84c0a;
+	color: var(--warning);
+	border: 1px solid var(--warning);
+
+	transition: all 0.2s ease;
+
+	padding: 8px 8px 8px 8px;
+	margin: 24px 16px -44px 16px;
+
+	&:hover {
+		.alert_close_icon {
+			margin-left: auto;
+			display: block;
+		}
+	}
+}
+
+.alert_icon {
+	flex-shrink: 0;
+
+	fill: var(--warning);
+}
+
+.alert_message {
+	margin-top: 2px;
+
+	& span {
+		line-height: 1.2;
+	}
+}
+
+.alert_close_icon {
+	display: none;
+
+	cursor: pointer;
+	padding: 2px;
+
+	fill: var(--warning);
+
+	border-radius: 12px;
+
+	transition: all 0.2s ease;
+
+	&:hover {
+		background: var(--op-10);
+		transform: scale(1.1);
+	}
 }
 
 .operation_window {
