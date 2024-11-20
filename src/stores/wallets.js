@@ -6,6 +6,10 @@ import { useDisconnect, useWeb3Modal, useWeb3ModalAccount, useWeb3ModalProvider 
 import { ConnectionStatus } from "@/services/constants/wallets.js"
 import { useTokensStore } from "@/stores/tokens.js"
 
+// import { createAppKit } from '@reown/appkit/vue'
+// import { arbitrum, mainnet, AppKitNetwork } from '@reown/appkit/networks'
+// import { WagmiAdapter } from '@reown/appkit-adapter-wagmi'
+
 export const useWalletsStore =  defineStore("wallets", () => {
 	const tezStatus = ref(ConnectionStatus.NOT_CONNECTED)
 	const tezConnected = computed(() => tezStatus.value === ConnectionStatus.CONNECTED)
@@ -105,6 +109,11 @@ export const useWalletsStore =  defineStore("wallets", () => {
 			tokens.mergeBalances();
 		}
 	)
+
+
+	const aztConnect = async () => {
+
+	}
 
 	return {
 		tezAddress,

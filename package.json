@@ -11,9 +11,14 @@
 	"dependencies": {
 		"@airgap/beacon-types": "^4.1.2",
 		"@baking-bad/tezos-etherlink-bridge-sdk": "0.3.0",
+		"@reown/appkit": "^1.5.0",
+		"@reown/appkit-adapter-ethers": "^1.5.0",
+		"@reown/appkit-adapter-wagmi": "^1.5.0",
+		"@tanstack/vue-query": "^5.60.6",
 		"@taquito/beacon-wallet": "19.1.0",
 		"@taquito/taquito": "19.1.0",
 		"@taquito/utils": "^19.1.0",
+		"@wagmi/vue": "^0.0.64",
 		"@web3modal/ethers": "^4.0.10",
 		"@web3modal/scaffold-utils": "^4.0.10",
 		"bignumber.js": "^9.1.2",
@@ -24,8 +29,10 @@
 		"sass": "^1.71.0",
 		"sass-loader": "^14.1.0",
 		"uuid": "9.0.1",
+		"viem": "^2.21.48",
 		"vue": "^3.4.15",
 		"vue-router": "^4.2.5",
+		"wagmi": "^2.12.33",
 		"web3": "^4.5.0"
 	},
 	"devDependencies": {

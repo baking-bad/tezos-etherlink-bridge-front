@@ -37,6 +37,20 @@ export const config = {
 			blockExplorerUrl: import.meta.env.VITE_ETHERLINK_EXPLORER,
 		},
 	},
+	aztec: {
+		network: {
+			name: "Aztec",
+			displayName: "Aztec",
+			chainId: 31337,
+			nativeCurrency: {
+				name: "Aztec",
+				symbol: "AZT",
+				decimals: 6,
+			},
+			rpcUrl: import.meta.env.VITE_ETHERLINK_RPC,
+			blockExplorerUrl: import.meta.env.VITE_ETHERLINK_EXPLORER,
+		},
+	},
 	providers: {
 		dipDup: {
 			baseUrl: import.meta.env.VITE_SDK_URL,

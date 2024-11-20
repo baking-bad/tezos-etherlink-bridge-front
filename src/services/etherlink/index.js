@@ -29,6 +29,13 @@ const init = () => {
 				rpcUrl: config.etherlink.network.rpcUrl,
 				explorerUrl: config.etherlink.network.blockExplorerUrl,
 			},
+			{
+				chainId: config.aztec.network.chainId,
+				name: config.aztec.network.name,
+				currency: config.aztec.network.nativeCurrency.symbol,
+				rpcUrl: config.aztec.network.rpcUrl,
+				explorerUrl: config.aztec.network.blockExplorerUrl,
+			},
 		],
 		projectId: config.walletConnectProjectId,
 		enableAnalytics: false,

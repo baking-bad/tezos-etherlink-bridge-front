@@ -9,6 +9,7 @@ import { createPinia } from "pinia"
 import TezosWallet from "@/services/tezos"
 import EtherlinkWallet from "@/services/etherlink"
 import TokenBridgeService from "@/services/tokenBridge"
+import AztecWallet from "@/services/aztec"
 
 /** Global Components */
 import Flex from "@/components/global/Flex.vue"
@@ -22,6 +23,7 @@ import router from "./router"
  *
  * App Services
  */
+// AztecWallet.init()
 TezosWallet.init()
 EtherlinkWallet.init()
 TokenBridgeService.init()
