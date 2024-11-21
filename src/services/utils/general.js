@@ -5,7 +5,7 @@ export const getLinkToExplorer = (hash, network, type) => {
 	if (network === 'tezos')
 		return `${config.tezos.network.blockExplorerUrl}/${hash}`
 	if (type === 'address')
-			return `${config.etherlink.network.blockExplorerUrl}/address/${hash}`
+		return `${config.etherlink.network.blockExplorerUrl}/address/${hash}`
 	return `${config.etherlink.network.blockExplorerUrl}/tx/${hash}`
 }
 

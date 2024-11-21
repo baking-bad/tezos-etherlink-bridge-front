@@ -1,12 +1,12 @@
 <script setup>
 /** Vendor */
-import { useAppKit } from "@reown/appkit/vue";
-import { createAppKit } from '@reown/appkit/vue'
-import { arbitrum, defineChain, mainnet } from '@reown/appkit/networks'
-import { WagmiAdapter } from '@reown/appkit-adapter-wagmi'
-import { EthersAdapter } from '@reown/appkit-adapter-ethers'
-import { http, WagmiProvider } from 'wagmi'
-import { walletConnect, coinbaseWallet, injected } from 'wagmi/connectors'
+// import { useAppKit } from "@reown/appkit/vue";
+// import { createAppKit } from '@reown/appkit/vue'
+// import { arbitrum, defineChain, mainnet } from '@reown/appkit/networks'
+// import { WagmiAdapter } from '@reown/appkit-adapter-wagmi'
+// import { EthersAdapter } from '@reown/appkit-adapter-ethers'
+// import { http, WagmiProvider } from 'wagmi'
+// import { walletConnect, coinbaseWallet, injected } from 'wagmi/connectors'
 
 /** Services */
 import { config } from "@/services/cfg"
@@ -36,89 +36,89 @@ const {
 	ethDisconnect
 } = walletsStore
 
-const projectId = config.walletConnectProjectId
-console.log('projectId', projectId);
+// const projectId = config.walletConnectProjectId
+// console.log('projectId', projectId);
 
 
-// 2. Create a metadata object
-const metadata = {
-	name: config.app.name,
-	description: config.app.description,
-	url: config.app.url,
-	icons: [],
-}
+// // 2. Create a metadata object
+// const metadata = {
+// 	name: config.app.name,
+// 	description: config.app.description,
+// 	url: config.app.url,
+// 	icons: [],
+// }
 
-// 3. Set the networks
-// const networks = [mainnet]
-// console.log('networks', networks);
+// // 3. Set the networks
+// // const networks = [mainnet]
+// // console.log('networks', networks);
 
-const customNetwork = defineChain({
-	id: 13777,
-	caipNetworkId: 'aztec:1',
-	chainNamespace: 'eip155',
-	name: 'aztec',
-	nativeCurrency: {
-		decimals: 18,
-		name: 'Aztec',
-		symbol: 'AZT',
-	},
-	rpcUrls: {
-		default: {
-			http: ['RPC_URL'],
-			webSocket: ['WS_RPC_URL'],
-		},
-	},
-	blockExplorers: {
-		default: { name: 'Explorer', url: 'BLOCK_EXPLORER_URL' },
-	},
-	contracts: {
-		// Add the contracts here
-	}
-})
-console.log('customNetwork', customNetwork);
+// const customNetwork = defineChain({
+// 	id: 13777,
+// 	caipNetworkId: 'aztec:1',
+// 	chainNamespace: 'eip155',
+// 	name: 'aztec',
+// 	nativeCurrency: {
+// 		decimals: 18,
+// 		name: 'Aztec',
+// 		symbol: 'AZT',
+// 	},
+// 	rpcUrls: {
+// 		default: {
+// 			http: ['RPC_URL'],
+// 			webSocket: ['WS_RPC_URL'],
+// 		},
+// 	},
+// 	blockExplorers: {
+// 		default: { name: 'Explorer', url: 'BLOCK_EXPLORER_URL' },
+// 	},
+// 	contracts: {
+// 		// Add the contracts here
+// 	}
+// })
+// console.log('customNetwork', customNetwork);
 
-// 4. Create Wagmi Adapter
+// // 4. Create Wagmi Adapter
+// // const wagmiAdapter = new WagmiAdapter({
+// // 	networks,
+// // 	projectId
+// // })
+
+// const connectors = []
+// //let connector = await walletConnect({ projectId, metadata, showQrModal: true });
+// console.log('walletConnect({ projectId, metadata, showQrModal: true })', walletConnect({ projectId, metadata, showQrModal: true }));
+
+// connectors.push(walletConnect({ projectId, metadata, showQrModal: true })) // showQrModal must be false
+// connectors.push(injected({ shimDisconnect: true }))
+// connectors.push(
+//   coinbaseWallet({
+//     appName: metadata.name,
+//     appLogoUrl: metadata.icons[0]
+//   })
+// )
+// console.log('connectors', connectors);
+
+// // const wagmiAdapter = new WagmiAdapter({
+// // 	transports: {
+// // 		[customNetwork.id]: http()
+// // 	},
+// // 	connectors,
+// // 	projectId,
+// // 	networks: [customNetwork]
+// // })
 // const wagmiAdapter = new WagmiAdapter({
-// 	networks,
+// 	networks: [mainnet],
 // 	projectId
 // })
+// console.log('wagmiAdapter', wagmiAdapter);
 
-const connectors = []
-//let connector = await walletConnect({ projectId, metadata, showQrModal: true });
-console.log('walletConnect({ projectId, metadata, showQrModal: true })', walletConnect({ projectId, metadata, showQrModal: true }));
-
-connectors.push(walletConnect({ projectId, metadata, showQrModal: true })) // showQrModal must be false
-connectors.push(injected({ shimDisconnect: true }))
-connectors.push(
-  coinbaseWallet({
-    appName: metadata.name,
-    appLogoUrl: metadata.icons[0]
-  })
-)
-console.log('connectors', connectors);
-
-// const wagmiAdapter = new WagmiAdapter({
-// 	transports: {
-// 		[customNetwork.id]: http()
-// 	},
-// 	connectors,
+// // 5. Create the modal
+// const modal = createAppKit({
+// 	adapters: [wagmiAdapter],
+// 	// networks: [customNetwork],
+// 	networks: [mainnet],
 // 	projectId,
-// 	networks: [customNetwork]
+// 	metadata,
 // })
-const wagmiAdapter = new WagmiAdapter({
-	networks: [mainnet],
-	projectId
-})
-console.log('wagmiAdapter', wagmiAdapter);
-
-// 5. Create the modal
-const modal = createAppKit({
-	adapters: [wagmiAdapter],
-	// networks: [customNetwork],
-	networks: [mainnet],
-	projectId,
-	metadata,
-})
 
 // const modal = useAppKit()
 // modal.open()
@@ -277,15 +277,15 @@ const modal = createAppKit({
 					</Flex>
 				</transition>
 
-				<Flex
+				<!-- <Flex
 					justify="between"
 					align="center"
 					:class="[$style.task]"
-				>
+				> -->
 					<!-- <template> -->
-						<appkit-button />
+						<!-- <appkit-button /> -->
 					<!-- </template> -->
-				</Flex>
+				<!-- </Flex> -->
 			</Flex>
 
 			<Transition name="fade" mode="out-in">

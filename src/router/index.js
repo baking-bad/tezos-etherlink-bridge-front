@@ -5,6 +5,7 @@ import { createRouter, createWebHistory } from "vue-router"
 import BridgeView from "@/views/BridgeView.vue"
 import ConnectView from "@/views/ConnectView.vue"
 import TransfersView from "@/views/TransfersView.vue"
+import AztecView from "@/views/AztecView1.vue"
 
 const router = createRouter({
 	history: createWebHistory(import.meta.env.BASE_URL),
@@ -23,6 +24,11 @@ const router = createRouter({
 			path: "/config",
 			name: "Config",
 			component: ConnectView,
+		},
+		{
+			path: "/aztec",
+			name: "Aztec",
+			component: AztecView,
 		},
 		{
 			path: '/:catchAll(.*)*',

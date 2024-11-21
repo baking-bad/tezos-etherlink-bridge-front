@@ -1,8 +1,8 @@
 import { defineStore } from "pinia"
 import TezService from '@/services/tezos'
-import EthService from '@/services/etherlink'
+// import EthService from '@/services/etherlink'
 import { watch, ref, computed } from "vue"
-import { useDisconnect, useWeb3Modal, useWeb3ModalAccount, useWeb3ModalProvider } from "@web3modal/ethers/vue"
+// import { useDisconnect, useWeb3Modal, useWeb3ModalAccount, useWeb3ModalProvider } from "@web3modal/ethers/vue"
 import { ConnectionStatus } from "@/services/constants/wallets.js"
 import { useTokensStore } from "@/stores/tokens.js"
 
@@ -68,42 +68,42 @@ export const useWalletsStore =  defineStore("wallets", () => {
 		return TezService.instances.beacon.client.disconnect()
 	}
 
-	const { address: ethAddress, isConnected: ethIsConnected } = useWeb3ModalAccount()
-	const ethStatus = computed(() => (ethIsConnected.value ? ConnectionStatus.CONNECTED : ConnectionStatus.NOT_CONNECTED))
-	const ethConnected = computed(() => !!ethIsConnected.value)
-	const ethConnect = async () => {
-		try {
-			const web3Modal = useWeb3Modal()
-			web3Modal.open()
-		} catch (error) {
-			console.log(error)
-		}
-	}
-	const { disconnect: ethDisconnectWallet } = useDisconnect()
-	const ethDisconnect = () => {
-		ethAddress.value = null
-		ethIsConnected.value = ConnectionStatus.NOT_CONNECTED
+	// const { address: ethAddress, isConnected: ethIsConnected } = useWeb3ModalAccount()
+	// const ethStatus = computed(() => (ethIsConnected.value ? ConnectionStatus.CONNECTED : ConnectionStatus.NOT_CONNECTED))
+	// const ethConnected = computed(() => !!ethIsConnected.value)
+	// const ethConnect = async () => {
+	// 	try {
+	// 		const web3Modal = useWeb3Modal()
+	// 		web3Modal.open()
+	// 	} catch (error) {
+	// 		console.log(error)
+	// 	}
+	// }
+	// const { disconnect: ethDisconnectWallet } = useDisconnect()
+	// const ethDisconnect = () => {
+	// 	ethAddress.value = null
+	// 	ethIsConnected.value = ConnectionStatus.NOT_CONNECTED
 
-		ethDisconnectWallet()
-	}
+	// 	ethDisconnectWallet()
+	// }
 	const allConnected = computed(() => {
-		return tezStatus.value === ConnectionStatus.CONNECTED && ethStatus.value === ConnectionStatus.CONNECTED
+		return tezStatus.value === ConnectionStatus.CONNECTED
 	})
 
 	const walletProviderUpdated = ref(false);
-	const { walletProvider } = useWeb3ModalProvider()
-	watch(
-		() => walletProvider.value,
-		async (newVal) => {
-			EthService.instances.toolkit.setProvider(newVal)
-			walletProviderUpdated.value = true
-			const tokens = useTokensStore()
-			tokens.mergeBalances();
-		},
-	)
+	// const { walletProvider } = useWeb3ModalProvider()
+	// watch(
+	// 	() => walletProvider.value,
+	// 	async (newVal) => {
+	// 		EthService.instances.toolkit.setProvider(newVal)
+	// 		walletProviderUpdated.value = true
+	// 		const tokens = useTokensStore()
+	// 		tokens.mergeBalances();
+	// 	},
+	// )
 
 	watch(
-		() => ({ tezAddress: tezAddress.value, ethAddress: ethAddress.value }),
+		() => ({ tezAddress: tezAddress.value }),
 		() => {
 			const tokens = useTokensStore()
 			tokens.mergeBalances();
@@ -122,11 +122,11 @@ export const useWalletsStore =  defineStore("wallets", () => {
 		tezConnect,
 		tezDisconnect,
 		tezCheckConnection,
-		ethAddress,
-		ethStatus,
-		ethConnected,
-		ethConnect,
-		ethDisconnect,
+		// ethAddress,
+		// ethStatus,
+		// ethConnected,
+		// ethConnect,
+		// ethDisconnect,
 		allConnected,
 		walletProviderUpdated
 	}

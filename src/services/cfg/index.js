@@ -47,8 +47,8 @@ export const config = {
 				symbol: "AZT",
 				decimals: 6,
 			},
-			rpcUrl: import.meta.env.VITE_ETHERLINK_RPC,
-			blockExplorerUrl: import.meta.env.VITE_ETHERLINK_EXPLORER,
+			rpcUrl: "aztec.rpc.url",
+			blockExplorerUrl: "aztec.block.explorer.url",
 		},
 	},
 	providers: {

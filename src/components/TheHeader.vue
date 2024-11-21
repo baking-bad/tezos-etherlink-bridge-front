@@ -28,6 +28,11 @@ const tabs = ref([
 		name: "Config",
 		path: "/config",
 	},
+	{
+		icon: "settings",
+		name: "Aztec",
+		path: "/aztec",
+	},
 ])
 
 const highlightStyle = reactive({

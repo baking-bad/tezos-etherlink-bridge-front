@@ -24,10 +24,10 @@ import router from "./router"
  * App Services
  */
 // AztecWallet.init()
-TezosWallet.init()
-EtherlinkWallet.init()
-TokenBridgeService.init()
-.then(() => {
+// TezosWallet.init()
+// EtherlinkWallet.init()
+// TokenBridgeService.init()
+// .then(() => {
     /**
      * Vue
      */
@@ -41,4 +41,4 @@ TokenBridgeService.init()
     app.component("Text", Text)
 
     app.mount("#app")
-})
+// })
