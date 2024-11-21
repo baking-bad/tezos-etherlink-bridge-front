@@ -66,10 +66,11 @@ const dropdownItems = computed(() => {
 	}
 })
 
+const hasDropdownItems = computed(() => dropdownItems.value.length > 0)
 </script>
 
 <template>
-	<Dropdown>
+	<Dropdown v-if="hasDropdownItems">
 		<template #trigger="{isOpen}">
 			<Flex align="center" gap="6" :class="$style.selector">
 				<img width="20" height="20" :src="loadImage(selectedToken.icon)" alt="" />
@@ -103,6 +104,15 @@ const dropdownItems = computed(() => {
 			</DropdownItem>
 		</template>
 	</Dropdown>
+	<Flex v-else align="center" gap="6" :class="$style.selector">
+		<img width="20" height="20" :src="loadImage(selectedToken.icon)" alt="" />
+		<Text size="16" color="primary"> {{ selectedToken.ticker }} </Text>
+		<Icon
+			name="chevron-right"
+			size="14"
+			color="tertiary"
+		/>
+	</Flex>
 </template>
 
 <style module>
