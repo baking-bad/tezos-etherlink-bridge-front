@@ -3,6 +3,10 @@
 import { computed, watchEffect } from "vue"
 import { storeToRefs } from "pinia"
 
+/** Components */
+import { amountToString } from "../services/utils/index.js"
+import { Dropdown, DropdownItem } from "@/components/ui/Dropdown"
+
 /** Services */
 import TokenBridgeService from "@/services/tokenBridge"
 const { tokenBridge } = TokenBridgeService.instances
@@ -16,11 +20,6 @@ const {
 	tezosTokens,
 	etherlinkTokens,
 } = storeToRefs(tokensStore)
-
-/** Components */
-import { Dropdown, DropdownItem } from "@/components/ui/Dropdown"
-import { amountToString } from "../services/utils/index.js"
-
 
 const props = defineProps({
 	chain: {
@@ -56,16 +55,22 @@ watchEffect(() => {
 })
 
 const dropdownItems = computed(() => {
+	let items = []
 	switch (props.chain) {
 		case 'tezos':
-			return tezosTokens.value.filter(token => token?.ticker !== selectedToken.value?.ticker)
+			items = tezosTokens.value.filter(token => token?.ticker !== selectedToken.value?.ticker)
 		case 'etherlink':
-			return etherlinkTokens.value.filter(token => token?.ticker !== selectedToken.value?.ticker)
+			items = etherlinkTokens.value.filter(token => token?.ticker !== selectedToken.value?.ticker)
 		default:
 			break;
 	}
-})
 
+	if (!items.length) {
+		items.push("Additional tokens are being bridged soon..")
+	}
+
+	return items
+})
 </script>
 
 <template>
@@ -86,8 +91,8 @@ const dropdownItems = computed(() => {
 			</Flex>
 		</template>
 		<template #popup>
-			<DropdownItem v-for="item in dropdownItems" @click="selectedToken = item">
-				<Flex align="center" gap="6" wide>
+			<DropdownItem v-for="item in dropdownItems" @click="selectedToken = item" :class="!dropdownItems[0].ticker && $style.plug">
+				<Flex v-if="item.ticker" align="center" gap="6" wide>
 					<img width="20" height="20" :src="loadImage(item.icon)" :class="$style.img" alt="" />
 					<Flex align="center" justify="between" gap="24" wide>
 						<Flex direction="column" gap="2">
@@ -99,6 +104,9 @@ const dropdownItems = computed(() => {
 							{{ amountToString(item.balance, item.decimals, true) }}
 						</Text>
 					</Flex>
+				</Flex>
+				<Flex v-else>
+					<Text size="13" color="tertiary" :style="{textAlign: 'center', lineHeight: '1.4'}"> {{ item }} </Text>
 				</Flex>
 			</DropdownItem>
 		</template>
@@ -126,6 +134,14 @@ const dropdownItems = computed(() => {
 	&:active {
 		box-shadow: 0 0 0 2px var(--op-5);
 	}
+}
+
+.plug {
+	width: 150px;
+	white-space: wrap;
+
+	cursor: default;
+	pointer-events: none;
 }
 
 .img {
