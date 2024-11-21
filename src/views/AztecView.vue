@@ -1,248 +1,181 @@
-<script setup>
-/** Components */
-// import ConnectWidget from "@/components/ConnectWidget.vue"
+<script lang="ts" setup>
+import UniversalProvider from '@walletconnect/universal-provider'
+import { WalletConnectModal } from '@walletconnect/modal'
+import { onMounted, ref } from 'vue';
 
-import { ref, onMounted } from 'vue'
-import { mainnet, polygon, base, solana, solanaTestnet } from '@reown/appkit/networks'
-import { EthersAdapter } from '@reown/appkit-adapter-ethers'
-// import { SolanaAdapter } from '@reown/appkit-adapter-solana'
-import {
-  createAppKit,
-  useAppKitEvents,
-  useAppKitState,
-  useAppKitTheme,
-  useAppKitAccount,
-  useAppKitNetwork
-} from '@reown/appkit/vue'
+import { arbitrum, mainnet } from '@reown/appkit/networks'
 
-const projectId = import.meta.env.VITE_WALLET_CONNECT_PROJECT_ID
-console.log('projectId', projectId);
+export const networks = [mainnet, arbitrum]
 
-if (!projectId) {
-  throw new Error('VITE_WALLET_CONNECT_PROJECT_ID is not set')
-}
+// import {
+//   createWeb3Modal,
+//   defaultConfig,
+//   useWeb3Modal,
+//   useWeb3ModalEvents,
+//   useWeb3ModalState,
+//   useWeb3ModalTheme
+// } from '@web3modal/ethers/vue'
+// import { localhost } from 'viem/chains';
 
-// Initialize Ethers adapter
-const ethersAdapter = new EthersAdapter()
 
-// Initialize Solana adapter
-// const solanaAdapter = new SolanaAdapter({})
+// function getBlockchainApiRpcUrl(chainId) {
+//   return `https://rpc.walletconnect.org/v1/?chainId=eip155:${chainId}&projectId=${projectId}`
+// }
 
-// Initialize AppKit
-const modal = createAppKit({
-  adapters: [ethersAdapter],
-  networks: [mainnet, polygon, base, solana, solanaTestnet],
-  projectId,
-  metadata: {
-    name: 'AppKit Vue Ethers Example',
-    description: 'AppKit Vue Ethers Example',
-    url: '',
-    icons: ['']
+// // 2. Set chains
+// const chains = [
+//   {
+//     chainId: 1,
+//     name: 'Ethereum',
+//     currency: 'ETH',
+//     explorerUrl: 'https://etherscan.io',
+//     rpcUrl: getBlockchainApiRpcUrl(1)
+//   },
+//   {
+//     chainId: 42161,
+//     name: 'Arbitrum',
+//     currency: 'ETH',
+//     explorerUrl: 'https://arbiscan.io',
+//     rpcUrl: getBlockchainApiRpcUrl(42161)
+//   }
+// ]
+
+// const ethersConfig = defaultConfig({
+//   metadata: {
+//     name: 'AppKit',
+//     description: 'AppKit Laboratory',
+//     url: 'https://example.com',
+//     icons: ['https://avatars.githubusercontent.com/u/37784886']
+//   },
+//   defaultChainId: 1
+// })
+
+// const namespaces = {
+//     aztec: {
+//         chains: ["aztec:1"],
+//         methods: [
+//             "aztec_sendTransaction",
+//             "aztec_experimental_createSecretHash",
+//             "aztec_experimental_tokenRedeemShield",
+//             "aztec_requestAccounts",
+//             "aztec_accounts"
+//         ],
+//         events: ["accountsChanged"],
+//     }
+// }
+
+// // 3. Create modal
+// createWeb3Modal({
+//   ethersConfig,
+//   projectId,
+//   chains,
+//   themeMode: 'light',
+//   themeVariables: {
+//     '--w3m-color-mix': '#00BB7F',
+//     '--w3m-color-mix-strength': 20
+//   }
+// })
+
+// // 4. Use modal composable
+// const modal = useWeb3Modal()
+// const state = useWeb3ModalState()
+// const { setThemeMode, themeMode, themeVariables } = useWeb3ModalTheme()
+// const events = useWeb3ModalEvents()
+
+// const provider = await UniversalProvider.init({
+//   projectId: '734c08921b9f4f202d6b63a45fb0d800',
+//   relayUrl: 'wss://relay.walletconnect.com'
+// })
+
+// const params = {
+//   requiredNamespaces: {
+//     polkadot: {
+//       methods: ['polkadot_signTransaction', 'polkadot_signMessage'],
+//       chains: [
+//         'polkadot:91b171bb158e2d3848fa23a9f1c25182', // polkadot
+//         'polkadot:afdc188f45c71dacbaa0b62e16a91f72', // hydradx
+//         'polkadot:0f62b701fb12d02237a33b84818c11f6' // turing network
+//       ],
+//       events: ['chainChanged', 'accountsChanged']
+//     }
+//   }
+// }
+
+// const { uri, approval } = await provider.client.connect(params)
+// console.log('uri', uri);
+
+// const walletConnectModal = new WalletConnectModal({
+//   projectId: 'e263299ab5fc37323ff95231b8e15c7f',
+// })
+
+// // if there is a URI from the client connect step open the modal
+// if (uri) {
+//   walletConnectModal.openModal({ uri })
+// }
+// await session approval from the wallet app
+// const walletConnectSession = await approval()
+
+
+const provider = ref<UniversalProvider | null>(null);
+const uri = ref<string | null>(null);
+// const walletConnectModal = new WalletConnectModal({
+//   projectId: 'e263299ab5fc37323ff95231b8e15c7f',
+// });
+
+const initializeProvider = async () => {
+  try {
+    provider.value = await UniversalProvider.init({
+      projectId: 'e263299ab5fc37323ff95231b8e15c7f',
+      // relayUrl: 'wss://relay.walletconnect.com',
+      // logger: 'debug',
+    });
+
+    const params = {
+      requiredNamespaces: {
+        polkadot: {
+          methods: ['polkadot_signTransaction', 'polkadot_signMessage'],
+          chains: [
+            'polkadot:91b171bb158e2d3848fa23a9f1c25182',
+            'polkadot:afdc188f45c71dacbaa0b62e16a91f72',
+            'polkadot:0f62b701fb12d02237a33b84818c11f6',
+          ],
+          events: ['chainChanged', 'accountsChanged'],
+        },
+      },
+    };
+
+    const { uri: connectUri, approval } = await provider.value.client.connect(params);
+    uri.value = connectUri;
+    console.log('uri.value', uri.value);
+    
+
+    // if (uri.value) {
+    //   walletConnectModal.openModal({ uri: uri.value });
+    // }
+
+    // Подождать одобрения пользователя
+    // const walletConnectSession = await approval();
+  } catch (error) {
+    console.error('Error initializing provider:', error);
   }
-})
+};
 
-// State Management
-const useAccount = useAppKitAccount()
-const useNetwork = useAppKitNetwork()
-const useAppKit = useAppKitState()
-const { setThemeMode } = useAppKitTheme()
-const events = useAppKitEvents()
-const walletInfo = ref({})
-const themeState = ref({ themeMode: 'light', themeVariables: {} })
-
-// Theme toggle function
-const toggleTheme = () => {
-  const newTheme = themeState.value.themeMode === 'dark' ? 'light' : 'dark'
-  setThemeMode(newTheme)
-  themeState.value.themeMode = newTheme
-  document.body.className = newTheme
-}
-
-// Subscriptions
 onMounted(() => {
-  // Set initial theme
-  document.body.className = themeState.value.themeMode
+  initializeProvider();
+});
 
-  modal.subscribeTheme(state => {
-    themeState.value = state
-    document.body.className = state.themeMode
-  })
-
-  modal.subscribeWalletInfo(state => {
-    // @ts-ignore
-    walletInfo.value = state
-  })
-})
 </script>
 
 <template>
-<div class="container">
-    <h1>Vue Ethers + Solana Example</h1>
+  <!-- <w3m-button />
+  <w3m-network-button />
+  <w3m-connect-button />
+  <w3m-account-button /> -->
 
-    <!-- AppKit UI Components -->
-    <div class="button-group">
-      <w3m-button />
-      <w3m-network-button />
-    </div>
-
-    <!-- Modal Controls -->
-    <div class="button-group">
-      <button @click="modal.open()">Open Connect Modal</button>
-      <button @click="modal.open({ view: 'Networks' })">Open Network Modal</button>
-      <button @click="toggleTheme">Toggle Theme Mode</button>
-      <button
-        @click="useNetwork.switchNetwork(useNetwork.chainId === polygon.id ? mainnet : polygon)"
-      >
-        Switch to
-        {{ useNetwork.chainId === polygon.id ? 'Mainnet' : 'Polygon' }}
-      </button>
-    </div>
-
-    <!-- State Displays -->
-    <div class="state-container">
-      <section>
-        <h2>Account</h2>
-        <pre>{{ JSON.stringify(useAccount, null, 2) }}</pre>
-      </section>
-
-      <section>
-        <h2>Network</h2>
-        <pre>{{ JSON.stringify(useNetwork, null, 2) }}</pre>
-      </section>
-
-      <section>
-        <h2>Modal State</h2>
-        <pre>{{ JSON.stringify(useAppKit, null, 2) }}</pre>
-      </section>
-
-      <section>
-        <h2>Theme</h2>
-        <pre>{{ JSON.stringify(themeState, null, 2) }}</pre>
-      </section>
-
-      <section>
-        <h2>Events</h2>
-        <pre>{{ JSON.stringify(events, null, 2) }}</pre>
-      </section>
-
-      <section>
-        <h2>Wallet Info</h2>
-        <pre>{{ JSON.stringify(walletInfo, null, 2) }}</pre>
-      </section>
-    </div>
-  </div>
+  <!-- <button @click="modal.open()">Open Connect Modal</button>
+  <button @click="modal.open({ view: 'Networks' })">Open Network Modal</button>
+  <button @click="setThemeMode(themeMode === 'dark' ? 'light' : 'dark')">Toggle Theme Mode</button>
+  <pre>{{ JSON.stringify(state, null, 2) }}</pre>
+  <pre>{{ JSON.stringify({ themeMode, themeVariables }, null, 2) }}</pre>
+  <pre>{{ JSON.stringify(events, null, 2) }}</pre> -->
 </template>
-
-<style module>
-/* Base styles */
-body {
-  margin: 0;
-  min-height: 100vh;
-  transition:
-    background-color 0.3s,
-    color 0.3s;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-/* Theme styles */
-body.dark {
-  background-color: #333;
-  color: #fff;
-}
-
-body.light {
-  background-color: #fff;
-  color: white;
-}
-
-/* Layout */
-.container {
-  padding: 20px;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-/* Typography */
-h1 {
-  font-weight: 700;
-  font-size: 2.5rem;
-  margin-bottom: 1.5rem;
-  letter-spacing: -0.02em;
-}
-
-h2 {
-  font-weight: 600;
-  font-size: 1.125rem;
-  margin: 0 0 10px 0;
-  letter-spacing: -0.01em;
-}
-
-/* Buttons */
-.button-group {
-  display: flex;
-  gap: 16px;
-  margin: 20px 0;
-}
-
-button {
-  padding: 8px 16px;
-  border-radius: 6px;
-  border: 1px solid #ddd;
-  cursor: pointer;
-  transition: all 0.3s;
-  font-weight: 500;
-  font-size: 0.875rem;
-}
-
-/* Light theme button styles */
-body.light button {
-  background: white;
-  color: white;
-  border-color: #ddd;
-}
-
-body.light button:hover {
-  background: #f5f5f5;
-}
-
-/* Dark theme button styles */
-body.dark button {
-  background: #444;
-  color: white;
-  border-color: #666;
-}
-
-body.dark button:hover {
-  background: #555;
-}
-
-/* State container */
-.state-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 20px;
-  margin-top: 20px;
-}
-
-section {
-  background: rgba(0, 0, 0, 0.1);
-  color: white;
-  padding: 16px;
-  border-radius: 8px;
-  max-height: 300px;
-  overflow-y: auto;
-}
-
-pre {
-  margin: 0;
-  white-space: pre-wrap;
-  word-break: break-all;
-  color: white;
-  font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Mono', 'Droid Sans Mono', 'Source Code Pro',
-    monospace;
-  font-size: 0.875rem;
-  line-height: 1.5;
-}
-</style>

@@ -5,7 +5,7 @@ import { createRouter, createWebHistory } from "vue-router"
 import BridgeView from "@/views/BridgeView.vue"
 import ConnectView from "@/views/ConnectView.vue"
 import TransfersView from "@/views/TransfersView.vue"
-import AztecView from "@/views/AztecView1.vue"
+import AztecView from "@/views/AztecView.vue"
 
 const router = createRouter({
 	history: createWebHistory(import.meta.env.BASE_URL),
