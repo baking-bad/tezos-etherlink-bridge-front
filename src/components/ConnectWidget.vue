@@ -126,7 +126,7 @@ const {
 </script>
 
 <template>
-	<Flex direction="column" align="center" justify="center" gap="6" :class="$style.wrapper">
+	<Flex direction="column" align="end" justify="end" gap="6" :class="$style.wrapper">
 		<Flex direction="column" align="center" gap="24">
 			<Flex align="center" gap="12">
 				<Tooltip :disabled="tezConnected">

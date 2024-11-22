@@ -5,177 +5,272 @@ import { onMounted, ref } from 'vue';
 
 import { arbitrum, mainnet } from '@reown/appkit/networks'
 
-export const networks = [mainnet, arbitrum]
+import { WalletConnectModalSign } from "@walletconnect/modal-sign-html"
+import { getSdkError } from "@walletconnect/utils";
 
-// import {
-//   createWeb3Modal,
-//   defaultConfig,
-//   useWeb3Modal,
-//   useWeb3ModalEvents,
-//   useWeb3ModalState,
-//   useWeb3ModalTheme
-// } from '@web3modal/ethers/vue'
-// import { localhost } from 'viem/chains';
+import Button from "@/components/ui/Button.vue"
 
+const projectId = '734c08921b9f4f202d6b63a45fb0d800';
+if (!projectId) {
+  throw new Error("You need to provide VITE_PROJECT_ID env variable");
+}
 
-// function getBlockchainApiRpcUrl(chainId) {
-//   return `https://rpc.walletconnect.org/v1/?chainId=eip155:${chainId}&projectId=${projectId}`
-// }
-
-// // 2. Set chains
-// const chains = [
-//   {
-//     chainId: 1,
-//     name: 'Ethereum',
-//     currency: 'ETH',
-//     explorerUrl: 'https://etherscan.io',
-//     rpcUrl: getBlockchainApiRpcUrl(1)
-//   },
-//   {
-//     chainId: 42161,
-//     name: 'Arbitrum',
-//     currency: 'ETH',
-//     explorerUrl: 'https://arbiscan.io',
-//     rpcUrl: getBlockchainApiRpcUrl(42161)
-//   }
-// ]
-
-// const ethersConfig = defaultConfig({
-//   metadata: {
-//     name: 'AppKit',
-//     description: 'AppKit Laboratory',
-//     url: 'https://example.com',
-//     icons: ['https://avatars.githubusercontent.com/u/37784886']
-//   },
-//   defaultChainId: 1
-// })
-
-// const namespaces = {
-//     aztec: {
-//         chains: ["aztec:1"],
-//         methods: [
-//             "aztec_sendTransaction",
-//             "aztec_experimental_createSecretHash",
-//             "aztec_experimental_tokenRedeemShield",
-//             "aztec_requestAccounts",
-//             "aztec_accounts"
-//         ],
-//         events: ["accountsChanged"],
-//     }
-// }
-
-// // 3. Create modal
-// createWeb3Modal({
-//   ethersConfig,
-//   projectId,
-//   chains,
-//   themeMode: 'light',
-//   themeVariables: {
-//     '--w3m-color-mix': '#00BB7F',
-//     '--w3m-color-mix-strength': 20
-//   }
-// })
-
-// // 4. Use modal composable
-// const modal = useWeb3Modal()
-// const state = useWeb3ModalState()
-// const { setThemeMode, themeMode, themeVariables } = useWeb3ModalTheme()
-// const events = useWeb3ModalEvents()
-
-// const provider = await UniversalProvider.init({
-//   projectId: '734c08921b9f4f202d6b63a45fb0d800',
-//   relayUrl: 'wss://relay.walletconnect.com'
-// })
-
-// const params = {
-//   requiredNamespaces: {
-//     polkadot: {
-//       methods: ['polkadot_signTransaction', 'polkadot_signMessage'],
-//       chains: [
-//         'polkadot:91b171bb158e2d3848fa23a9f1c25182', // polkadot
-//         'polkadot:afdc188f45c71dacbaa0b62e16a91f72', // hydradx
-//         'polkadot:0f62b701fb12d02237a33b84818c11f6' // turing network
-//       ],
-//       events: ['chainChanged', 'accountsChanged']
-//     }
-//   }
-// }
-
-// const { uri, approval } = await provider.client.connect(params)
-// console.log('uri', uri);
-
-// const walletConnectModal = new WalletConnectModal({
-//   projectId: 'e263299ab5fc37323ff95231b8e15c7f',
-// })
-
-// // if there is a URI from the client connect step open the modal
-// if (uri) {
-//   walletConnectModal.openModal({ uri })
-// }
-// await session approval from the wallet app
-// const walletConnectSession = await approval()
-
-
-const provider = ref<UniversalProvider | null>(null);
-const uri = ref<string | null>(null);
-// const walletConnectModal = new WalletConnectModal({
-//   projectId: 'e263299ab5fc37323ff95231b8e15c7f',
-// });
-
-const initializeProvider = async () => {
-  try {
-    provider.value = await UniversalProvider.init({
-      projectId: 'e263299ab5fc37323ff95231b8e15c7f',
-      // relayUrl: 'wss://relay.walletconnect.com',
-      // logger: 'debug',
-    });
-
-    const params = {
-      requiredNamespaces: {
-        polkadot: {
-          methods: ['polkadot_signTransaction', 'polkadot_signMessage'],
-          chains: [
-            'polkadot:91b171bb158e2d3848fa23a9f1c25182',
-            'polkadot:afdc188f45c71dacbaa0b62e16a91f72',
-            'polkadot:0f62b701fb12d02237a33b84818c11f6',
-          ],
-          events: ['chainChanged', 'accountsChanged'],
-        },
-      },
-    };
-
-    const { uri: connectUri, approval } = await provider.value.client.connect(params);
-    uri.value = connectUri;
-    console.log('uri.value', uri.value);
-    
-
-    // if (uri.value) {
-    //   walletConnectModal.openModal({ uri: uri.value });
-    // }
-
-    // Подождать одобрения пользователя
-    // const walletConnectSession = await approval();
-  } catch (error) {
-    console.error('Error initializing provider:', error);
-  }
-};
-
-onMounted(() => {
-  initializeProvider();
+const web3Modal = new WalletConnectModalSign({
+  projectId,
+  metadata: {
+    name: "My Dapp",
+    description: "My Dapp description",
+    url: "https://my-dapp.com",
+    icons: ["https://my-dapp.com/logo.png"],
+  },
 });
 
+const session = ref()
+const connected = ref(false)
+
+async function connect() {
+  try {
+    // connectButton.disabled = true;
+    session.value = await web3Modal.connect({
+      requiredNamespaces: {
+        aztec: {
+            chains: ["aztec:1"],
+            methods: ["aztec_execute"],
+            events: ["accountsChanged"],
+        },
+      },
+    });
+    console.info(session.value);
+    connected.value = true
+  } catch (err) {
+    console.error(err);
+    connected.value = false
+  } finally {
+    // connectButton.disabled = false;
+  }
+}
+
+async function disconnect() {
+  console.log('123', await web3Modal.getSession());
+  
+    await web3Modal.disconnect({
+      topic: session.value.topic,
+      reason: {
+        message: "USER_DISCONNECTED",
+        code: 123,
+      }
+      // reason: getSdkError("USER_DISCONNECTED"),
+    });
+
+    session.value = undefined
+    connected.value = false
+
+    console.log('456', await web3Modal.getSession());
+  }
+
+async function sendEvent() {
+  
+}
 </script>
 
 <template>
-  <!-- <w3m-button />
-  <w3m-network-button />
-  <w3m-connect-button />
-  <w3m-account-button /> -->
+  <Flex justify="center">
+    <Flex direction="column" align="center" justify="center" gap="24" :class="$style.wrapper">
+      <Flex direction="column" gap="16" :class="$style.section">
+        <Button
+          @click="connect"
+          type="secondary"
+          size="medium"
+        >
+          Connect
+        </Button>
 
-  <!-- <button @click="modal.open()">Open Connect Modal</button>
-  <button @click="modal.open({ view: 'Networks' })">Open Network Modal</button>
-  <button @click="setThemeMode(themeMode === 'dark' ? 'light' : 'dark')">Toggle Theme Mode</button>
-  <pre>{{ JSON.stringify(state, null, 2) }}</pre>
-  <pre>{{ JSON.stringify({ themeMode, themeVariables }, null, 2) }}</pre>
-  <pre>{{ JSON.stringify(events, null, 2) }}</pre> -->
+        <Flex v-if="connected" align="center" :class="$style.section">
+          <Text v-if="session" size="13" color="primary"> {{ JSON.stringify(session, null, 2) }} </Text>
+        </Flex>
+      </Flex>
+
+      <Flex v-if="connected" direction="column" gap="16" :class="$style.section">
+        <Button
+          @click="disconnect"
+          type="secondary"
+          size="medium"
+        >
+          Disconnect
+        </Button>
+
+        <Flex align="center" :class="$style.section">
+          <Text v-if="session" size="13" color="primary"> {{ JSON.stringify(session, null, 2) }} </Text>
+        </Flex>
+      </Flex>
+    </Flex>
+  </Flex>
 </template>
+
+<style module>
+.wrapper {
+	max-width: 500px;
+	width: 500px;
+
+  justify-items: center;
+  justify-content: center;
+
+  height: auto;
+
+
+	border-radius: 16px;
+	background: linear-gradient(rgba(0, 0, 0, 40%), rgba(0, 0, 0, 0%));
+	box-shadow: 0 0 0 2px var(--op-5);
+
+	padding: 20px 8px 20px 8px;
+
+	margin: 32px 16px;
+}
+
+.section {
+  width: 400px;
+  max-height: 400px;
+
+  overflow-y: auto;
+
+  align-items: start;
+  align-content: start;
+  justify-items: start;
+  justify-content: start;
+}
+
+.button {
+	width: fit-content;
+	height: 26px;
+
+	border-radius: 8px;
+	background: var(--op-10);
+	cursor: pointer;
+
+	padding: 0 8px;
+
+	transition: all 0.2s ease;
+
+	&:hover {
+		background: var(--op-15);
+	}
+
+	&:active {
+		background: var(--op-20);
+	}
+}
+
+.wallet {
+	position: relative;
+
+	width: 56px;
+	height: 56px;
+
+	border-radius: 12px;
+	background: var(--op-8);
+
+	& img {
+		border-radius: 50%;
+		filter: grayscale(1);
+		opacity: 0.5;
+
+		transition: all 0.2s ease;
+	}
+
+	& svg {
+		position: absolute;
+		top: -12px;
+		right: -12px;
+		box-sizing: content-box;
+
+		background: #101010;
+		border-radius: 50%;
+
+		padding: 3px;
+	}
+}
+
+.wallet.connected {
+	& img {
+		filter: none;
+		opacity: 1;
+	}
+}
+
+.task {
+	width: 316px;
+
+	border-radius: 8px;
+	background: var(--op-5);
+	cursor: pointer;
+
+	padding: 10px 10px 10px 10px;
+
+	transition: all 0.1s ease;
+
+	&:hover {
+		background: var(--op-8);
+	}
+
+	&.done {
+		cursor: auto;
+	}
+}
+
+.link {
+	color: var(--txt-tertiary);
+}
+
+.disconnect {
+	color: var(--txt-tertiary);
+	fill: var(--txt-tertiary);
+	cursor: pointer;
+}
+
+.disconnect:hover {
+	fill: var(--red);
+	color: var(--red);
+	opacity: 0.8;
+}
+
+.description {
+	margin-left: 22px;
+}
+
+.ready_icon {
+	& svg {
+		transition: all 0.5s ease;
+	}
+
+	& svg:first-child {
+		fill: var(--green);
+
+		transform: translateX(16px);
+
+		filter: drop-shadow(0 0px 8px var(--green));
+	}
+
+	& svg:last-child {
+		fill: var(--green);
+
+		transform: translateX(-16px);
+
+		filter: drop-shadow(0 0px 8px var(--green));
+	}
+}
+
+.next_btn {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+
+	height: 32px;
+
+	border-radius: 8px;
+	background: var(--green);
+	cursor: pointer;
+
+	margin: 0 12px;
+}
+</style>
