@@ -15,14 +15,40 @@ if (!projectId) {
   throw new Error("You need to provide VITE_PROJECT_ID env variable");
 }
 
+const metadata = [
+	{
+		name: "3Route",
+		description: "Tezos DEX aggregator",
+		url: "https://3route.io/",
+		icons: ["https://bcd-static-assets.fra1.digitaloceanspaces.com/dapps/3route/3route_logo_x3.png"],
+	},
+	{
+		name: "Atomex",
+		description: "Atomex",
+		url: "https://atomex.me",
+		icons: ["https://bcd-static-assets.fra1.digitaloceanspaces.com/dapps/atomex/atomex_logo.jpg"],
+	},
+	{
+		name: "Juster",
+		description: "Juster",
+		url: "https://app.juster.fi/",
+		icons: ["https://bcd-static-assets.fra1.digitaloceanspaces.com/dapps/juster/juster_logo.png"],
+	},
+	{
+		name: "Test Dapp",
+		description: "Test Dapp description",
+		url: "",
+		icons: [],
+	},
+]
+
+const getRandomMetadata = () => {
+	return metadata[Math.floor(Math.random() * metadata.length)]
+}
+
 const web3Modal = new WalletConnectModalSign({
-  projectId,
-  metadata: {
-    name: "My Dapp",
-    description: "My Dapp description",
-    url: "https://my-dapp.com",
-    icons: ["https://my-dapp.com/logo.png"],
-  },
+	projectId,
+	metadata: getRandomMetadata(),
 });
 
 const session = ref()
