@@ -92,7 +92,7 @@ const statusStyle = computed(() => {
 			return {color: `var(--red)`}
 		}
 
-		return {color: `var(--green)`, opacity: 0.8}
+		return {color: `var(--etherlink-green)`, opacity: 0.8}
 	}
 
 	return {color: `var(--blue)`}
@@ -199,7 +199,7 @@ const handleRemove = () => {
 
 					<Text size="16" color="black">Processing..</Text>
 				</Flex>
-				
+
 				<Text v-else size="16" color="black">Finish withdrawal</Text>
 			</Flex>
 		</Flex>
@@ -233,7 +233,7 @@ const handleRemove = () => {
 }
 
 .img {
-	border-radius: 50%;	
+	border-radius: 50%;
 }
 
 .icon_close{
@@ -257,7 +257,7 @@ const handleRemove = () => {
 	height: 32px;
 
 	border-radius: 8px;
-	background: var(--green);
+	background: var(--etherlink-green);
 	opacity: 0.85;
 	cursor: pointer;
 

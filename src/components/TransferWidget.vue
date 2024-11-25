@@ -294,7 +294,7 @@ const warningDisplayed = ref(true)
 				</Flex>
 			</Flex>
 		</Flex>
-		
+
 		<Flex v-if="recentTransfers.length > 0" direction="column" align="center" gap="4">
 			<Flex :class="$style.transfers_header" align="center" flex="start">
 				<Text size="16" color="tertiary">Recent transfers</Text>
@@ -466,7 +466,7 @@ const warningDisplayed = ref(true)
 	height: 32px;
 
 	border-radius: 8px;
-	background: var(--green);
+	background: var(--etherlink-green);
 	opacity: 0.85;
 	cursor: pointer;
 
@@ -495,7 +495,7 @@ const warningDisplayed = ref(true)
 }
 
 .connect_wallets {
-	background: var(--yellow);
+	background: var(--etherlink-green);
 }
 
 .transfers_header {

@@ -36,6 +36,7 @@ $grayscale: (
 	--gray: #363739;
 	// --warning: #fb8c00;
 	--warning: #D1AE44;
+	--etherlink-green: #38FF9C;
 
 	/* Grayscale */
 	@each $gray, $value in $grayscale {

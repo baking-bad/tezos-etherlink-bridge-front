@@ -40,7 +40,7 @@ const props = defineProps({
 	color: var(--txt-primary);
 
 	&:hover {
-		color: var(--green);
+		color: var(--etherlink-green);
 	}
 }
 </style>
