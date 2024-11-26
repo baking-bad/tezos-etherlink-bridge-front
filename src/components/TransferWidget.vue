@@ -26,6 +26,10 @@ const { tokenBridge } = TokenBridgeService.instances
 /** Stores */
 import { useTransfersStore } from "@/stores/transfers.js"
 import { useTokensStore } from "@/stores/tokens.js"
+import { useWalletsStore } from "@/stores/wallets"
+
+
+
 const tokensStore = useTokensStore()
 const {
 	tezosTokens,
@@ -75,6 +79,12 @@ const bigIntAmount = ref(0n)
 function calculateBigInt(stringAmount, decimals) {
 	return BigInt(BigNumber(purgeNumber(stringAmount)).shiftedBy(decimals).toFixed(0))
 }
+
+/** Wallet display */
+const {ethConnected, ethAddress, tezConnected, tezAddress, ethStatus} = useWalletsStore()
+const tezAddressTruncated = tezConnected ? tezAddress.slice(0, 4) + '...' + tezAddress.slice(-4) : ''
+const ethAddressTruncated = ethAddress ? ethAddress.slice(0, 4) + '...' + ethAddress.slice(-4) : ''
+console.log({tezConnected, tezAddress, ethConnected, ethAddress, ethStatus})
 
 watch(
 	() => [amount.value, fromToken?.value?.decimals, toToken?.value?.decimals],
@@ -182,8 +192,11 @@ const warningDisplayed = ref(true)
 			<Flex direction="column" gap="4" :class="$style.inputs">
 				<Flex @click="fromInputEl.focus()" direction="column" gap="16" :class="$style.from">
 					<Flex align="center" justify="between" :class="$style.top">
-						<Text size="14" color="secondary">From</Text>
-
+						<Text size="14" color="secondary">From:
+							<Text size="16" :style="{ color: fromChain.name === 'etherlink' ? 'var(--etherlink-green)' : '#4382fa' }">
+								{{fromChain.name === 'etherlink' ? ethAddressTruncated : tezAddressTruncated}}
+							</Text>
+						</Text>
 						<Flex align="center" gap="6">
 							<img width="16" height="16" :src="loadImage(fromChain.logo)" :class="$style.logo" alt="" />
 							<Text size="13" weight="semibold" color="primary">{{ capitalize(fromChain.name) }}</Text>
@@ -228,7 +241,11 @@ const warningDisplayed = ref(true)
 
 				<Flex @click="toInputEl.focus()" direction="column" gap="16" :class="$style.to">
 					<Flex align="center" justify="between" :class="$style.top">
-						<Text size="14" color="secondary">To</Text>
+						<Text size="14" color="secondary">To:
+							<Text size="16" :style="{ color: toChain.name === 'etherlink' ? 'var(--etherlink-green)' : '#0F61FF' }">
+								{{toChain.name === 'etherlink' ? ethAddressTruncated : tezAddressTruncated}}
+							</Text>
+						</Text>
 
 						<Flex align="center" gap="6">
 							<img width="16" height="16" :src="loadImage(toChain.logo)" :class="$style.logo" alt="" />
@@ -367,8 +384,8 @@ const warningDisplayed = ref(true)
 }
 
 .operation_window {
-	max-width: 400px;
-	width: 400px;
+	max-width: 550px;
+	width: 550px;
 
 	border-radius: 16px;
 	background: linear-gradient(rgba(0, 0, 0, 40%), rgba(0, 0, 0, 0%));

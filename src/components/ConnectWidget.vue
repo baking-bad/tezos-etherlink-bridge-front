@@ -197,8 +197,8 @@ const {
 
 <style module>
 .wrapper {
-	max-width: 400px;
-	width: 400px;
+	max-width: 550px;
+	width: 550px;
 
 	border-radius: 16px;
 	background: linear-gradient(rgba(0, 0, 0, 40%), rgba(0, 0, 0, 0%));
