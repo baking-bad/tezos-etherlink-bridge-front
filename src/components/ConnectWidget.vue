@@ -197,8 +197,8 @@ const {
 
 <style module>
 .wrapper {
-	max-width: 400px;
-	width: 400px;
+	max-width: 550px;
+	width: 550px;
 
 	border-radius: 16px;
 	background: linear-gradient(rgba(0, 0, 0, 40%), rgba(0, 0, 0, 0%));
@@ -313,19 +313,19 @@ const {
 	}
 
 	& svg:first-child {
-		fill: var(--green);
+		fill: var(--etherlink-green);
 
 		transform: translateX(16px);
 
-		filter: drop-shadow(0 0px 8px var(--green));
+		filter: drop-shadow(0 0px 8px var(--etherlink-green));
 	}
 
 	& svg:last-child {
-		fill: var(--green);
+		fill: var(--etherlink-green);
 
 		transform: translateX(-16px);
 
-		filter: drop-shadow(0 0px 8px var(--green));
+		filter: drop-shadow(0 0px 8px var(--etherlink-green));
 	}
 }
 
@@ -338,7 +338,7 @@ const {
 	height: 32px;
 
 	border-radius: 8px;
-	background: var(--green);
+	background: var(--etherlink-green);
 	cursor: pointer;
 
 	margin: 0 12px;

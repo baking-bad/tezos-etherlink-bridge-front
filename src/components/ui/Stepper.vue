@@ -122,7 +122,7 @@ onMounted(() => {
 }
 
 .passed {
-	background-color: var(--green);
+	background-color: var(--etherlink-green);
 
 	animation: none;
 }

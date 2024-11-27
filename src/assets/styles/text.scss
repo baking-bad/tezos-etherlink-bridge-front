@@ -64,6 +64,7 @@ $textColors: (
 	"green": "--green",
 	"red": "--red",
 	"yellow": "--yellow",
+	"etherlink-green": "--etherlink-green"
 );
 
 @each $key, $value in $textColors {
