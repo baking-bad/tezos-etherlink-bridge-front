@@ -60,7 +60,7 @@ async function connect() {
     session.value = await web3Modal.connect({
       requiredNamespaces: {
         aztec: {
-            chains: ["aztec:1"],
+            chains: ["aztec:31337"],
             methods: ["aztec_execute"],
             events: ["accountsChanged"],
         },

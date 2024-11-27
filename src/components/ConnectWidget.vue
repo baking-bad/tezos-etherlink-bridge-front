@@ -54,7 +54,7 @@ const {
 
 // const customNetwork = defineChain({
 // 	id: 13777,
-// 	caipNetworkId: 'aztec:1',
+// 	caipNetworkId: 'aztec:31337',
 // 	chainNamespace: 'eip155',
 // 	name: 'aztec',
 // 	nativeCurrency: {
