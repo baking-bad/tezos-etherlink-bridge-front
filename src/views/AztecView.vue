@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import UniversalProvider from '@walletconnect/universal-provider'
 import { WalletConnectModal } from '@walletconnect/modal'
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 
 import { arbitrum, mainnet } from '@reown/appkit/networks'
 
@@ -53,6 +53,8 @@ const web3Modal = new WalletConnectModalSign({
 
 const session = ref()
 const connected = ref(false)
+const sendPayload = ref()
+const sendPayloadView = ref()
 
 async function connect() {
   try {
@@ -94,9 +96,65 @@ async function disconnect() {
     console.log('456', await web3Modal.getSession());
   }
 
+
+async function sendRequest () {
+	await web3Modal.request(JSON.parse(sendPayloadView.value))
+}
+
 async function sendEvent() {
   
 }
+
+watch(
+	() => session.value,
+	() => {
+		if (session.value) {
+			sendPayload.value = {
+				topic: session.value.topic,
+				request: {
+					method: "aztec_execute",
+					params: [
+						{
+							type: "add_capsule",
+							capsule: ["0xabcdef"],
+						},
+						{
+							type: "call",
+							contract: "0xabcdef",
+							method: "some_method",
+							args: ["asd", 123, true],
+						},
+						{
+							type: "authorize_call",
+							isPublic: false,
+							consumer: "0x001122",
+							caller: "0x223344",
+							contract: "0x001122",
+							method: "transfer",
+							args: ["0x112233", "0x223344", 123],
+						},
+						{
+							type: "call",
+							contract: "0x001122",
+							method: "transfer",
+							args: ["0x112233", "0x223344", 123],
+						},
+					]
+				},
+				chainId: "aztec:31337",
+			}
+		} else {
+			sendPayload.value = ""
+		}
+	},
+)
+
+watch(
+	() => sendPayload.value,
+	() => {
+		sendPayloadView.value = JSON.stringify(sendPayload.value, null, 2)
+	}
+)
 </script>
 
 <template>
@@ -127,6 +185,20 @@ async function sendEvent() {
 
         <Flex align="center" :class="$style.section">
           <Text v-if="session" size="13" color="primary"> {{ JSON.stringify(session, null, 2) }} </Text>
+        </Flex>
+      </Flex>
+
+      <Flex v-if="connected" direction="column" gap="16" :class="$style.section">
+        <Button
+          @click="sendRequest"
+          type="secondary"
+          size="medium"
+        >
+          Send
+        </Button>
+
+        <Flex align="center" :class="$style.section">
+			<textarea ref="fromInputEl" v-model="sendPayloadView" :class="$style.input" />
         </Flex>
       </Flex>
     </Flex>
@@ -299,4 +371,18 @@ async function sendEvent() {
 
 	margin: 0 12px;
 }
+
+.input {
+	width: 100%;
+	height: 280px;
+
+	padding: 0;
+
+	background-color: var(--card-background);
+
+	font-size: 14px;
+	font-family: "ClashGrotesk", "sans-serif";
+	color: var(--txt-primary);
+}
+
 </style>
