@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import UniversalProvider from '@walletconnect/universal-provider'
 import { WalletConnectModal } from '@walletconnect/modal'
-import { onMounted, ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 
 import { arbitrum, mainnet } from '@reown/appkit/networks'
 
@@ -105,6 +105,70 @@ async function sendEvent() {
   
 }
 
+const address = ref("0x0249ff6810cafb31ac99511292d0104ba160292bed3ca4a0eb9d7ac2f37e5371")
+const capsule = ref("0x02c2a6d5a406673674d8405ecb48f7cb26322a6b7d7724ee1b47be8c61d0467f")
+const contract = ref("0x03f5eb79b443df7879b6903082dc0585d235011fdf42c91594c72dce2d64adc3")
+const amount = ref("100")
+
+const params = computed(() => {
+	return [
+		{
+			type: "call",
+			contract: contract.value,
+			method: "transfer",
+			args: [capsule, 1],
+		},
+		{
+			type: "add_capsule",
+			capsule: [capsule.value],
+		},
+		{
+			type: "add_contact",
+			address: contract.value,
+		},
+		{
+			type: "authorize_call",
+			registry: false,
+			caller: address.value,
+			contract: contract.value,
+			method: "transfer_public",
+			args: [address.value, capsule.value, "100", 0],
+		},
+		{
+			type: "authorize_call",
+			registry: true,
+			caller: address.value,
+			contract: contract.value,
+			method: "transfer_public",
+			args: [address.value, capsule.value, "100", 0],
+		},
+		{
+			type: "authorize_intent",
+			registry: false,
+			consumer: contract.value,
+			intent: [capsule.value],
+		},
+		{
+			type: "authorize_intent",
+			registry: true,
+			consumer: contract.value,
+			intent: [capsule.value],
+		},
+		{
+			type: "call",
+			contract: contract.value,
+			method: "transfer_public",
+			args: [address.value, capsule.value, "100", 0],
+		},
+		{
+			type: "call",
+			contract: contract.value,
+			method: "transfer_public",
+			args: [address.value, capsule.value, "100", 0],
+		},
+	]
+})
+
 watch(
 	() => session.value,
 	() => {
@@ -113,33 +177,7 @@ watch(
 				topic: session.value.topic,
 				request: {
 					method: "aztec_execute",
-					params: [
-						{
-							type: "add_capsule",
-							capsule: ["0xabcdef"],
-						},
-						{
-							type: "call",
-							contract: "0xabcdef",
-							method: "some_method",
-							args: ["asd", 123, true],
-						},
-						{
-							type: "authorize_call",
-							isPublic: false,
-							consumer: "0x001122",
-							caller: "0x223344",
-							contract: "0x001122",
-							method: "transfer",
-							args: ["0x112233", "0x223344", 123],
-						},
-						{
-							type: "call",
-							contract: "0x001122",
-							method: "transfer",
-							args: ["0x112233", "0x223344", 123],
-						},
-					]
+					params: params,
 				},
 				chainId: "aztec:31337",
 			}
@@ -147,6 +185,24 @@ watch(
 			sendPayload.value = ""
 		}
 	},
+)
+
+watch(
+	() => [address.value, capsule.value, contract.value],
+	() => {
+		if (session.value) {
+			sendPayload.value = {
+				topic: session.value.topic,
+				request: {
+					method: "aztec_execute",
+					params: params,
+				},
+				chainId: "aztec:31337",
+			}
+		} else {
+			sendPayload.value = ""
+		}
+	}
 )
 
 watch(
@@ -188,7 +244,7 @@ watch(
         </Flex>
       </Flex>
 
-      <Flex v-if="connected" direction="column" gap="16" :class="$style.section">
+      <Flex v-if="connected" direction="column" gap="8" :class="$style.section_big">
         <Button
           @click="sendRequest"
           type="secondary"
@@ -197,8 +253,23 @@ watch(
           Send
         </Button>
 
+		<Flex direction="column" align="start" gap="4" :style="{width: '100%'}">
+			<Text size="13" color="primary">Address</Text>
+			<input v-model="address" :class="$style.input" />
+		</Flex>
+		
+		<Flex direction="column" align="start" gap="4" :style="{width: '100%'}">
+			<Text size="13" color="primary">Contract</Text>
+			<input v-model="contract" :class="$style.input" />
+		</Flex>
+
+		<Flex direction="column" align="start" gap="4" :style="{width: '100%'}">
+			<Text size="13" color="primary">Capsule</Text>
+			<input v-model="capsule" :class="$style.input" />
+		</Flex>
+
         <Flex align="center" :class="$style.section">
-			<textarea ref="fromInputEl" v-model="sendPayloadView" :class="$style.input" />
+			<textarea ref="fromInputEl" v-model="sendPayloadView" :class="$style.input_big" />
         </Flex>
       </Flex>
     </Flex>
@@ -227,7 +298,19 @@ watch(
 
 .section {
   width: 400px;
-  max-height: 400px;
+  max-height: 250px;
+
+  overflow-y: auto;
+
+  align-items: start;
+  align-content: start;
+  justify-items: start;
+  justify-content: start;
+}
+
+.section_big {
+  width: 400px;
+  max-height: 500px;
 
   overflow-y: auto;
 
@@ -374,7 +457,20 @@ watch(
 
 .input {
 	width: 100%;
-	height: 280px;
+	height: 20px;
+
+	padding: 0;
+
+	background-color: var(--card-background);
+
+	font-size: 14px;
+	font-family: "ClashGrotesk", "sans-serif";
+	color: var(--txt-primary);
+}
+
+.input_big {
+	width: 100%;
+	height: 300px;
 
 	padding: 0;
 
