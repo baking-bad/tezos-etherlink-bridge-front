@@ -53,6 +53,8 @@ const web3Modal = new WalletConnectModalSign({
 
 const session = ref()
 const connected = ref(false)
+const accounts = ref([])
+const selectedAccount = ref()
 const sendPayload = ref()
 const sendPayloadView = ref()
 
@@ -68,8 +70,14 @@ async function connect() {
         },
       },
     });
-    console.info(session.value);
-    connected.value = true
+    console.info('connect response', session.value);
+	// console.log('session.value?.namespaces', session.value.namespaces);
+	
+	accounts.value = session.value?.namespaces.aztec.accounts
+	accounts.value = accounts.value.map(acc => acc.replace('aztec:31337:', ''))
+	selectedAccount.value = accounts.value[0]
+
+	connected.value = true
   } catch (err) {
     console.error(err);
     connected.value = false
@@ -105,7 +113,16 @@ async function sendEvent() {
   
 }
 
-const address = ref("0x0249ff6810cafb31ac99511292d0104ba160292bed3ca4a0eb9d7ac2f37e5371")
+const handleSelectAccount = (acc) => {
+	console.log('selectedAccount.value', selectedAccount.value);
+	console.log('acc', acc);
+	
+	selectedAccount.value = acc
+	console.log('selectedAccount.value', selectedAccount.value);
+}
+
+const addressFrom = ref("0x0249ff6810cafb31ac99511292d0104ba160292bed3ca4a0eb9d7ac2f37e5371")
+const addressTo = ref("0x02c2a6d5a406673674d8405ecb48f7cb26322a6b7d7724ee1b47be8c61d0467f")
 const capsule = ref("0x02c2a6d5a406673674d8405ecb48f7cb26322a6b7d7724ee1b47be8c61d0467f")
 const contract = ref("0x03f5eb79b443df7879b6903082dc0585d235011fdf42c91594c72dce2d64adc3")
 const amount = ref("100")
@@ -116,7 +133,7 @@ const params = computed(() => {
 			type: "call",
 			contract: contract.value,
 			method: "transfer",
-			args: [capsule.value, 1],
+			args: [addressTo.value, 1],
 		},
 		{
 			type: "add_capsule",
@@ -129,42 +146,42 @@ const params = computed(() => {
 		{
 			type: "authorize_call",
 			registry: false,
-			caller: address.value,
+			caller: addressFrom.value,
 			contract: contract.value,
 			method: "transfer_public",
-			args: [address.value, capsule.value, amount.value, 0],
+			args: [addressFrom.value, addressTo.value, amount.value, 0],
 		},
 		{
 			type: "authorize_call",
 			registry: true,
-			caller: address.value,
+			caller: addressFrom.value,
 			contract: contract.value,
 			method: "transfer_public",
-			args: [address.value, capsule.value, amount.value, 0],
+			args: [addressFrom.value, addressTo.value, amount.value, 0],
 		},
 		{
 			type: "authorize_intent",
 			registry: false,
 			consumer: contract.value,
-			intent: [capsule.value],
+			intent: [addressTo.value],
 		},
 		{
 			type: "authorize_intent",
 			registry: true,
 			consumer: contract.value,
-			intent: [capsule.value],
+			intent: [addressTo.value],
 		},
 		{
 			type: "call",
 			contract: contract.value,
 			method: "transfer_public",
-			args: [address.value, capsule.value, amount.value, 0],
+			args: [addressFrom.value, addressTo.value, amount.value, 0],
 		},
 		{
 			type: "call",
 			contract: contract.value,
 			method: "transfer_public",
-			args: [address.value, capsule.value, amount.value, 0],
+			args: [addressFrom.value, addressTo.value, amount.value, 0],
 		},
 	]
 })
@@ -177,6 +194,7 @@ watch(
 				topic: session.value.topic,
 				request: {
 					method: "aztec_execute",
+					account: selectedAccount.value,
 					params: params,
 				},
 				chainId: "aztec:31337",
@@ -188,12 +206,13 @@ watch(
 )
 
 watch(
-	() => [address.value, capsule.value, contract.value, amount.value],
+	() => [selectedAccount.value, addressFrom.value, addressTo.value, capsule.value, contract.value, amount.value],
 	() => {
 		sendPayload.value = {
 			topic: session.value.topic,
 			request: {
 				method: "aztec_execute",
+				account: selectedAccount.value,
 				params: params.value,
 			},
 			chainId: "aztec:31337",
@@ -240,7 +259,7 @@ watch(
         </Flex>
       </Flex>
 
-      <Flex v-if="connected" direction="column" gap="8" :class="$style.section_big">
+      <Flex v-if="connected" direction="column" gap="12" :class="$style.section_big">
         <Button
           @click="sendRequest"
           type="secondary"
@@ -248,24 +267,34 @@ watch(
         >
           Send
         </Button>
+		
+		<Flex direction="column" align="start" gap="6" :style="{width: '100%'}">
+			<Text size="13" weight="600" color="primary">Shared Accounts</Text>
+			<Text v-for="acc in accounts" @click="handleSelectAccount(acc)" size="13" color="secondary" :class="[$style.account, selectedAccount === acc && $style.account_selected]"> {{ acc }} </Text>
+		</Flex>
 
 		<Flex direction="column" align="start" gap="4" :style="{width: '100%'}">
-			<Text size="13" color="primary">Address</Text>
-			<input v-model="address" :class="$style.input" />
+			<Text size="13" weight="600" color="primary">Address From</Text>
+			<input v-model="addressFrom" :class="$style.input" />
 		</Flex>
 		
 		<Flex direction="column" align="start" gap="4" :style="{width: '100%'}">
-			<Text size="13" color="primary">Contract</Text>
+			<Text size="13" weight="600" color="primary">Address To</Text>
+			<input v-model="addressTo" :class="$style.input" />
+		</Flex>
+
+		<Flex direction="column" align="start" gap="4" :style="{width: '100%'}">
+			<Text size="13" weight="600" color="primary">Contract</Text>
 			<input v-model="contract" :class="$style.input" />
 		</Flex>
 
 		<Flex direction="column" align="start" gap="4" :style="{width: '100%'}">
-			<Text size="13" color="primary">Capsule</Text>
+			<Text size="13" weight="600" color="primary">Capsule</Text>
 			<input v-model="capsule" :class="$style.input" />
 		</Flex>
 
 		<Flex direction="column" align="start" gap="4" :style="{width: '100%'}">
-			<Text size="13" color="primary">Amount</Text>
+			<Text size="13" weight="600" color="primary">Amount</Text>
 			<input v-model="amount" :class="$style.input" />
 		</Flex>
 
@@ -454,6 +483,14 @@ watch(
 	cursor: pointer;
 
 	margin: 0 12px;
+}
+
+.account {
+	cursor: pointer;
+}
+
+.account_selected {
+	color: var(--green);
 }
 
 .input {
