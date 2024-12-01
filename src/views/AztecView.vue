@@ -85,7 +85,7 @@ async function disconnect() {
       topic: session.value.topic,
       reason: {
         message: "USER_DISCONNECTED",
-        code: 123,
+        code: 5000,
       }
       // reason: getSdkError("USER_DISCONNECTED"),
     });
