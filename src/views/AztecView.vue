@@ -116,7 +116,7 @@ const params = computed(() => {
 			type: "call",
 			contract: contract.value,
 			method: "transfer",
-			args: [capsule, 1],
+			args: [capsule.value, 1],
 		},
 		{
 			type: "add_capsule",
@@ -132,7 +132,7 @@ const params = computed(() => {
 			caller: address.value,
 			contract: contract.value,
 			method: "transfer_public",
-			args: [address.value, capsule.value, "100", 0],
+			args: [address.value, capsule.value, amount.value, 0],
 		},
 		{
 			type: "authorize_call",
@@ -140,7 +140,7 @@ const params = computed(() => {
 			caller: address.value,
 			contract: contract.value,
 			method: "transfer_public",
-			args: [address.value, capsule.value, "100", 0],
+			args: [address.value, capsule.value, amount.value, 0],
 		},
 		{
 			type: "authorize_intent",
@@ -158,13 +158,13 @@ const params = computed(() => {
 			type: "call",
 			contract: contract.value,
 			method: "transfer_public",
-			args: [address.value, capsule.value, "100", 0],
+			args: [address.value, capsule.value, amount.value, 0],
 		},
 		{
 			type: "call",
 			contract: contract.value,
 			method: "transfer_public",
-			args: [address.value, capsule.value, "100", 0],
+			args: [address.value, capsule.value, amount.value, 0],
 		},
 	]
 })
@@ -188,19 +188,15 @@ watch(
 )
 
 watch(
-	() => [address.value, capsule.value, contract.value],
+	() => [address.value, capsule.value, contract.value, amount.value],
 	() => {
-		if (session.value) {
-			sendPayload.value = {
-				topic: session.value.topic,
-				request: {
-					method: "aztec_execute",
-					params: params,
-				},
-				chainId: "aztec:31337",
-			}
-		} else {
-			sendPayload.value = ""
+		sendPayload.value = {
+			topic: session.value.topic,
+			request: {
+				method: "aztec_execute",
+				params: params.value,
+			},
+			chainId: "aztec:31337",
 		}
 	}
 )
@@ -266,6 +262,11 @@ watch(
 		<Flex direction="column" align="start" gap="4" :style="{width: '100%'}">
 			<Text size="13" color="primary">Capsule</Text>
 			<input v-model="capsule" :class="$style.input" />
+		</Flex>
+
+		<Flex direction="column" align="start" gap="4" :style="{width: '100%'}">
+			<Text size="13" color="primary">Amount</Text>
+			<input v-model="amount" :class="$style.input" />
 		</Flex>
 
         <Flex align="center" :class="$style.section">
