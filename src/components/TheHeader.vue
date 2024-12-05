@@ -204,7 +204,7 @@ watch(
 	}
 
 	&.connected {
-		opacity: 0.5;
+		background: #38FF9C;
 		pointer-events: none;
 	}
 }

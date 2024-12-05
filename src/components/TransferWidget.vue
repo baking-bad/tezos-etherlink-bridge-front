@@ -179,13 +179,11 @@ const warningDisplayed = ref(true)
 	<Flex align="center" justify="center" direction="column" gap="40" :class="$style.wrapper">
 		<Flex v-if="tezosNetworkName !== 'mainnet' && warningDisplayed" align="start" gap="8" :class="$style.alert">
 			<Icon name="info" size="22" :class="$style.alert_icon" />
-
 			<Flex direction="column" gap="8" :class="$style.alert_message">
 				<Text size="15" weight="semibold">Attention!</Text>
 
 				<Text size="15" weight="500">You are on the <Text size="15" weight="semibold"> {{ capitalize(tezosNetworkName) }} </Text> test network.</Text>
 			</Flex>
-
 			<Icon @click="warningDisplayed = false" name="close" size="18" color="secondary" :class="$style.alert_close_icon" />
 		</Flex>
 		<Flex direction="column" gap="20" :class="$style.operation_window">
