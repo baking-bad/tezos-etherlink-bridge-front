@@ -74,7 +74,7 @@ async function connect() {
 	// console.log('session.value?.namespaces', session.value.namespaces);
 	
 	accounts.value = session.value?.namespaces.aztec.accounts
-	accounts.value = accounts.value.map(acc => acc.replace('aztec:41337:', ''))
+	accounts.value = accounts.value.map(acc => acc.replace('aztec:41337:', '').replace('aztec:31337:', ''))
 	selectedAccount.value = accounts.value[0]
 
 	connected.value = true
