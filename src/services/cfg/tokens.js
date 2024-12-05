@@ -17,7 +17,28 @@ export const tokenPairs = [
 			decimals: 18,
 			icon: "xtz",
 		},
-	}
+	},
+	{
+		etherlink: {
+			type: "erc20",
+			name: "TEZOS PEPE",
+			ticker: "tzPEPE",
+			address: "0x9121B153bbCF8C23F20eE43b494F08760B91aD64",
+			decimals: 2,
+			icon: "tzpepe",
+		},
+		tezos: {
+			type: "fa2",
+			name: "TEZOS PEPE",
+			ticker: "tzPEPE",
+			address: "KT1MZg99PxMDEENwB4Fi64xkqAVh5d1rv8Z9",
+			tokenId: "0",
+			decimals: 2,
+			icon: "tzpepe",
+			ticketerContractAddress: "KT1UzfUMQDiEv7w6RQnnvt412qFXZmgjrLpd",
+			ticketHelperContractAddress: "KT1JJsiwXgGVhomcUQsPQYdALkRRqakvK3XC",
+		},
+	},
 ]
 
 export const getTokenKey = (token) => {
