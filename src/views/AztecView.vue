@@ -81,7 +81,7 @@ async function connect() {
 	// console.log('session.value?.namespaces', session.value.namespaces);
 	
 	accounts.value = session.value?.namespaces.aztec.accounts
-	accounts.value = accounts.value.map(acc => acc.replace('aztec:41337:', '').replace('aztec:31337:', ''))
+	accounts.value = accounts.value.map(acc => acc.split(":").pop()) //replace('aztec:41337:', '').replace('aztec:31337:', ''))
 	selectedAccount.value = accounts.value[0]
 
 	connected.value = true
@@ -94,7 +94,7 @@ async function connect() {
 }
 
 async function disconnect() {
-  console.log('123', await web3Modal.getSession());
+  console.log('active session', await web3Modal.getSession());
   
     await web3Modal.disconnect({
       topic: session.value.topic,
@@ -108,7 +108,7 @@ async function disconnect() {
     session.value = undefined
     connected.value = false
 
-    console.log('456', await web3Modal.getSession());
+    console.log('droped session', await web3Modal.getSession());
   }
 
 
