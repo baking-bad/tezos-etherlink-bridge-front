@@ -15,11 +15,12 @@ const instances = {
 }
 
 const init = () => {
+	const networkName = config.tezos.network.name
 	instances.beacon = new BeaconWallet({
 		name: config.app.name,
 		description: config.app.description,
 		network: {
-			type: NetworkType.CUSTOM,
+			type: NetworkType[networkName.toUpperCase()],
 			rpcUrl: config.tezos.network.rpcUrl,
 		},
 		featuredWallets: ["temple", "atomex", "metamask", "trust"],
