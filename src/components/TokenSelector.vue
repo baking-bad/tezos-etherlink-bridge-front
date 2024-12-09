@@ -59,8 +59,10 @@ const dropdownItems = computed(() => {
 	switch (props.chain) {
 		case 'tezos':
 			items = tezosTokens.value.filter(token => token?.ticker !== selectedToken.value?.ticker)
+			break;
 		case 'etherlink':
 			items = etherlinkTokens.value.filter(token => token?.ticker !== selectedToken.value?.ticker)
+			break;
 		default:
 			break;
 	}
