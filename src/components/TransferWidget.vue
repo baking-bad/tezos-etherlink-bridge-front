@@ -81,10 +81,14 @@ function calculateBigInt(stringAmount, decimals) {
 }
 
 /** Wallet display */
-const {ethConnected, ethAddress, tezConnected, tezAddress, ethStatus} = useWalletsStore()
-const tezAddressTruncated = tezConnected ? tezAddress.slice(0, 4) + '...' + tezAddress.slice(-4) : ''
-const ethAddressTruncated = ethAddress ? ethAddress.slice(0, 4) + '...' + ethAddress.slice(-4) : ''
-console.log({tezConnected, tezAddress, ethConnected, ethAddress, ethStatus})
+const walletsStore = useWalletsStore()
+const { ethAddress, tezAddress} = storeToRefs(walletsStore)
+const tezAddressTruncated = computed(() =>
+  tezAddress.value ? `${tezAddress.value.slice(0, 4)}...${tezAddress.value.slice(-4)}` : ''
+)
+const ethAddressTruncated = computed(() =>
+  ethAddress.value ? `${ethAddress.value.slice(0, 4)}...${ethAddress.value.slice(-4)}` : ''
+)
 
 watch(
 	() => [amount.value, fromToken?.value?.decimals, toToken?.value?.decimals],

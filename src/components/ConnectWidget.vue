@@ -26,7 +26,6 @@ const {
 	ethConnect,
 	ethDisconnect
 } = walletsStore
-
 </script>
 
 <template>
