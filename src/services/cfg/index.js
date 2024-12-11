@@ -25,8 +25,8 @@ export const config = {
 	},
 	etherlink: {
 		network: {
-			name: "Etherlink Testnet",
-			displayName: "Etherlink Testnet",
+			name: "Etherlink",
+			displayName: "Etherlink",
 			chainId: Number(import.meta.env.VITE_ETHERLINK_CHAIN_ID),
 			nativeCurrency: {
 				name: "XTZ",
