@@ -39,6 +39,27 @@ export const tokenPairs = [
 			ticketHelperContractAddress: "KT1JJsiwXgGVhomcUQsPQYdALkRRqakvK3XC",
 		},
 	},
+	{
+		etherlink: {
+			type: "erc20",
+			name: "OTTEZ",
+			ticker: "OTTERLINK",
+			address: "0x8322723F5Ca51cb20A80D6C55D24eAa1651f68c7",
+			decimals: 8,
+			icon: "otterlink",
+		},
+		tezos: {
+			type: "fa2",
+			name: "OTTEZ",
+			ticker: "OTTERLINK",
+			address: "KT18opRzxCFTyhU6iw2g3DUfBy82GRYXqHjH",
+			tokenId: "0",
+			decimals: 8,
+			icon: "otterlink",
+			ticketerContractAddress: "KT1CaP2apQz1fMExBA7igaQeUjFJc42aZsQ8",
+			ticketHelperContractAddress: "KT1TWDQ5t44EDeHspiH8WNAX1FryVKDPVqWM",
+		},
+	},
 ]
 
 export const getTokenKey = (token) => {
